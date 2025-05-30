@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<link rel="icon" href="https://dplnews.com/wp-content/uploads/2022/02/dplnews_claro_mc100222.jpeg" type="image/x-icon">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario de Gestión Backoffice HFC</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.6/flatpickr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .titulo {
+    width: 103%;
+    background-color: #000000;
+    text-align: center;
+    color: white;
+    margin-bottom: 0px;
+  }
+
+    .botones-container {
+        background-color: #000000; /* Azul oscuro */
+        margin-top: 0px;
+        width: 100%; /* Ajuste de ancho */
+        display: flex;
+        justify-content: center; /* Centrar los elementos horizontalmente */
+        align-items: center; /* Centrar los elementos verticalmente */
+        flex-wrap: wrap; /* Envolver elementos */
+        margin-bottom: 30px;
+        border: 40px solid #000000;
+    }
+
+.form-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Contenedor para los formularios */
+.forms-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+    .botones-container button {
+        background-color: #000000; /* Azul oscuro */
+        color: white; /* Letras blancas */
+        padding: 12px 20px; /* Aumentar el espacio interno */
+        border: 2px solid white;
+        border-radius: 5px;
+        margin: 2px; /* Espacio entre los botones */
+        cursor: pointer;
+        font-size: 16px; /* Tamaño de letra */
+    }
+
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        overflow: hidden; /* Evita el colapso de márgenes */
+        padding: 20px; /* Añade padding al contenedor */
+
+    }
+
+    #mini-form, #main-form, #details-form, .text-container {
+        max-width: 400px;
+        padding: 50px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 20px; /* Ajusta el margen según lo necesites */
+        margin-bottom: 40px;
+    }
+
+#details-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1300px;
+    margin: 30px auto;
+    margin-top: 40px;
+    margin-right: 30px;
+    padding-left: 40px;
+}
+
+#details-form .form-section {
+    width: 100%;
+}
+
+#details-form .form-section textarea {
+    width: 100%;
+    box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
+}
+
+    .form-section {
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        margin-bottom: 20px;
+
+    }
+
+.form-section label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-section input, 
+    .form-section select, 
+    .form-section textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+    }
+
+    .form-section textarea {
+        height: 100px;
+        resize: vertical;
+    }
+
+    button {
+        background-color: #000000;
+        color: white;
+        padding: 10px 130px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 20px;
+    }
+
+    button:hover {
+        background-color: #ddd;
+    }
+
+    .text-container {
+        max-width: 400px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 0px; /* Ajusta el margen según lo necesites */
+        gap: 15px; 
+        margin-left: 30px;
+        padding-top: 20px;
+    	border-top-width: 0px;
+    	border-left-width: 0px;
+    	border-right-width: 0px;
+    	border-bottom-width: 0px;
+    }
+
+    .textarea-item {
+        max-width: 400px;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+    }
+
+    .textarea-item label {
+        margin-bottom: 5px;
+        display: block;
+        color: #333;
+    }
+
+    .textarea-item button {
+        background-color: #000000;
+        color: white;
+        padding: 10px 150px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+        font-size: 16px;
+    }
+
+
+    .textarea-item button:hover {
+        background-color: #ccc;
+    }
+
+    #text1, #text2, #text3 {
+        width: 350px;
+        height: 200px;
+    }
+
+    #Observaciones, #PDSR, #redAccesoDet, #ruta, #ping, #capa2, #capa3 {
+        width: 400px;
+        height: 100px;
+    }
+
+    .horizontal-textareas {
+        display: flex;
+        flex-wrap: wrap; /* Permite que los elementos se muevan a una nueva línea si no caben */
+        gap: 15px; /* Espacio entre los cuadros */
+    }
+
+    .horizontal-textareas div {
+        flex: 1 1 calc(33.33% - 15px); /* Cada textarea ocupa un 33% del ancho del contenedor con espacio entre ellos */
+        min-width: 250px; /* Evita que se hagan demasiado pequeños */
+    }
+
+    .horizontal-textareas textarea {
+        width: 100%;
+        height: 80px; /* Ajuste de altura */
+    }
+
+    .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* Oculto por defecto */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        .popup-content h2 {
+            margin-top: 0;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+        }
+
+        .tab.active {
+            background-color: #ddd;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .close-btn {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .close-btn:hover {
+            background-color: #333;
+        }
+ 
+        .form-container {
+            display: flex;
+            align-items: flex-start; /* Alinea la parte superior */
+            justify-content: flex-start;
+            gap: 20px; /* Espacio entre el formulario y la textarea */
+        }
+
+</style>
+
+</head>
+<body>
+
+<div class="titulo">
+    <h1>PLANTILLA CREACION DE RMA</h1>
+</div>
+
+<div class="botones-container">
+    <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
+    <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
+</div>
+
+    <div class="form-container">
+    <!-- Formulario Principal -->
+    <div class="form-section">
+
+<div class="container">
+  <form id="mini-form">
+    <label for="caso">Caso/ODS:</label>
+    <input type="text" id="caso" name="caso" required><br>
+
+    <label for="accesorios">Accesorios:</label>
+    <input type="text" id="accesorios" name="accesorios" required><br>
+
+    <label for="origen">Origen:</label>
+    <input type="text" id="origen" name="origen" required><br>
+
+    <label for="unidad">Unidad de Negocio:</label>
+    <input type="text" id="unidad" name="unidad" required><br>
+
+    <label for="fecha">Fecha de Solicitud:</label>
+    <input type="text" id="fecha" name="fecha" required><br>
+
+    <label for="tecnico">Tecnico:</label>
+    <input type="text" id="tecnico" name="tecnico" required><br>
+
+    <label for="abreviatura">Motivo Recoleccion:</label>
+    <select id="abreviatura" name="abreviatura" required>
+        <option value="falla">falla</option>
+        <option value="REC_NO_SA">REC_NO_SA</option>
+      	<option value="REC_DÑ_EX">REC_DÑ_EX</option>
+      	<option value="REC_DÑ_IN">REC_DÑ_IN</option>
+      	<option value="REC_INCOM">REC_INCOM</option>
+      	<option value="PANRT">PANRT</option>
+    </select><br>
+    </form>
+
+        <form id="main-form">
+            <h2>Plantilla RMA</h2>
+            <label for="ean">EAN:</label>
+            <input type="text" id="ean" name="ean">
+
+            <label for="estadoproducto">Estado de producto:</label>
+            <input type="text" id="estadoproducto" name="estadoproducto">
+
+            <label for="serial">Serial:</label>
+            <input type="text" id="serial" name="serial">
+
+            <label for="formato">Formato:</label>
+            <input type="text" id="formato" name="formato">
+
+            <label for="motivo">Motivo:</label>
+            <input type="text" id="motivo" name="motivo">
+
+    	    <label for="proceso">Proceso (RMA - ODS):</label>
+            <select id="proceso" name="proceso" required>
+      		<option value="RMA">RMA</option>
+      		<option value="ODS">ODS</option>
+    	    </select><br>
+
+    	    <label for="trasportador">Trasportador (Pro - coordi):</label>
+            <select id="trasportador" name="trasportador" required>
+      		<option value="Propio">Propio</option>
+      		<option value="Coordinadora">Coordinadora</option>
+ 		<option value="Envia">Envia</option>
+    	    </select><br>
+
+            <label for="destino">Destino:</label>
+            <input type="text" id="destino" name="destino">
+
+            <label for="direccion">Dirección:</label>
+            <input type="text" id="direccion" name="direccion">
+
+            <label for="telefonos">Telefonos:</label>
+            <input type="text" id="telefonos" name="telefonos">
+
+            <label for="fecharecoleccion">Fecha recolección:</label>
+            <input type="text" id="fecharecoleccion" name="fecharecoleccion">
+
+            <label for="frecuencia">Dia - Frecuencia:</label>
+            <input type="text" id="frecuencia" name="frecuencia">
+
+            <label for="observaciones">Observaciones del caso:</label>
+            <input type="text" id="observaciones" name="observaciones">
+           
+            <button type="button" onclick="generarPlantillas()">Generar Plantillas</button>
+            <button type="button" onclick="generarFormatoP()">Generar Formato P</button>
+            <button type="button" onclick="generarFormatoAveri()">Generar Formato Averi</button>
+        </form>
+        
+    <!-- Textareas para resultados con botones de copiar -->
+    <div class="text-container">       
+        <!-- Textarea 1 -->
+        <div class="textarea-item">
+            <label for="text1">Plantilla RMA:</label>
+            <textarea id="text1" readonly></textarea>
+            <button onclick="copyToClipboard('text1')">Copiar</button>
+        </div>
+        
+        <!-- Textarea 2 -->
+        <div class="textarea-item">
+            <label for="text2">Plantilla Observaciones RMA:</label>
+            <textarea id="text2" readonly></textarea>
+            <button onclick="copyToClipboard('text2')">Copiar</button>
+        </div>
+    </div>
+ </div>
+
+<script>
+
+function generarPlantillas() {
+
+    // Obtener valores del formulario
+    const ean = document.getElementById('ean').value;
+    const estadoproducto = document.getElementById('estadoproducto').value;
+    const serial = document.getElementById('serial').value;
+    const formato = document.getElementById('formato').value;
+    const motivo = document.getElementById('motivo').value;
+    const proceso = document.getElementById('proceso').value;
+    const trasportador = document.getElementById('trasportador').value;
+    const destino = document.getElementById('destino').value;
+    const direccion = document.getElementById('direccion').value;
+    const telefonos = document.getElementById('telefonos').value;
+    const fecharecoleccion = document.getElementById('fecharecoleccion').value;
+    const frecuencia = document.getElementById('frecuencia').value;
+    const observaciones = document.getElementById('observaciones').value;
+    const caso = document.getElementById('caso').value;
+    const abreviatura = document.getElementById('abreviatura').value;
+
+    // Generar contenido para text1
+    document.getElementById('text1').value = `Ean: ${ean}
+Estado de producto: ${estadoproducto}
+Serial: ${serial}
+Formato: ${formato}
+Motivo: ${motivo}
+Proceso (RMA - ODS): ${proceso}
+Trasportador (Pro - Coordi): ${trasportador}
+Destino: ${destino}
+Dirección: ${direccion}
+Teléfonos: ${telefonos}
+Fecha recolección: ${fecharecoleccion}
+Dia - Frecuencia: ${frecuencia}
+Observaciones del caso: ${observaciones}`;
+
+    // Generar contenido para text2 (sin redeclarar variables)
+    document.getElementById('text2').value = `Caso: ${caso} // ${direccion} // ${telefonos} // Estado: ${abreviatura} // Formato: ${formato} // Destino: ${destino} // Serial: ${serial} // Motivo: ${motivo}`;
+}
+
+    function copyToClipboard(textareaId) {
+        const textarea = document.getElementById(textareaId);
+        textarea.select();
+        document.execCommand('copy');
+        alert('Texto copiado al portapapeles');
+    }
+
+ // FORMATO P
+    async function generarFormatoP() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        // Obtener valores del formulario
+        const getValue = id => document.getElementById(id).value;
+        const valores = {
+            origen: getValue('origen'),
+            fecha: getValue('fecha'),
+            serial: getValue('serial'),
+	    estadoproducto: getValue('estadoproducto'),
+            caso: getValue('caso'),
+            tecnico: getValue('tecnico'),
+            ean: getValue('ean'),
+            accesorios: getValue('accesorios'),
+            observaciones: getValue('observaciones')
+        };
+
+        // ====== CONFIGURACIÓN PRECISA ======
+        const config = {
+            colWidth: 30,    // 6 columnas = 180mm
+            rowHeight: 15,   // 6 filas = 90mm
+            startX: 10,      // Margen izquierdo
+            startY: 20       // Margen superior
+        };
+
+doc.setDrawColor(0, 0, 0);
+doc.setLineWidth(0.5);
+
+const x = Math.floor(config.startX);
+const y = Math.floor(config.startY);
+const cw = Math.floor(config.colWidth);
+const rh = Math.floor(config.rowHeight);
+
+// === MARCO EXTERIOR ===
+doc.line(x, y, x + cw * 6, y);                     // Superior
+doc.line(x, y + rh * 6, x + cw * 6, y + rh * 6);   // Inferior
+doc.line(x, y, x, y + rh * 6);                     // Izquierda
+doc.line(x + cw * 6, y, x + cw * 6, y + rh * 6);   // Derecha
+
+// === LÍNEAS HORIZONTALES ===
+doc.line(x, y + rh, x + cw * 4, y + rh);           // Bajo PV / Fecha
+doc.line(x, y + rh * 2, x + cw * 4, y + rh * 2);   // Bajo Fecha
+doc.line(x, y + rh * 3, x + cw * 2, y + rh * 3);   // Bajo Serial
+doc.line(x, y + rh * 4, x + cw * 2, y + rh * 4);   // Bajo Técnico
+doc.line(x, y + rh * 5, x + cw * 2, y + rh * 5);   // Bajo EAN
+
+doc.line(x + cw * 2, y + rh * 3, x + cw * 6, y + rh * 3); // Bajo OT
+doc.line(x + cw * 2, y + rh * 4, x + cw * 6, y + rh * 4); // Bajo OBSERVACIONES
+doc.line(x + cw * 2, y + rh * 5, x + cw * 6, y + rh * 5); // Bajo Accesorios
+
+// === LÍNEAS VERTICALES ===
+// doc.line(x + cw * 2, y, x + cw * 2, y + rh * 6);   // Entre Fecha y OT
+doc.line(x + cw * 2, y, x + cw * 2, y + rh * 4);
+doc.line(x + cw * 2, y, x + cw * 2, y + rh * 5);
+doc.line(x + cw * 4, y, x + cw * 4, y + rh);       // Límite izquierdo del cuadro "P"
+
+// ❌ IMPORTANTE: Estas líneas NO deben estar presentes:
+// doc.line(x + cw * 3, y + rh * 3, x + cw * 3, y + rh * 6);  ← Línea fantasma OT/OBS
+// doc.line(x + cw, y + rh * 3, x + cw, y + rh * 6);          ← Línea entre EAN/FT
+
+        // ====== CELDA "P" (2 cols x 3 filas) ======
+        doc.setFillColor(255, 212, 0);
+        doc.rect(
+            config.startX + (4 * config.colWidth),
+            config.startY,
+            2 * config.colWidth,
+            3 * config.rowHeight,
+            'F'
+        );
+        doc.setFontSize(80);
+        doc.text("P", 
+            config.startX + (5 * config.colWidth),
+            config.startY + (1.5 * config.rowHeight),
+            { align: 'center', baseline: 'middle' }
+        );
+
+        // ====== TEXTO ALINEADO A LA IZQUIERDA ======
+        doc.setFontSize(10);
+        const textos = [            
+            // Fila 3
+            { text: `Serial: ${valores.serial}`, x: config.startX + 1, y: config.startY + 40 },
+            { text: `OT: ${valores.caso}`, x: config.startX + (2 * config.colWidth) + 1, y: config.startY + 40 },
+            
+            // Fila 4
+            { text: `Tecnico: ${valores.tecnico}`, x: config.startX + 1, y: config.startY + 55 },
+            
+            // Fila 5
+            { text: `EAN: ${valores.ean}`, x: config.startX + 1, y: config.startY + 70 },
+            { text: `Accesorios: ${valores.accesorios}`, x: config.startX + (2 * config.colWidth) + 1, y: config.startY + 70 },
+            
+        ];
+        textos.forEach(t => {
+    doc.text(t.text, t.x, t.y, t.options || {});
+});
+
+// Agregar PV, Fecha y sus valores (sin duplicación)
+doc.setFontSize(10);
+doc.text("PV", config.startX + config.colWidth, config.startY + 10, { align: "center" });
+doc.text(valores.origen, config.startX + config.colWidth, config.startY + 25, { align: "center" });
+
+doc.text("Fecha", config.startX + config.colWidth * 3, config.startY + 10, { align: "center" });
+doc.text(valores.fecha, config.startX + config.colWidth * 3, config.startY + 25, { align: "center" });
+
+// OBSERVACIONES alineado arriba a la izquierda
+doc.text("OBSERVACIONES:", config.startX + (2 * config.colWidth) + 1, config.startY + (3 * config.rowHeight) + 2, {
+    align: "left",
+    baseline: "top"
+});
+const obsTexto = doc.splitTextToSize(valores.estadoproducto, (4 * config.colWidth) - 10);
+doc.text(obsTexto, config.startX + (2 * config.colWidth) + 1, config.startY + (3 * config.rowHeight) + 7, {
+    align: "left",
+    baseline: "top"
+});
+
+// FT alineado arriba a la izquierda
+doc.text("FT:", config.startX + 1, config.startY + (5 * config.rowHeight) + 2, {
+    align: "left",
+    baseline: "top"
+});
+const ftTexto = doc.splitTextToSize(valores.observaciones, (6 * config.colWidth) - 15);
+doc.text(ftTexto, config.startX + 8, config.startY + (5 * config.rowHeight) + 2, {
+    align: "left",
+    baseline: "top"
+});
+const areasClave = [
+    // Fila 1: PV (cols 1-2)
+    { x: config.startX, y: config.startY, cols: 2, rows: 1 },
+    // Fila 1: Fecha (cols 3-4)
+    { x: config.startX + (2 * config.colWidth), y: config.startY, cols: 2, rows: 1 },
+    
+    // Fila 2: PV (cols 1-2)
+    { x: config.startX, y: config.startY + config.rowHeight, cols: 2, rows: 1 },
+    // Fila 2: Fecha (cols 3-4)
+    { x: config.startX + (2 * config.colWidth), y: config.startY + config.rowHeight, cols: 2, rows: 1 },
+
+    // Fila 3: Serial (cols 1-2)
+    { x: config.startX, y: config.startY + (2 * config.rowHeight), cols: 2, rows: 1 },
+    // Fila 3: OT (cols 3-4)
+    { x: config.startX + (2 * config.colWidth), y: config.startY + (2 * config.rowHeight), cols: 2, rows: 1 },
+    
+    // Fila 4: Técnico (cols 1-2)
+    { x: config.startX, y: config.startY + (3 * config.rowHeight), cols: 2, rows: 1 },
+    // Fila 4: Observaciones (cols 3-6)
+    { x: config.startX + (2 * config.colWidth), y: config.startY + (3 * config.rowHeight), cols: 4, rows: 1 },
+    
+    // Fila 5: EAN (cols 1-2)
+    { x: config.startX, y: config.startY + (4 * config.rowHeight), cols: 2, rows: 1 },
+    // Fila 5: Accesorios (cols 3-6)
+    { x: config.startX + (2 * config.colWidth), y: config.startY + (4 * config.rowHeight), cols: 4, rows: 1 },
+    
+    // Fila 6: FT (cols 1-6)
+    { x: config.startX, y: config.startY + (5 * config.rowHeight), cols: 6, rows: 1 }
+];
+
+
+        doc.setLineWidth(0.001); // Grosor más delgado solo para las líneas blancas
+doc.setDrawColor(255, 255, 255); // Color blanco
+
+areasClave.forEach(area => {
+    // Eliminar líneas verticales internas
+    for (let c = 1; c < area.cols; c++) {
+        doc.line(
+            area.x + (c * config.colWidth),
+            area.y,
+            area.x + (c * config.colWidth),
+            area.y + (area.rows * config.rowHeight)
+        );
+    }
+    // Eliminar líneas horizontales internas
+    for (let r = 1; r < area.rows; r++) {
+        doc.line(
+            area.x,
+            area.y + (r * config.rowHeight),
+            area.x + (area.cols * config.colWidth),
+            area.y + (r * config.rowHeight)
+        );
+    }
+});
+
+// Restaurar configuración original para continuar
+doc.setDrawColor(0, 0, 0); // Negro
+doc.setLineWidth(0.001); // Grosor normal
+        doc.save(`Formato_P_${valores.caso}.pdf`);
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error al generar PDF. Verifica la consola.");
+    }
+}
+
+// FORMATO AVERI - RECOLECCIÓN
+async function generarFormatoAveri() {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Obtener valores del formulario
+        const getValue = id => document.getElementById(id).value;
+        const valores = {
+            destino: getValue('destino'),
+            origen: getValue('origen'),
+            ean: getValue('ean'),
+            caso: getValue('caso'),
+            serial: getValue('serial'),
+            accesorios: getValue('accesorios'),
+            fecha: getValue('fecha'),
+            observaciones: getValue('observaciones')
+        };
+
+        // ====== CONFIGURACIÓN ======
+        const config = {
+            cols: 3,
+            rows: 9,
+            colWidth: 60,
+            rowHeight: 5,
+            startX: 10,
+            startY: 20
+        };
+
+        const totalWidth = config.colWidth * config.cols;
+        const totalHeight = config.rowHeight * config.rows;
+
+        // ====== DIBUJAR BORDES DE LA TABLA ======
+        // Altura personalizada por fila
+const rowHeights = Array(config.rows).fill(config.rowHeight);
+rowHeights[8] = 15; // Hacer más alta la fila 8 (Observaciones)
+
+// Dibujar líneas horizontales
+let currentY = config.startY;
+for (let i = 0; i <= config.rows; i++) {
+    if (i === 1 || i === 2) {
+        // Solo dibujar desde columna 2 hacia la derecha (evitar AVE)
+        const col2Start = config.startX + config.colWidth * 2;
+        doc.line(col2Start, currentY, col2Start + config.colWidth, currentY);
+    } else {
+        // Dibujar la línea completa normalmente
+        doc.line(config.startX, currentY, config.startX + totalWidth, currentY);
+    }
+
+    if (i < config.rows) currentY += rowHeights[i];
+}
+
+// Dibujar líneas verticales
+for (let i = 0; i <= config.cols; i++) {
+    let y = config.startY;
+    for (let r = 0; r < config.rows; r++) {
+        const nextY = y + rowHeights[r];
+
+        const isInsideAve = (i === 1) && r < 3;
+        const isInsideObservaciones = r === 8 && (i === 1 || i === 2);
+        const isInsideTecnicoYCoordinador = (i === 2) && (r === 6 || r === 7);
+
+        if (!isInsideAve && !isInsideObservaciones && !isInsideTecnicoYCoordinador) {
+            doc.line(config.startX + (i * config.colWidth), y, config.startX + (i * config.colWidth), nextY);
+        }
+
+        y = nextY;
+    }
+}
+
+        // ====== COMBINACIÓN DE CELDAS ======
+        const merge = (colIndex, rowIndex, colspan, rowspan) => {
+    doc.setDrawColor(255, 255, 255); // color blanco para "borrar"
+    let yOffset = 0;
+    for (let i = 0; i < rowIndex; i++) yOffset += rowHeights[i];
+    const yStart = config.startY + yOffset;
+
+    let yEnd = yStart;
+    for (let i = rowIndex; i < rowIndex + rowspan; i++) yEnd += rowHeights[i];
+
+    // Eliminar líneas verticales internas
+    for (let c = 1; c < colspan; c++) {
+        const x = config.startX + ((colIndex + c) * config.colWidth);
+        doc.line(x, yStart, x, yEnd);
+    }
+
+    // Eliminar líneas horizontales internas
+    let xStart = config.startX + (colIndex * config.colWidth);
+    let xEnd = config.startX + ((colIndex + colspan) * config.colWidth);
+    let tempY = yStart;
+    for (let r = 1; r < rowspan; r++) {
+        tempY += rowHeights[rowIndex + r - 1];
+        doc.line(xStart, tempY, xEnd, tempY);
+    }
+
+    doc.setDrawColor(0, 0, 0); // restaurar color negro
+};
+
+        // Aplicar combinaciones
+        merge(0, 0, 2, 3);  // Celda "AVE" (2 columnas, 3 filas)
+        merge(2, 0, 1, 1);  // Unidad de Negocio (fila 0)
+        merge(2, 1, 1, 1);  // Origen (fila 1)
+        merge(2, 2, 1, 1);  // Cambios (fila 2)
+        merge(1, 6, 2, 1);  // Autoriza Coordinador (columnas vacías)
+        merge(1, 7, 2, 1);  // Técnico que valida (combinar 2 columnas)
+        merge(0, 8, 3, 1);  // Observaciones (combinar 3 columnas)
+
+        // ====== DIBUJAR LÍNEA FALTANTE (COLUMNA DERECHA) ======
+        doc.line(
+            config.startX + (2 * config.colWidth),  // Columna 2
+            config.startY + (2 * config.rowHeight), // Fila 2
+            config.startX + (2 * config.colWidth),  // Misma columna
+            config.startY + (3 * config.rowHeight)  // Hasta fila 3
+        );
+
+        // ====== TEXTO Y FORMATO ======
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text("AVE",
+    	   config.startX + 5,                     // Margen izquierdo de la celda
+    	   config.startY + (15 / 2) + 1.5         // Centrado vertical en 3 filas + ajuste visual
+	);
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+
+        const text = [
+            // Sección derecha de "AVE"
+            { text: `Unidad de Negocio: ${valores.destino}`, col: 2, row: 0 },
+            { text: `Origen: ${valores.origen}`, col: 2, row: 1 },
+            { text: `Cambios:    PTOV:    N/A: X`, col: 2, row: 2 },
+
+            // Fila 4 (EAN, OT, Serial)
+            { text: `EAN: ${valores.ean}`, col: 0, row: 3 },
+            { text: `OT: ${valores.caso}`, col: 1, row: 3 },
+            { text: `Serial: ${valores.serial}`, col: 2, row: 3 },
+
+            // Fila 5 (Accesorios y FT)
+            { text: `ACCESORIOS: ${valores.accesorios}`, col: 0, row: 4 },
+            { text: `FT: N/A`, col: 2, row: 4 },
+
+            // Fila 6 (Solicitado el día, Fecha, Solicitante)
+            { text: `Solicitado el día:`, col: 0, row: 5 },
+            { text: `${valores.fecha}`, col: 1, row: 5 },
+            { text: `Solicitante: Sebastian Ovalle`, col: 2, row: 5 },
+
+            // Fila 7 (Autoriza Coordinador)
+            { text: `Autoriza Coordinador:`, col: 0, row: 6 },
+
+            // Fila 8 (Técnico que valida)
+            { text: `Técnico que valida:`, col: 0, row: 7 },
+            { text: `Sebastian Ovalle`, col: 1, row: 7 },
+
+            // Fila 9 (Observaciones)
+            { text: `Observaciones: ${valores.observaciones}`, col: 0, row: 8 }
+        ];
+
+        // Dibujar texto
+        // Dibujar texto (ajustando Observaciones)
+text.forEach(item => {
+    const x = config.startX + (item.col * config.colWidth) + 1;
+    let yOffset = 0;
+    for (let i = 0; i < item.row; i++) {
+        yOffset += rowHeights[i];
+    }
+    const yBase = config.startY + yOffset;
+
+    if (item.row === 8) {
+        // Texto multilínea para Observaciones
+        const maxWidth = config.colWidth * 3 - 4; // 3 columnas menos margen
+        const lines = doc.splitTextToSize(item.text, maxWidth);
+        doc.text(lines, x, yBase + 4);
+    } else {
+        const y = yBase + (rowHeights[item.row] / 2) + 1.5;
+        doc.text(item.text, x, y);
+    }
+});
+
+
+        doc.save(`Formato_Averi_${valores.caso}.pdf`);
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Error al generar el Formato AVE. Revisa la consola.");
+    }
+}
+</script>
+
+</script>
+</body>
+</html>

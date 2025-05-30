@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Envíos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+        .titulo {
+            width: 103%;
+            background-color: #000000;
+            text-align: center;
+            color: white;
+            margin-bottom: 0px;
+            padding: 15px 0;
+        }
+        .botones-container {
+            background-color: #000000;
+            margin-top: 0px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            border: 40px solid #000000;
+        }
+        .botones-container button {
+            background-color: #000000;
+            color: white;
+            padding: 12px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .botones-container button:hover {
+            background-color: #333;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            overflow: hidden;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .form-section {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+        .form-section h2 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-section input, 
+        .form-section select, 
+        .form-section textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        .form-section textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .form-section input[readonly] {
+            background-color: #f5f5f5;
+        }
+        .text-container {
+            max-width: 500px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+        }
+        .textarea-item {
+            width: 100%;
+        }
+        .textarea-item label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: bold;
+        }
+        .textarea-item textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        .btn-descargar {
+            background-color: #000;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+        }
+        .btn-descargar:hover {
+            background-color: #333;
+        }
+        .btn-generar {
+            background-color: #000;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .btn-generar:hover {
+            background-color: #333;
+        }
+        .btn-recoleccion {
+            background-color: #000;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .btn-recoleccion:hover {
+            background-color: #333;
+        }
+        .select2-container {
+            width: 100% !important;
+            margin-bottom: 15px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .form-section, .text-container {
+                max-width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="titulo">
+    <h1>FORMULARIO DE ENVÍOS</h1>
+</div>
+
+<div class="botones-container">
+    <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
+    <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
+</div>
+
+<div class="container">
+    <!-- Formulario Principal -->
+    <div class="form-section">
+        <h2>Datos del Remitente</h2>
+        
+        <label for="cedulaCliente">CÉDULA CLIENTE:</label>
+        <input type="text" id="cedulaCliente" name="cedulaCliente">
+        
+        <label for="nombreCliente">NOMBRE CLIENTE:</label>
+        <input type="text" id="nombreCliente" name="nombreCliente">
+        
+        <label for="telCliente">TEL CLIENTE:</label>
+        <input type="text" id="telCliente" name="telCliente">
+        
+        <label for="direccionCliente">DIRECCIÓN CLIENTE:</label>
+        <input type="text" id="direccionCliente" name="direccionCliente">
+        
+        <label for="ciudadRemitente">CIUDAD REMITENTE (USAR CÓDIGO DANE):</label>
+        <select id="ciudadRemitente" name="ciudadRemitente" class="js-ciudades">
+            <option value="">Seleccione...</option>
+            <!-- Las ciudades se cargarán dinámicamente -->
+        </select>
+    </div>
+
+    <!-- Segundo Formulario -->
+    <div class="form-section">
+        <h2>Datos del Destinatario</h2>
+        
+        <label for="cedulaDestinatario">CEDULA DESTINATARIO:</label>
+        <input type="text" id="cedulaDestinatario" name="cedulaDestinatario" value="8909009431" readonly>
+        
+        <label for="unidad">UNIDAD:</label>
+        <select id="unidad" name="unidad" onchange="actualizarDireccionYCiudad()">
+            <option value="">Seleccione...</option>
+            <option value="CENTR">CENTR</option>
+            <option value="AKCED">AKCED</option>
+            <option value="AKCE2">AKCE2</option>
+        </select>
+        
+        <label for="direccionDestino">DIRECCION DESTINO:</label>
+        <input type="text" id="direccionDestino" name="direccionDestino" readonly>
+        
+        <label for="telefonoDestino">TELEFONO:</label>
+        <input type="text" id="telefonoDestino" name="telefonoDestino" value="4073033" readonly>
+        
+        <label for="ciudadDestino">CIUDAD DESTINO:</label>
+        <input type="text" id="ciudadDestino" name="ciudadDestino" readonly>
+    </div>
+
+    <!-- Tercer Formulario -->
+    <div class="form-section">
+        <h2>Datos del Envío</h2>
+        
+        <label for="caso">CASO:</label>
+        <input type="text" id="caso" name="caso" placeholder="Ej: CASO12345">
+        
+        <label for="guia">GUÍA:</label>
+        <input type="text" id="guia" name="guia" placeholder="Ej: GUIA12345">
+        
+        <label for="descripcionContenido">DESCRIPCION CONTENIDO:</label>
+        <textarea id="descripcionContenido" name="descripcionContenido" placeholder="Ej: Multifuncional Epson L3210 Hg"></textarea>
+        
+        <label for="valorAsegurado">VALOR ASEGURADO POR EL TOTAL DE CAJAS O PAQUETES:</label>
+        <input type="text" id="valorAsegurado" name="valorAsegurado" placeholder="Ej: 729000">
+        
+        <label for="referencia">REFERENCIA:</label>
+        <input type="text" id="referencia" name="referencia" placeholder="Ej: ODS 01483619">
+        
+        <label for="observaciones">OBSERVACIONES:</label>
+        <textarea id="observaciones" name="observaciones" placeholder="Ej: CASO 01483534, Multifuncional Epson L3210 Hg"></textarea>
+        
+        <label for="totalPeso">totalPeso:</label>
+        <input type="text" id="totalPeso" name="totalPeso" placeholder="Ej: 12">
+        
+        <label for="totalVolumen">totalVolumen:</label>
+        <input type="text" id="totalVolumen" name="totalVolumen" placeholder="Ej: 48">
+        
+        <label for="totalUnidades">totalUnidades:</label>
+        <input type="text" id="totalUnidades" name="totalUnidades" placeholder="Ej: 1">
+    </div>
+
+    <!-- Cuarto Formulario -->
+    <div class="form-section">
+        <h2>Información Adicional</h2>
+        
+        <label for="fecha">FECHA:</label>
+        <input type="text" id="fecha" name="fecha" readonly>
+        
+        <label for="notificarCorreo">NOTIFICAR CORREO:</label>
+        <input type="text" id="notificarCorreo" name="notificarCorreo" value="1">
+        
+        <label for="correoNotificar">CORREO A NOTIFICAR:</label>
+        <input type="text" id="correoNotificar" name="correoNotificar">
+        
+        <button type="button" class="btn-generar" onclick="generarArchivo()">Generar Guia</button>
+        <button type="button" class="btn-recoleccion" onclick="generarRecoleccion()">Generar ID Recolección</button>
+    </div>
+
+    <!-- Área de texto para el resultado -->
+    <div class="text-container">
+        <div class="textarea-item">
+            <label for="textoResultado">Archivo generado (separado por tabulaciones):</label>
+            <textarea id="textoResultado" readonly></textarea>
+            <button class="btn-descargar" onclick="descargarArchivo()">Descargar Guia</button>
+        </div>
+    </div>
+
+    <!-- Área de texto para ID de recolección -->
+    <div class="text-container">
+        <div class="textarea-item">
+            <label for="textoRecoleccion">ID de Recolección:</label>
+            <textarea id="textoRecoleccion" readonly></textarea>
+            <button class="btn-descargar" onclick="descargarRecoleccion()">Descargar ID Recolección</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    // Lista de ciudades con códigos DANE (puedes agregar más)
+    const ciudades = [
+{id: "ABEJORRAL (ANT)", text: "ABEJORRAL (ANT)"},
+{id: "ABREGO (N/STDER)", text: "ABREGO (N/STDER)"},
+{id: "ABRIAQUI (ANT)", text: "ABRIAQUI (ANT)"},
+{id: "ACACIAS (META)", text: "ACACIAS (META)"},
+{id: "ACANDI (CHOCO)", text: "ACANDI (CHOCO)"},
+{id: "ACAPULCO (STDER)", text: "ACAPULCO (STDER)"},
+{id: "ACEVEDO (HLA)", text: "ACEVEDO (HLA)"},
+{id: "ACHI (BOL)", text: "ACHI (BOL)"},
+{id: "AGRADO (HLA)", text: "AGRADO (HLA)"},
+{id: "AGUACHICA (CES)", text: "AGUACHICA (CES)"},
+{id: "AGUACLARA (C/NARE)", text: "AGUACLARA (C/NARE)"},
+{id: "AGUADAS (CDAS)", text: "AGUADAS (CDAS)"},
+{id: "AGUADA (STDER)", text: "AGUADA (STDER)"},
+{id: "AGUA DE DIOS (C/MARCA)", text: "AGUA DE DIOS (C/MARCA)"},
+{id: "AGUAZUL (C/NARE)", text: "AGUAZUL (C/NARE)"},
+{id: "AIPE (HLA)", text: "AIPE (HLA)"},
+{id: "ALBAN (C/MARCA)", text: "ALBAN (C/MARCA)"},
+{id: "ALBANIA (CAQ)", text: "ALBANIA (CAQ)"},
+{id: "ALBANIA (GUAJ)", text: "ALBANIA (GUAJ)"},
+{id: "ALCALA (VALLE)", text: "ALCALA (VALLE)"},
+{id: "ALDANA (NAR)", text: "ALDANA (NAR)"},
+{id: "ALEJANDRIA (ANT)", text: "ALEJANDRIA (ANT)"},
+{id: "ALGARROBO (MG/LENA)", text: "ALGARROBO (MG/LENA)"},
+{id: "ALGECIRAS (HLA)", text: "ALGECIRAS (HLA)"},
+{id: "ALMAGUER (CAU)", text: "ALMAGUER (CAU)"},
+{id: "ALMEIDA (BOY)", text: "ALMEIDA (BOY)"},
+{id: "ALPUJARRA (TOL)", text: "ALPUJARRA (TOL)"},
+{id: "ALTAMIRA (ANT)", text: "ALTAMIRA (ANT)"},
+{id: "ALTAMIRA (HLA)", text: "ALTAMIRA (HLA)"},
+{id: "ALTAQUER (NAR)", text: "ALTAQUER (NAR)"},
+{id: "ALTO BAUDO (CHOCO)", text: "ALTO BAUDO (CHOCO)"},
+{id: "ALVARADO (TOL)", text: "ALVARADO (TOL)"},
+{id: "AMAGA (ANT)", text: "AMAGA (ANT)"},
+{id: "AMAIME (VALLE)", text: "AMAIME (VALLE)"},
+{id: "AMALFI (ANT)", text: "AMALFI (ANT)"},
+{id: "AMBALEMA (TOL)", text: "AMBALEMA (TOL)"},
+{id: "ANAPOIMA (C/MARCA)", text: "ANAPOIMA (C/MARCA)"},
+{id: "ANCUYA (NAR)", text: "ANCUYA (NAR)"},
+{id: "ANDAGOYA (CHOCO)", text: "ANDAGOYA (CHOCO)"},
+{id: "ANDALUCIA (VALLE)", text: "ANDALUCIA (VALLE)"},
+{id: "ANDES (ANT)", text: "ANDES (ANT)"},
+{id: "ANGELOPOLIS (ANT)", text: "ANGELOPOLIS (ANT)"},
+{id: "ANGOSTURA (ANT)", text: "ANGOSTURA (ANT)"},
+{id: "ANIMAS (CHOCO)", text: "ANIMAS (CHOCO)"},
+{id: "ANOLAIMA (C/MARCA)", text: "ANOLAIMA (C/MARCA)"},
+{id: "ANORI (ANT)", text: "ANORI (ANT)"},
+{id: "ANSERMA (CDAS)", text: "ANSERMA (CDAS)"},
+{id: "ANSERMA NUEVO (VALLE)", text: "ANSERMA NUEVO (VALLE)"},
+{id: "ANZA (ANT)", text: "ANZA (ANT)"},
+{id: "ANZOATEGUI (TOL)", text: "ANZOATEGUI (TOL)"},
+{id: "APARTADO (ANT)", text: "APARTADO (ANT)"},
+{id: "APIA (RS)", text: "APIA (RS)"},
+{id: "APIAY (META)", text: "APIAY (META)"},
+{id: "APULO (C/MARCA)", text: "APULO (C/MARCA)"},
+{id: "AQUITANIA (BOY)", text: "AQUITANIA (BOY)"},
+{id: "ARACATACA (MG/LENA)", text: "ARACATACA (MG/LENA)"},
+{id: "ARAGUANEY (C/NARE)", text: "ARAGUANEY (C/NARE)"},
+{id: "ARANZAZU (CDAS)", text: "ARANZAZU (CDAS)"},
+{id: "ARATOCA (STDER)", text: "ARATOCA (STDER)"},
+{id: "ARAUCA (ARAU)", text: "ARAUCA (ARAU)"},
+{id: "ARAUCA (CDAS)", text: "ARAUCA (CDAS)"},
+{id: "ARAUQUITA (ARAU)", text: "ARAUQUITA (ARAU)"},
+{id: "ARBELAEZ (C/MARCA)", text: "ARBELAEZ (C/MARCA)"},
+{id: "ARBOLEDA (CDAS)", text: "ARBOLEDA (CDAS)"},
+{id: "ARBOLEDAS (N/STDER)", text: "ARBOLEDAS (N/STDER)"},
+{id: "ARBOLETES (ANT)", text: "ARBOLETES (ANT)"},
+{id: "ARCABUCO (BOY)", text: "ARCABUCO (BOY)"},
+{id: "ARENAL (BOL)", text: "ARENAL (BOL)"},
+{id: "ARGELIA (ANT)", text: "ARGELIA (ANT)"},
+{id: "ARGELIA (CAU)", text: "ARGELIA (CAU)"},
+{id: "ARGELIA (VALLE)", text: "ARGELIA (VALLE)"},
+{id: "ARGENTINA (HLA)", text: "ARGENTINA (HLA)"},
+{id: "ARJONA (BOL)", text: "ARJONA (BOL)"},
+{id: "ARJONA (CES)", text: "ARJONA (CES)"},
+{id: "ARMA (CDAS)", text: "ARMA (CDAS)"},
+{id: "ARMENIA MANTEQUILLA (ANT)", text: "ARMENIA MANTEQUILLA (ANT)"},
+{id: "ARMENIA (QDIO)", text: "ARMENIA (QDIO)"},
+{id: "ARMERO GUAYABAL (TOL)", text: "ARMERO GUAYABAL (TOL)"},
+{id: "ARROYO DE PIEDRA (ATL)", text: "ARROYO DE PIEDRA (ATL)"},
+{id: "ASTREA (CES)", text: "ASTREA (CES)"},
+{id: "ATACO (TOL)", text: "ATACO (TOL)"},
+{id: "AYACUCHO (CES)", text: "AYACUCHO (CES)"},
+{id: "AYAPEL (CORD)", text: "AYAPEL (CORD)"},
+{id: "BAHIA SOLANO MUTIS (CHOCO)", text: "BAHIA SOLANO MUTIS (CHOCO)"},
+{id: "BAJO BAUDO PIZARRO (CHOCO)", text: "BAJO BAUDO PIZARRO (CHOCO)"},
+{id: "BALBOA (CAU)", text: "BALBOA (CAU)"},
+{id: "BALBOA (RS)", text: "BALBOA (RS)"},
+{id: "BALLESTAS (BOL)", text: "BALLESTAS (BOL)"},
+{id: "BARANOA (ATL)", text: "BARANOA (ATL)"},
+{id: "BARAYA (HLA)", text: "BARAYA (HLA)"},
+{id: "BARBACOAS (NAR)", text: "BARBACOAS (NAR)"},
+{id: "BARBOSA (ANT)", text: "BARBOSA (ANT)"},
+{id: "BARBOSA (STDER)", text: "BARBOSA (STDER)"},
+{id: "BARCELONA (QDIO)", text: "BARCELONA (QDIO)"},
+{id: "BARICHARA (STDER)", text: "BARICHARA (STDER)"},
+{id: "BARRANCABERMEJA (STDER)", text: "BARRANCABERMEJA (STDER)"},
+{id: "BARRANCA DE UPIA (META)", text: "BARRANCA DE UPIA (META)"},
+{id: "BARRANCAS (GUAJ)", text: "BARRANCAS (GUAJ)"},
+{id: "BARRANCO DE LOBA (BOL)", text: "BARRANCO DE LOBA (BOL)"},
+{id: "BARRANQUILLA (ATL)", text: "BARRANQUILLA (ATL)"},
+{id: "BARU (BOL)", text: "BARU (BOL)"},
+{id: "BAYUNCA (BOL)", text: "BAYUNCA (BOL)"},
+{id: "BECERRIL (CES)", text: "BECERRIL (CES)"},
+{id: "BELALCAZAR (CDAS)", text: "BELALCAZAR (CDAS)"},
+{id: "BELALCAZAR PAEZ (CAU)", text: "BELALCAZAR PAEZ (CAU)"},
+{id: "BELEN (BOY)", text: "BELEN (BOY)"},
+{id: "BELENCITO (BOY)", text: "BELENCITO (BOY)"},
+{id: "BELEN DE BAJIRA (CHOCO)", text: "BELEN DE BAJIRA (CHOCO)"},
+{id: "BELEN DE LOS ANDAQUIES (CAQ)", text: "BELEN DE LOS ANDAQUIES (CAQ)"},
+{id: "BELEN DE UMBRIA (RS)", text: "BELEN DE UMBRIA (RS)"},
+{id: "BELEN (HLA)", text: "BELEN (HLA)"},
+{id: "BELEN (NAR)", text: "BELEN (NAR)"},
+{id: "BELLO (ANT)", text: "BELLO (ANT)"},
+{id: "BELMIRA (ANT)", text: "BELMIRA (ANT)"},
+{id: "BERBEO (BOY)", text: "BERBEO (BOY)"},
+{id: "BERRUECOS ARBOLEDA (NAR)", text: "BERRUECOS ARBOLEDA (NAR)"},
+{id: "BETANIA (ANT)", text: "BETANIA (ANT)"},
+{id: "BETEITIVA (BOY)", text: "BETEITIVA (BOY)"},
+{id: "BETULIA (ANT)", text: "BETULIA (ANT)"},
+{id: "BITUIMA (C/MARCA)", text: "BITUIMA (C/MARCA)"},
+{id: "BOAVITA (BOY)", text: "BOAVITA (BOY)"},
+{id: "BOCHALEMA (N/STDER)", text: "BOCHALEMA (N/STDER)"},
+{id: "BOGOTA (C/MARCA)", text: "BOGOTA (C/MARCA)"},
+{id: "BOJACA (C/MARCA)", text: "BOJACA (C/MARCA)"},
+{id: "BOJAYA (CHOCO)", text: "BOJAYA (CHOCO)"},
+{id: "BOLIVAR (CAU)", text: "BOLIVAR (CAU)"},
+{id: "BOLIVAR (STDER)", text: "BOLIVAR (STDER)"},
+{id: "BOLIVAR (VALLE)", text: "BOLIVAR (VALLE)"},
+{id: "BOLIVIA (CDAS)", text: "BOLIVIA (CDAS)"},
+{id: "BOLOMBOLO (ANT)", text: "BOLOMBOLO (ANT)"},
+{id: "BONAFONT (CDAS)", text: "BONAFONT (CDAS)"},
+{id: "BOQUERON (TOL)", text: "BOQUERON (TOL)"},
+{id: "BOSCONIA (CES)", text: "BOSCONIA (CES)"},
+{id: "BOYACA (BOY)", text: "BOYACA (BOY)"},
+{id: "BRICEÑO (ANT)", text: "BRICEÑO (ANT)"},
+{id: "BRICEÑO (BOY)", text: "BRICEÑO (BOY)"},
+{id: "BRICEÑO (C/MARCA)", text: "BRICEÑO (C/MARCA)"},
+{id: "BRUSELAS (HLA)", text: "BRUSELAS (HLA)"},
+{id: "BUCARAMANGA (STDER)", text: "BUCARAMANGA (STDER)"},
+{id: "BUCARASICA (N/STDER)", text: "BUCARASICA (N/STDER)"},
+{id: "BUENA SENA (BOL)", text: "BUENA SENA (BOL)"},
+{id: "BUENAVENTURA (VALLE)", text: "BUENAVENTURA (VALLE)"},
+{id: "BUENAVISTA (BOY)", text: "BUENAVISTA (BOY)"},
+{id: "BUENA VISTA (CORD)", text: "BUENA VISTA (CORD)"},
+{id: "BUENAVISTA (GUAJ)", text: "BUENAVISTA (GUAJ)"},
+{id: "BUENAVISTA (QDIO)", text: "BUENAVISTA (QDIO)"},
+{id: "BUENOS AIRES (CAU)", text: "BUENOS AIRES (CAU)"},
+{id: "BUENOS AIRES (TOL)", text: "BUENOS AIRES (TOL)"},
+{id: "BUESACO (NAR)", text: "BUESACO (NAR)"},
+{id: "BUESAQUILLO (NAR)", text: "BUESAQUILLO (NAR)"},
+{id: "BUGA LA GRANDE (VALLE)", text: "BUGA LA GRANDE (VALLE)"},
+{id: "BUGA (VALLE)", text: "BUGA (VALLE)"},
+{id: "BURITICA (ANT)", text: "BURITICA (ANT)"},
+{id: "BUSBANZA (BOY)", text: "BUSBANZA (BOY)"},
+{id: "CABRERA (C/MARCA)", text: "CABRERA (C/MARCA)"},
+{id: "CABRERA (NAR)", text: "CABRERA (NAR)"},
+{id: "CACERES (ANT)", text: "CACERES (ANT)"},
+{id: "CACHIPAY (C/MARCA)", text: "CACHIPAY (C/MARCA)"},
+{id: "CACHIRA (N/STDER)", text: "CACHIRA (N/STDER)"},
+{id: "CACOTA (N/STDER)", text: "CACOTA (N/STDER)"},
+{id: "CAICEDO (ANT)", text: "CAICEDO (ANT)"},
+{id: "CAICEDONIA (VALLE)", text: "CAICEDONIA (VALLE)"},
+{id: "CAIMITO (SUCRE)", text: "CAIMITO (SUCRE)"},
+{id: "CAJAMARCA (TOL)", text: "CAJAMARCA (TOL)"},
+{id: "CAJAPI (NAR)", text: "CAJAPI (NAR)"},
+{id: "CAJIBIO (CAU)", text: "CAJIBIO (CAU)"},
+{id: "CAJICA (C/MARCA)", text: "CAJICA (C/MARCA)"},
+{id: "CALAMAR (BOL)", text: "CALAMAR (BOL)"},
+{id: "CALARCA (QDIO)", text: "CALARCA (QDIO)"},
+{id: "CALDAS (ANT)", text: "CALDAS (ANT)"},
+{id: "CALDAS (BOY)", text: "CALDAS (BOY)"},
+{id: "CALDAS VIEJO (TOL)", text: "CALDAS VIEJO (TOL)"},
+{id: "CALDONO (CAU)", text: "CALDONO (CAU)"},
+{id: "CALI (VALLE)", text: "CALI (VALLE)"},
+{id: "CALOTO (CAU)", text: "CALOTO (CAU)"},
+{id: "CAMBAO (C/MARCA)", text: "CAMBAO (C/MARCA)"},
+{id: "CAMPAMENTO (ANT)", text: "CAMPAMENTO (ANT)"},
+{id: "CAMPECHE (ATL)", text: "CAMPECHE (ATL)"},
+{id: "CAMPOALEGRE (HLA)", text: "CAMPOALEGRE (HLA)"},
+{id: "CAMPO DE LA CRUZ (ATL)", text: "CAMPO DE LA CRUZ (ATL)"},
+{id: "CAMPOHERMOSO (BOY)", text: "CAMPOHERMOSO (BOY)"},
+{id: "CANALETE (CORD)", text: "CANALETE (CORD)"},
+{id: "CAÑASGORDAS (ANT)", text: "CAÑASGORDAS (ANT)"},
+{id: "CANDELARIA (ATL)", text: "CANDELARIA (ATL)"},
+{id: "CANDELARIA (VALLE)", text: "CANDELARIA (VALLE)"},
+{id: "CANDELILLAS (NAR)", text: "CANDELILLAS (NAR)"},
+{id: "CANTAGALLO (BOL)", text: "CANTAGALLO (BOL)"},
+{id: "CAPARRAPI (C/MARCA)", text: "CAPARRAPI (C/MARCA)"},
+{id: "CAPELLANIA (C/MARCA)", text: "CAPELLANIA (C/MARCA)"},
+{id: "CAPITANEJO (STDER)", text: "CAPITANEJO (STDER)"},
+{id: "CAPURGANA (CHOCO)", text: "CAPURGANA (CHOCO)"},
+{id: "CAQUEZA (C/MARCA)", text: "CAQUEZA (C/MARCA)"},
+{id: "CARACOLI (ANT)", text: "CARACOLI (ANT)"},
+{id: "CARACOLICITO (CES)", text: "CARACOLICITO (CES)"},
+{id: "CARAMANTA (ANT)", text: "CARAMANTA (ANT)"},
+{id: "CAREPA (ANT)", text: "CAREPA (ANT)"},
+{id: "CARILLO (CORD)", text: "CARILLO (CORD)"},
+{id: "CARLOSAMA  CUASPUD (NAR)", text: "CARLOSAMA  CUASPUD (NAR)"},
+{id: "CARMEN DE APICALA (TOL)", text: "CARMEN DE APICALA (TOL)"},
+{id: "CARMEN DE CARUPA (C/MARCA)", text: "CARMEN DE CARUPA (C/MARCA)"},
+{id: "CAROLINA DEL PRINCIPE (ANT)", text: "CAROLINA DEL PRINCIPE (ANT)"},
+{id: "CARTAGENA (BOL)", text: "CARTAGENA (BOL)"},
+{id: "CARTAGENA (C/MARCA)", text: "CARTAGENA (C/MARCA)"},
+{id: "CARTAGENA DEL CHAIRA (CAQ)", text: "CARTAGENA DEL CHAIRA (CAQ)"},
+{id: "CARTAGO (VALLE)", text: "CARTAGO (VALLE)"},
+{id: "CASABIANCA (TOL)", text: "CASABIANCA (TOL)"},
+{id: "CASTILLA (CDAS)", text: "CASTILLA (CDAS)"},
+{id: "CASTILLA LA NUEVA (META)", text: "CASTILLA LA NUEVA (META)"},
+{id: "CASTILLA (TOL)", text: "CASTILLA (TOL)"},
+{id: "CATAMBUCO (NAR)", text: "CATAMBUCO (NAR)"},
+{id: "CAUCASIA (ANT)", text: "CAUCASIA (ANT)"},
+{id: "CEBADAL (NAR)", text: "CEBADAL (NAR)"},
+{id: "CERETE (CORD)", text: "CERETE (CORD)"},
+{id: "CERINZA (BOY)", text: "CERINZA (BOY)"},
+{id: "CERRITO (STDER)", text: "CERRITO (STDER)"},
+{id: "CERRO SAN ANTONIO (MG/LENA)", text: "CERRO SAN ANTONIO (MG/LENA)"},
+{id: "CERTEGUI (CHOCO)", text: "CERTEGUI (CHOCO)"},
+{id: "CHACHAGUI (NAR)", text: "CHACHAGUI (NAR)"},
+{id: "CHAGUANI (C/MARCA)", text: "CHAGUANI (C/MARCA)"},
+{id: "CHAPARRAL (TOL)", text: "CHAPARRAL (TOL)"},
+{id: "CHARALA (STDER)", text: "CHARALA (STDER)"},
+{id: "CHENCHE ASOLEADO (TOL)", text: "CHENCHE ASOLEADO (TOL)"},
+{id: "CHIA (C/MARCA)", text: "CHIA (C/MARCA)"},
+{id: "CHICORAL (TOL)", text: "CHICORAL (TOL)"},
+{id: "CHIGORODO (ANT)", text: "CHIGORODO (ANT)"},
+{id: "CHIMA (CORD)", text: "CHIMA (CORD)"},
+{id: "CHIMICHAGUA (CES)", text: "CHIMICHAGUA (CES)"},
+{id: "CHINACOTA (N/STDER)", text: "CHINACOTA (N/STDER)"},
+{id: "CHINAUTA (C/MARCA)", text: "CHINAUTA (C/MARCA)"},
+{id: "CHINAVITA (BOY)", text: "CHINAVITA (BOY)"},
+{id: "CHINCHINA (CDAS)", text: "CHINCHINA (CDAS)"},
+{id: "CHINU (CORD)", text: "CHINU (CORD)"},
+{id: "CHIPAQUE (C/MARCA)", text: "CHIPAQUE (C/MARCA)"},
+{id: "CHIPATA (STDER)", text: "CHIPATA (STDER)"},
+{id: "CHIQUINQUIRA (BOY)", text: "CHIQUINQUIRA (BOY)"},
+{id: "CHIQUIZA (BOY)", text: "CHIQUIZA (BOY)"},
+{id: "CHIRIGUANA (CES)", text: "CHIRIGUANA (CES)"},
+{id: "CHISCAS (BOY)", text: "CHISCAS (BOY)"},
+{id: "CHITA (BOY)", text: "CHITA (BOY)"},
+{id: "CHITAGA (N/STDER)", text: "CHITAGA (N/STDER)"},
+{id: "CHITARAQUE (BOY)", text: "CHITARAQUE (BOY)"},
+{id: "CHIVATA (BOY)", text: "CHIVATA (BOY)"},
+{id: "CHIVOLO (MG/LENA)", text: "CHIVOLO (MG/LENA)"},
+{id: "CHIVOR (BOY)", text: "CHIVOR (BOY)"},
+{id: "CHOACHI (C/MARCA)", text: "CHOACHI (C/MARCA)"},
+{id: "CHOCONTA (C/MARCA)", text: "CHOCONTA (C/MARCA)"},
+{id: "CHUCUNES (NAR)", text: "CHUCUNES (NAR)"},
+{id: "CHUSACA (C/MARCA)", text: "CHUSACA (C/MARCA)"},
+{id: "CICUCO (BOL)", text: "CICUCO (BOL)"},
+{id: "CIENAGA DE ORO (CORD)", text: "CIENAGA DE ORO (CORD)"},
+{id: "CIENAGA (MG/LENA)", text: "CIENAGA (MG/LENA)"},
+{id: "CIÉNEGA (BOY)", text: "CIÉNEGA (BOY)"},
+{id: "CIMITARRA (STDER)", text: "CIMITARRA (STDER)"},
+{id: "CIRCASIA (QDIO)", text: "CIRCASIA (QDIO)"},
+{id: "CISNEROS (ANT)", text: "CISNEROS (ANT)"},
+{id: "CISNEROS (VALLE)", text: "CISNEROS (VALLE)"},
+{id: "CIUDAD BOLIVAR (ANT)", text: "CIUDAD BOLIVAR (ANT)"},
+{id: "CLEMENCIA (BOL)", text: "CLEMENCIA (BOL)"},
+{id: "COCONUCO (CAU)", text: "COCONUCO (CAU)"},
+{id: "COCORNA (ANT)", text: "COCORNA (ANT)"},
+{id: "CODAZZI- AGUSTIN (CES)", text: "CODAZZI- AGUSTIN (CES)"},
+{id: "COELLO - COCORA (TOL)", text: "COELLO - COCORA (TOL)"},
+{id: "COELLO (TOL)", text: "COELLO (TOL)"},
+{id: "COGUA (C/MARCA)", text: "COGUA (C/MARCA)"},
+{id: "COLOMBIA (HLA)", text: "COLOMBIA (HLA)"},
+{id: "COLOMBOY (CORD)", text: "COLOMBOY (CORD)"},
+{id: "COLON (P/MAYO)", text: "COLON (P/MAYO)"},
+{id: "COMBITA (BOY)", text: "COMBITA (BOY)"},
+{id: "CONCEPCION (ANT)", text: "CONCEPCION (ANT)"},
+{id: "CONCEPCION (STDER)", text: "CONCEPCION (STDER)"},
+{id: "CONCORDIA (ANT)", text: "CONCORDIA (ANT)"},
+{id: "CONDOTO (CHOCO)", text: "CONDOTO (CHOCO)"},
+{id: "CONSACA (NAR)", text: "CONSACA (NAR)"},
+{id: "CONTADERO (NAR)", text: "CONTADERO (NAR)"},
+{id: "CONTRATACION (STDER)", text: "CONTRATACION (STDER)"},
+{id: "CONVENCION (N/STDER)", text: "CONVENCION (N/STDER)"},
+{id: "CONVENIO (TOL)", text: "CONVENIO (TOL)"},
+{id: "COPACABANA (ANT)", text: "COPACABANA (ANT)"},
+{id: "COPER (BOY)", text: "COPER (BOY)"},
+{id: "CORDOBA (BOL)", text: "CORDOBA (BOL)"},
+{id: "CORDOBA (NAR)", text: "CORDOBA (NAR)"},
+{id: "CORDOBA (QDIO)", text: "CORDOBA (QDIO)"},
+{id: "CORINTO (CAU)", text: "CORINTO (CAU)"},
+{id: "COROZAL (SUCRE)", text: "COROZAL (SUCRE)"},
+{id: "CORRALES (BOY)", text: "CORRALES (BOY)"},
+{id: "COSCUEZ (BOY)", text: "COSCUEZ (BOY)"},
+{id: "COSTA RICA (VALLE)", text: "COSTA RICA (VALLE)"},
+{id: "COTA (C/MARCA)", text: "COTA (C/MARCA)"},
+{id: "COTORRA (CORD)", text: "COTORRA (CORD)"},
+{id: "COVARACHIA (BOY)", text: "COVARACHIA (BOY)"},
+{id: "COVEÑAS (SUCRE)", text: "COVEÑAS (SUCRE)"},
+{id: "COYAIMA (TOL)", text: "COYAIMA (TOL)"},
+{id: "CRAVO NORTE (ARAU)", text: "CRAVO NORTE (ARAU)"},
+{id: "CUATRO ESQUINAS (NAR)", text: "CUATRO ESQUINAS (NAR)"},
+{id: "CUBARA (BOY)", text: "CUBARA (BOY)"},
+{id: "CUBARRAL SAN LUIS (META)", text: "CUBARRAL SAN LUIS (META)"},
+{id: "CUCAITA (BOY)", text: "CUCAITA (BOY)"},
+{id: "CUCUNUBA (C/MARCA)", text: "CUCUNUBA (C/MARCA)"},
+{id: "CUCUTA (N/STDER)", text: "CUCUTA (N/STDER)"},
+{id: "CUCUTILLA (N/STDER)", text: "CUCUTILLA (N/STDER)"},
+{id: "CUITIVA (BOY)", text: "CUITIVA (BOY)"},
+{id: "CUMARAL (META)", text: "CUMARAL (META)"},
+{id: "CUMARIBO (VICH)", text: "CUMARIBO (VICH)"},
+{id: "CUMBAL (NAR)", text: "CUMBAL (NAR)"},
+{id: "CUMBITARA (NAR)", text: "CUMBITARA (NAR)"},
+{id: "CUNDAY (TOL)", text: "CUNDAY (TOL)"},
+{id: "CURILLO (CAQ)", text: "CURILLO (CAQ)"},
+{id: "CURITI (STDER)", text: "CURITI (STDER)"},
+{id: "CURRULAO (ANT)", text: "CURRULAO (ANT)"},
+{id: "CURUMANI (CES)", text: "CURUMANI (CES)"},
+{id: "CUSIANA POZO (C/NARE)", text: "CUSIANA POZO (C/NARE)"},
+{id: "DABEIBA (ANT)", text: "DABEIBA (ANT)"},
+{id: "DAGUA (VALLE)", text: "DAGUA (VALLE)"},
+{id: "DARIEN (VALLE)", text: "DARIEN (VALLE)"},
+{id: "DAZA (NAR)", text: "DAZA (NAR)"},
+{id: "DISTRACCION (GUAJ)", text: "DISTRACCION (GUAJ)"},
+{id: "DOIMA (TOL)", text: "DOIMA (TOL)"},
+{id: "DOLORES (TOL)", text: "DOLORES (TOL)"},
+{id: "DONMATIAS (ANT)", text: "DONMATIAS (ANT)"},
+{id: "DORADAL (ANT)", text: "DORADAL (ANT)"},
+{id: "DOSQUEBRADAS (RS)", text: "DOSQUEBRADAS (RS)"},
+{id: "DUITAMA (BOY)", text: "DUITAMA (BOY)"},
+{id: "DURANIA (N/STDER)", text: "DURANIA (N/STDER)"},
+{id: "EBEJICO (ANT)", text: "EBEJICO (ANT)"},
+{id: "EL AGUILA (VALLE)", text: "EL AGUILA (VALLE)"},
+{id: "EL BAGRE (ANT)", text: "EL BAGRE (ANT)"},
+{id: "EL BANCO (MG/LENA)", text: "EL BANCO (MG/LENA)"},
+{id: "EL BORDO (CAU)", text: "EL BORDO (CAU)"},
+{id: "EL CAIRO (VALLE)", text: "EL CAIRO (VALLE)"},
+{id: "EL CARITO (CORD)", text: "EL CARITO (CORD)"},
+{id: "EL CARMELO (VALLE)", text: "EL CARMELO (VALLE)"},
+{id: "EL CARMEN DE ATRATO (CHOCO)", text: "EL CARMEN DE ATRATO (CHOCO)"},
+{id: "EL CARMEN DE BOLIVAR (BOL)", text: "EL CARMEN DE BOLIVAR (BOL)"},
+{id: "EL CARMEN DE CHUCURI (STDER)", text: "EL CARMEN DE CHUCURI (STDER)"},
+{id: "EL CARMEN DE VIBORAL (ANT)", text: "EL CARMEN DE VIBORAL (ANT)"},
+{id: "EL CARMEN (N/STDER)", text: "EL CARMEN (N/STDER)"},
+{id: "EL CENTRO (STDER)", text: "EL CENTRO (STDER)"},
+{id: "EL CERRITO (VALLE)", text: "EL CERRITO (VALLE)"},
+{id: "EL CHARCO (NAR)", text: "EL CHARCO (NAR)"},
+{id: "EL CHARQUITO (C/MARCA)", text: "EL CHARQUITO (C/MARCA)"},
+{id: "EL COCUY (BOY)", text: "EL COCUY (BOY)"},
+{id: "EL COLEGIO MESITAS (C/MARCA)", text: "EL COLEGIO MESITAS (C/MARCA)"},
+{id: "EL COPEY (CES)", text: "EL COPEY (CES)"},
+{id: "EL DIFICIL (MG/LENA)", text: "EL DIFICIL (MG/LENA)"},
+{id: "EL DIVISO (NAR)", text: "EL DIVISO (NAR)"},
+{id: "EL DOCE (ANT)", text: "EL DOCE (ANT)"},
+{id: "EL DONCELLO (CAQ)", text: "EL DONCELLO (CAQ)"},
+{id: "EL DOVIO (VALLE)", text: "EL DOVIO (VALLE)"},
+{id: "EL ENCANO (NAR)", text: "EL ENCANO (NAR)"},
+{id: "EL ESPINO (BOY)", text: "EL ESPINO (BOY)"},
+{id: "EL ESPINO (NAR)", text: "EL ESPINO (NAR)"},
+{id: "EL ESTRECHO (CAU)", text: "EL ESTRECHO (CAU)"},
+{id: "EL GUAMO (BOL)", text: "EL GUAMO (BOL)"},
+{id: "EL LIMON (TOL)", text: "EL LIMON (TOL)"},
+{id: "EL MOLINO (GUAJ)", text: "EL MOLINO (GUAJ)"},
+{id: "EL NARANJAL (CAU)", text: "EL NARANJAL (CAU)"},
+{id: "EL PASO (CES)", text: "EL PASO (CES)"},
+{id: "EL PATIA (CAU)", text: "EL PATIA (CAU)"},
+{id: "EL PAUJIL (CAQ)", text: "EL PAUJIL (CAQ)"},
+{id: "EL PEÑOL (ANT)", text: "EL PEÑOL (ANT)"},
+{id: "EL PEÑOL (NAR)", text: "EL PEÑOL (NAR)"},
+{id: "EL PEÑÓN (C/MARCA)", text: "EL PEÑÓN (C/MARCA)"},
+{id: "EL PEÑON (STDER)", text: "EL PEÑON (STDER)"},
+{id: "EL PIÑON (MG/LENA)", text: "EL PIÑON (MG/LENA)"},
+{id: "EL PLACER (VALLE)", text: "EL PLACER (VALLE)"},
+{id: "EL PLAYON (STDER)", text: "EL PLAYON (STDER)"},
+{id: "EL QUEREMAL (VALLE)", text: "EL QUEREMAL (VALLE)"},
+{id: "EL REMOLINO (NAR)", text: "EL REMOLINO (NAR)"},
+{id: "EL RETEN (MG/LENA)", text: "EL RETEN (MG/LENA)"},
+{id: "EL ROSAL (C/MARCA)", text: "EL ROSAL (C/MARCA)"},
+{id: "EL ROSARIO (NAR)", text: "EL ROSARIO (NAR)"},
+{id: "EL SANTUARIO (ANT)", text: "EL SANTUARIO (ANT)"},
+{id: "EL SISGA (C/MARCA)", text: "EL SISGA (C/MARCA)"},
+{id: "EL TABLAZO (TOL)", text: "EL TABLAZO (TOL)"},
+{id: "EL TABLON DE GOMEZ (NAR)", text: "EL TABLON DE GOMEZ (NAR)"},
+{id: "EL TAMBO (CAU)", text: "EL TAMBO (CAU)"},
+{id: "EL TAMBO (NAR)", text: "EL TAMBO (NAR)"},
+{id: "EL TIGRE (ANT)", text: "EL TIGRE (ANT)"},
+{id: "EL TIGRE (P/MAYO)", text: "EL TIGRE (P/MAYO)"},
+{id: "EL TOTUMO (TOL)", text: "EL TOTUMO (TOL)"},
+{id: "EL TRES (ANT)", text: "EL TRES (ANT)"},
+{id: "EL TRIUNFO (C/MARCA)", text: "EL TRIUNFO (C/MARCA)"},
+{id: "EL VARAL (CORD)", text: "EL VARAL (CORD)"},
+{id: "EL VIAJANO (CORD)", text: "EL VIAJANO (CORD)"},
+{id: "EL ZULIA (N/STDER)", text: "EL ZULIA (N/STDER)"},
+{id: "ENCISO (STDER)", text: "ENCISO (STDER)"},
+{id: "ENTRERRIOS (ANT)", text: "ENTRERRIOS (ANT)"},
+{id: "ENVIGADO (ANT)", text: "ENVIGADO (ANT)"},
+{id: "ESPINAL (TOL)", text: "ESPINAL (TOL)"},
+{id: "ESPRIELLA (NAR)", text: "ESPRIELLA (NAR)"},
+{id: "FACATATIVA (C/MARCA)", text: "FACATATIVA (C/MARCA)"},
+{id: "FALAN (TOL)", text: "FALAN (TOL)"},
+{id: "FENICIA (VALLE)", text: "FENICIA (VALLE)"},
+{id: "FILADELFIA (CDAS)", text: "FILADELFIA (CDAS)"},
+{id: "FILANDIA (QDIO)", text: "FILANDIA (QDIO)"},
+{id: "FIRAVITOBA (BOY)", text: "FIRAVITOBA (BOY)"},
+{id: "FLANDES (TOL)", text: "FLANDES (TOL)"},
+{id: "FLORENCIA (CAQ)", text: "FLORENCIA (CAQ)"},
+{id: "FLORENCIA (CAU)", text: "FLORENCIA (CAU)"},
+{id: "FLORENCIA (CDAS)", text: "FLORENCIA (CDAS)"},
+{id: "FLORESTA (BOY)", text: "FLORESTA (BOY)"},
+{id: "FLORIAN (STDER)", text: "FLORIAN (STDER)"},
+{id: "FLORIDABLANCA (STDER)", text: "FLORIDABLANCA (STDER)"},
+{id: "FLORIDA (VALLE)", text: "FLORIDA (VALLE)"},
+{id: "FOMEQUE (C/MARCA)", text: "FOMEQUE (C/MARCA)"},
+{id: "FONSECA (GUAJ)", text: "FONSECA (GUAJ)"},
+{id: "FORTUL (ARAU)", text: "FORTUL (ARAU)"},
+{id: "FOSCA (C/MARCA)", text: "FOSCA (C/MARCA)"},
+{id: "FREDONIA (ANT)", text: "FREDONIA (ANT)"},
+{id: "FRESNO (TOL)", text: "FRESNO (TOL)"},
+{id: "FRONTINO (ANT)", text: "FRONTINO (ANT)"},
+{id: "FUENTE DE ORO (META)", text: "FUENTE DE ORO (META)"},
+{id: "FUNDACION (MG/LENA)", text: "FUNDACION (MG/LENA)"},
+{id: "FUNES (NAR)", text: "FUNES (NAR)"},
+{id: "FUNZA (C/MARCA)", text: "FUNZA (C/MARCA)"},
+{id: "FUQUENE (C/MARCA)", text: "FUQUENE (C/MARCA)"},
+{id: "FUSAGASUGA (C/MARCA)", text: "FUSAGASUGA (C/MARCA)"},
+{id: "GACHALA (C/MARCA)", text: "GACHALA (C/MARCA)"},
+{id: "GACHANCIPA (C/MARCA)", text: "GACHANCIPA (C/MARCA)"},
+{id: "GACHANTIVA (BOY)", text: "GACHANTIVA (BOY)"},
+{id: "GACHETA (C/MARCA)", text: "GACHETA (C/MARCA)"},
+{id: "GAIRA (MG/LENA)", text: "GAIRA (MG/LENA)"},
+{id: "GAITANIA (TOL)", text: "GAITANIA (TOL)"},
+{id: "GALAN (STDER)", text: "GALAN (STDER)"},
+{id: "GALAPA (ATL)", text: "GALAPA (ATL)"},
+{id: "GALERAS (SUCRE)", text: "GALERAS (SUCRE)"},
+{id: "GALERAZAMBA (BOL)", text: "GALERAZAMBA (BOL)"},
+{id: "GALINDEZ (CAU)", text: "GALINDEZ (CAU)"},
+{id: "GAMA (C/MARCA)", text: "GAMA (C/MARCA)"},
+{id: "GAMARRA (CES)", text: "GAMARRA (CES)"},
+{id: "GAMBITA (STDER)", text: "GAMBITA (STDER)"},
+{id: "GAMEZA (BOY)", text: "GAMEZA (BOY)"},
+{id: "GARAGOA (BOY)", text: "GARAGOA (BOY)"},
+{id: "GARZON (HLA)", text: "GARZON (HLA)"},
+{id: "GENOVA (NAR)", text: "GENOVA (NAR)"},
+{id: "GENOVA (QDIO)", text: "GENOVA (QDIO)"},
+{id: "GENOY (NAR)", text: "GENOY (NAR)"},
+{id: "GIGANTE (HLA)", text: "GIGANTE (HLA)"},
+{id: "GINEBRA (VALLE)", text: "GINEBRA (VALLE)"},
+{id: "GIRALDO (ANT)", text: "GIRALDO (ANT)"},
+{id: "GIRARDOTA (ANT)", text: "GIRARDOTA (ANT)"},
+{id: "GIRARDOT (C/MARCA)", text: "GIRARDOT (C/MARCA)"},
+{id: "GIRON (STDER)", text: "GIRON (STDER)"},
+{id: "GOMEZ PLATA (ANT)", text: "GOMEZ PLATA (ANT)"},
+{id: "GONZALEZ (CES)", text: "GONZALEZ (CES)"},
+{id: "GRAMALOTE (N/STDER)", text: "GRAMALOTE (N/STDER)"},
+{id: "GRANADA (ANT)", text: "GRANADA (ANT)"},
+{id: "GRANADA (C/MARCA)", text: "GRANADA (C/MARCA)"},
+{id: "GRANADA (META)", text: "GRANADA (META)"},
+{id: "GUACAMAYAL (MG/LENA)", text: "GUACAMAYAL (MG/LENA)"},
+{id: "GUACAMAYAS (BOY)", text: "GUACAMAYAS (BOY)"},
+{id: "GUACARI (VALLE)", text: "GUACARI (VALLE)"},
+{id: "GUACA (STDER)", text: "GUACA (STDER)"},
+{id: "GUACHAVEZ SAN CRUZ (NAR)", text: "GUACHAVEZ SAN CRUZ (NAR)"},
+{id: "GUACHENE (CAU)", text: "GUACHENE (CAU)"},
+{id: "GUACHETA (C/MARCA)", text: "GUACHETA (C/MARCA)"},
+{id: "GUACHUCAL (NAR)", text: "GUACHUCAL (NAR)"},
+{id: "GUADALUPE (ANT)", text: "GUADALUPE (ANT)"},
+{id: "GUADALUPE (HLA)", text: "GUADALUPE (HLA)"},
+{id: "GUADALUPE (STDER)", text: "GUADALUPE (STDER)"},
+{id: "GUADUAS (C/MARCA)", text: "GUADUAS (C/MARCA)"},
+{id: "GUAITARILLA (NAR)", text: "GUAITARILLA (NAR)"},
+{id: "GUALANDAY (TOL)", text: "GUALANDAY (TOL)"},
+{id: "GUALMATAN (NAR)", text: "GUALMATAN (NAR)"},
+{id: "GUAMAL (META)", text: "GUAMAL (META)"},
+{id: "GUAMAL (MG/LENA)", text: "GUAMAL (MG/LENA)"},
+{id: "GUAMO (TOL)", text: "GUAMO (TOL)"},
+{id: "GUAPI (CAU)", text: "GUAPI (CAU)"},
+{id: "GUARANDA (SUCRE)", text: "GUARANDA (SUCRE)"},
+{id: "GUARATO (CHOCO)", text: "GUARATO (CHOCO)"},
+{id: "GUARINOCITO (CDAS)", text: "GUARINOCITO (CDAS)"},
+{id: "GUARNE (ANT)", text: "GUARNE (ANT)"},
+{id: "GUASCA (C/MARCA)", text: "GUASCA (C/MARCA)"},
+{id: "GUATAPE (ANT)", text: "GUATAPE (ANT)"},
+{id: "GUATAQUI (C/MARCA)", text: "GUATAQUI (C/MARCA)"},
+{id: "GUATAVITA (C/MARCA)", text: "GUATAVITA (C/MARCA)"},
+{id: "GUATEQUE (BOY)", text: "GUATEQUE (BOY)"},
+{id: "GUATICA (RS)", text: "GUATICA (RS)"},
+{id: "GUAVATA (STDER)", text: "GUAVATA (STDER)"},
+{id: "GUAYABAL DE SIQUIMA (C/MARCA)", text: "GUAYABAL DE SIQUIMA (C/MARCA)"},
+{id: "GUAYABETAL (C/MARCA)", text: "GUAYABETAL (C/MARCA)"},
+{id: "GUAYATA (BOY)", text: "GUAYATA (BOY)"},
+{id: "GUEPSA (STDER)", text: "GUEPSA (STDER)"},
+{id: "GUICÁN (BOY)", text: "GUICÁN (BOY)"},
+{id: "GUTIERREZ (C/MARCA)", text: "GUTIERREZ (C/MARCA)"},
+{id: "HACARI (N/STDER)", text: "HACARI (N/STDER)"},
+{id: "HATILLO DE LOBA (BOL)", text: "HATILLO DE LOBA (BOL)"},
+{id: "HATO COROZAL (C/NARE)", text: "HATO COROZAL (C/NARE)"},
+{id: "HATO NUEVO (GUAJ)", text: "HATO NUEVO (GUAJ)"},
+{id: "HELICONIA (ANT)", text: "HELICONIA (ANT)"},
+{id: "HERBEO (TOL)", text: "HERBEO (TOL)"},
+{id: "HERRAN (N/STDER)", text: "HERRAN (N/STDER)"},
+{id: "HERRERA (TOL)", text: "HERRERA (TOL)"},
+{id: "HISPANIA (ANT)", text: "HISPANIA (ANT)"},
+{id: "HOBO (HLA)", text: "HOBO (HLA)"},
+{id: "HOLGUIN (VALLE)", text: "HOLGUIN (VALLE)"},
+{id: "HONDA (TOL)", text: "HONDA (TOL)"},
+{id: "IBAGUE (TOL)", text: "IBAGUE (TOL)"},
+{id: "ICONONZO (TOL)", text: "ICONONZO (TOL)"},
+{id: "ILES (NAR)", text: "ILES (NAR)"},
+{id: "IMBILI (NAR)", text: "IMBILI (NAR)"},
+{id: "IMUES (NAR)", text: "IMUES (NAR)"},
+{id: "INIRIDA (GUAI)", text: "INIRIDA (GUAI)"},
+{id: "INZA (CAU)", text: "INZA (CAU)"},
+{id: "IPIALES (NAR)", text: "IPIALES (NAR)"},
+{id: "IQUIRA (HLA)", text: "IQUIRA (HLA)"},
+{id: "IRRA (RS)", text: "IRRA (RS)"},
+{id: "ISABEL LOPEZ (ATL)", text: "ISABEL LOPEZ (ATL)"},
+{id: "ISTMINA (CHOCO)", text: "ISTMINA (CHOCO)"},
+{id: "ITAGUI (ANT)", text: "ITAGUI (ANT)"},
+{id: "ITUANGO (ANT)", text: "ITUANGO (ANT)"},
+{id: "IZA (BOY)", text: "IZA (BOY)"},
+{id: "JAMBALO (CAU)", text: "JAMBALO (CAU)"},
+{id: "JAMUNDI (VALLE)", text: "JAMUNDI (VALLE)"},
+{id: "JARDIN CACERES (ANT)", text: "JARDIN CACERES (ANT)"},
+{id: "JARDIN SUROESTE (ANT)", text: "JARDIN SUROESTE (ANT)"},
+{id: "JENESANO (BOY)", text: "JENESANO (BOY)"},
+{id: "JERICO (ANT)", text: "JERICO (ANT)"},
+{id: "JERICÓ (BOY)", text: "JERICÓ (BOY)"},
+{id: "JERUSALEN (C/MARCA)", text: "JERUSALEN (C/MARCA)"},
+{id: "JESUS MARIA (STDER)", text: "JESUS MARIA (STDER)"},
+{id: "JOSE MARIA HERNANDEZ (NAR)", text: "JOSE MARIA HERNANDEZ (NAR)"},
+{id: "JUAN ARIAS (BOL)", text: "JUAN ARIAS (BOL)"},
+{id: "JUAN DE ACOSTA (ATL)", text: "JUAN DE ACOSTA (ATL)"},
+{id: "JUAN MINA (ATL)", text: "JUAN MINA (ATL)"},
+{id: "JUNIN (C/MARCA)", text: "JUNIN (C/MARCA)"},
+{id: "JUNIN (NAR)", text: "JUNIN (NAR)"},
+{id: "JUNÍN (TOL)", text: "JUNÍN (TOL)"},
+{id: "JUNTAS (TOL)", text: "JUNTAS (TOL)"},
+{id: "JURADO (CHOCO)", text: "JURADO (CHOCO)"},
+{id: "LA APARTADA (CORD)", text: "LA APARTADA (CORD)"},
+{id: "LA ARADA (TOL)", text: "LA ARADA (TOL)"},
+{id: "LABATECA (N/STDER)", text: "LABATECA (N/STDER)"},
+{id: "LA BELLEZA (STDER)", text: "LA BELLEZA (STDER)"},
+{id: "LA BOQUILLA (BOL)", text: "LA BOQUILLA (BOL)"},
+{id: "LABRANZAGRANDE (BOY)", text: "LABRANZAGRANDE (BOY)"},
+{id: "LA CALERA (C/MARCA)", text: "LA CALERA (C/MARCA)"},
+{id: "LA CAPILLA (BOY)", text: "LA CAPILLA (BOY)"},
+{id: "LA CEJA (ANT)", text: "LA CEJA (ANT)"},
+{id: "LA CELIA (RS)", text: "LA CELIA (RS)"},
+{id: "LA CHAMBA (TOL)", text: "LA CHAMBA (TOL)"},
+{id: "LA CHAPARRERA (C/NARE)", text: "LA CHAPARRERA (C/NARE)"},
+{id: "LA CRUZADA (ANT)", text: "LA CRUZADA (ANT)"},
+{id: "LA CRUZ (NAR)", text: "LA CRUZ (NAR)"},
+{id: "LA CUMBRE (VALLE)", text: "LA CUMBRE (VALLE)"},
+{id: "LA DORADA (CDAS)", text: "LA DORADA (CDAS)"},
+{id: "LA DORADA SAN MIGUEL (P/MAYO)", text: "LA DORADA SAN MIGUEL (P/MAYO)"},
+{id: "LA ESMERALDA (ARAU)", text: "LA ESMERALDA (ARAU)"},
+{id: "LA ESPERANZA (N/STDER)", text: "LA ESPERANZA (N/STDER)"},
+{id: "LA ESTRELLA (ANT)", text: "LA ESTRELLA (ANT)"},
+{id: "LA FELISA (CDAS)", text: "LA FELISA (CDAS)"},
+{id: "LA FLORIDA (C/MARCA)", text: "LA FLORIDA (C/MARCA)"},
+{id: "LA FLORIDA (NAR)", text: "LA FLORIDA (NAR)"},
+{id: "LA GLORIA (CES)", text: "LA GLORIA (CES)"},
+{id: "LA GRANJA (STDER)", text: "LA GRANJA (STDER)"},
+{id: "LA GRAN VIA (C/MARCA)", text: "LA GRAN VIA (C/MARCA)"},
+{id: "LA GRAN VIA (MG/LENA)", text: "LA GRAN VIA (MG/LENA)"},
+{id: "LA GUAYACANA (NAR)", text: "LA GUAYACANA (NAR)"},
+{id: "LA HORMIGA - VALLE GUAMUEZ (P/MAYO)", text: "LA HORMIGA - VALLE GUAMUEZ (P/MAYO)"},
+{id: "LA JAGUA DE IBIRICO (CES)", text: "LA JAGUA DE IBIRICO (CES)"},
+{id: "LA JAGUA DEL PILAR (GUAJ)", text: "LA JAGUA DEL PILAR (GUAJ)"},
+{id: "LA LLANADA (NAR)", text: "LA LLANADA (NAR)"},
+{id: "LA LOMA (CES)", text: "LA LOMA (CES)"},
+{id: "LA MACARENA (META)", text: "LA MACARENA (META)"},
+{id: "LA MERCED (CDAS)", text: "LA MERCED (CDAS)"},
+{id: "LA MESA (C/MARCA)", text: "LA MESA (C/MARCA)"},
+{id: "LA MONTAÑITA (CAQ)", text: "LA MONTAÑITA (CAQ)"},
+{id: "LANDAZURI (STDER)", text: "LANDAZURI (STDER)"},
+{id: "LA PAILA (VALLE)", text: "LA PAILA (VALLE)"},
+{id: "LA PALMA (C/MARCA)", text: "LA PALMA (C/MARCA)"},
+{id: "LA PALMITA (TOL)", text: "LA PALMITA (TOL)"},
+{id: "LA PAZ (CES)", text: "LA PAZ (CES)"},
+{id: "LA PAZ (STDER)", text: "LA PAZ (STDER)"},
+{id: "LA PEÑA (ATL)", text: "LA PEÑA (ATL)"},
+{id: "LA PEÑA (C/MARCA)", text: "LA PEÑA (C/MARCA)"},
+{id: "LA PESQUERA (ARAU)", text: "LA PESQUERA (ARAU)"},
+{id: "LA PINTADA (ANT)", text: "LA PINTADA (ANT)"},
+{id: "LA PLATA (HLA)", text: "LA PLATA (HLA)"},
+{id: "LA PLAYA (N/STDER)", text: "LA PLAYA (N/STDER)"},
+{id: "LA PRIMAVERA (VICH)", text: "LA PRIMAVERA (VICH)"},
+{id: "LA PUNTA (C/MARCA)", text: "LA PUNTA (C/MARCA)"},
+{id: "LA SIERRA (ANT)", text: "LA SIERRA (ANT)"},
+{id: "LA SIERRA (CAU)", text: "LA SIERRA (CAU)"},
+{id: "LA SIERRA (TOL)", text: "LA SIERRA (TOL)"},
+{id: "LAS LAJAS (NAR)", text: "LAS LAJAS (NAR)"},
+{id: "LA TABLAZA (ANT)", text: "LA TABLAZA (ANT)"},
+{id: "LA TEBAIDA (QDIO)", text: "LA TEBAIDA (QDIO)"},
+{id: "LA UNION (ANT)", text: "LA UNION (ANT)"},
+{id: "LA UNION (C/MARCA)", text: "LA UNION (C/MARCA)"},
+{id: "LA UNION (NAR)", text: "LA UNION (NAR)"},
+{id: "LA UNION (SUCRE)", text: "LA UNION (SUCRE)"},
+{id: "LA UNION (VALLE)", text: "LA UNION (VALLE)"},
+{id: "LA URIBE (VALLE)", text: "LA URIBE (VALLE)"},
+{id: "LA UVITA (BOY)", text: "LA UVITA (BOY)"},
+{id: "LA VEGA (CAU)", text: "LA VEGA (CAU)"},
+{id: "LA VEGA (C/MARCA)", text: "LA VEGA (C/MARCA)"},
+{id: "LA VICTORIA (BOY)", text: "LA VICTORIA (BOY)"},
+{id: "LA VICTORIA (C/MARCA)", text: "LA VICTORIA (C/MARCA)"},
+{id: "LA VICTORIA (VALLE)", text: "LA VICTORIA (VALLE)"},
+{id: "LA VIRGINIA (RS)", text: "LA VIRGINIA (RS)"},
+{id: "LA YE (CORD)", text: "LA YE (CORD)"},
+{id: "LEBRIJA (STDER)", text: "LEBRIJA (STDER)"},
+{id: "LEIVA (NAR)", text: "LEIVA (NAR)"},
+{id: "LEJANIAS (META)", text: "LEJANIAS (META)"},
+{id: "LENGUAZAQUE (C/MARCA)", text: "LENGUAZAQUE (C/MARCA)"},
+{id: "LERIDA (TOL)", text: "LERIDA (TOL)"},
+{id: "LETICIA (AMAZ)", text: "LETICIA (AMAZ)"},
+{id: "LIBANO (TOL)", text: "LIBANO (TOL)"},
+{id: "LIBORINA (ANT)", text: "LIBORINA (ANT)"},
+{id: "LINARES (NAR)", text: "LINARES (NAR)"},
+{id: "LLANADAS (ANT)", text: "LLANADAS (ANT)"},
+{id: "LLANOS DE CUIVA (ANT)", text: "LLANOS DE CUIVA (ANT)"},
+{id: "LLORENTE (NAR)", text: "LLORENTE (NAR)"},
+{id: "LLORO (CHOCO)", text: "LLORO (CHOCO)"},
+{id: "LOBO GUERRERO (VALLE)", text: "LOBO GUERRERO (VALLE)"},
+{id: "LOMA DE ARENA (BOL)", text: "LOMA DE ARENA (BOL)"},
+{id: "LOPEZ DE MICAY (CAU)", text: "LOPEZ DE MICAY (CAU)"},
+{id: "LORICA (CORD)", text: "LORICA (CORD)"},
+{id: "LOS CORDOBAS (CORD)", text: "LOS CORDOBAS (CORD)"},
+{id: "LOS PALMITOS (SUCRE)", text: "LOS PALMITOS (SUCRE)"},
+{id: "LOS PATIOS (N/STDER)", text: "LOS PATIOS (N/STDER)"},
+{id: "LOURDES (N/STDER)", text: "LOURDES (N/STDER)"},
+{id: "LURUACO (ATL)", text: "LURUACO (ATL)"},
+{id: "MACANAL (BOY)", text: "MACANAL (BOY)"},
+{id: "MACEO (ANT)", text: "MACEO (ANT)"},
+{id: "MACHETA (C/MARCA)", text: "MACHETA (C/MARCA)"},
+{id: "MADRID (C/MARCA)", text: "MADRID (C/MARCA)"},
+{id: "MAGANGUE (BOL)", text: "MAGANGUE (BOL)"},
+{id: "MAHATES (BOL)", text: "MAHATES (BOL)"},
+{id: "MAICAO (GUAJ)", text: "MAICAO (GUAJ)"},
+{id: "MAJAGUAL (SUCRE)", text: "MAJAGUAL (SUCRE)"},
+{id: "MALAGA (STDER)", text: "MALAGA (STDER)"},
+{id: "MALAMBO (ATL)", text: "MALAMBO (ATL)"},
+{id: "MANATI (ATL)", text: "MANATI (ATL)"},
+{id: "MANAURE BALCON DEL CESAR (CES)", text: "MANAURE BALCON DEL CESAR (CES)"},
+{id: "MANAURE (GUAJ)", text: "MANAURE (GUAJ)"},
+{id: "MANI (C/NARE)", text: "MANI (C/NARE)"},
+{id: "MANIZALES (CDAS)", text: "MANIZALES (CDAS)"},
+{id: "MANTA (C/MARCA)", text: "MANTA (C/MARCA)"},
+{id: "MANZANARES (CDAS)", text: "MANZANARES (CDAS)"},
+{id: "MARGARITA (BOL)", text: "MARGARITA (BOL)"},
+{id: "MARIA LA BAJA (BOL)", text: "MARIA LA BAJA (BOL)"},
+{id: "MARINILLA (ANT)", text: "MARINILLA (ANT)"},
+{id: "MARIPI (BOY)", text: "MARIPI (BOY)"},
+{id: "MARIQUITA (TOL)", text: "MARIQUITA (TOL)"},
+{id: "MARMATO (CDAS)", text: "MARMATO (CDAS)"},
+{id: "MARQUETALIA (CDAS)", text: "MARQUETALIA (CDAS)"},
+{id: "MARSELLA (RS)", text: "MARSELLA (RS)"},
+{id: "MARULANDA (CDAS)", text: "MARULANDA (CDAS)"},
+{id: "MATANZA (STDER)", text: "MATANZA (STDER)"},
+{id: "MAYA (C/MARCA)", text: "MAYA (C/MARCA)"},
+{id: "MEDELLIN (ANT)", text: "MEDELLIN (ANT)"},
+{id: "MEDIA LUNA (MG/LENA)", text: "MEDIA LUNA (MG/LENA)"},
+{id: "MEDINA (C/MARCA)", text: "MEDINA (C/MARCA)"},
+{id: "MELGAR (TOL)", text: "MELGAR (TOL)"},
+{id: "MERCADERES (CAU)", text: "MERCADERES (CAU)"},
+{id: "MINGUEO (GUAJ)", text: "MINGUEO (GUAJ)"},
+{id: "MIRAFLORES (BOY)", text: "MIRAFLORES (BOY)"},
+{id: "MIRANDA (CAU)", text: "MIRANDA (CAU)"},
+{id: "MISTRATO (RS)", text: "MISTRATO (RS)"},
+{id: "MITU (V/PES)", text: "MITU (V/PES)"},
+{id: "MOCOA (P/MAYO)", text: "MOCOA (P/MAYO)"},
+{id: "MOCONDINO (NAR)", text: "MOCONDINO (NAR)"},
+{id: "MOGOTES (STDER)", text: "MOGOTES (STDER)"},
+{id: "MOJARRAS (CAU)", text: "MOJARRAS (CAU)"},
+{id: "MOLAGAVITA (STDER)", text: "MOLAGAVITA (STDER)"},
+{id: "MOLINEROS (ATL)", text: "MOLINEROS (ATL)"},
+{id: "MOMIL (CORD)", text: "MOMIL (CORD)"},
+{id: "MOMPOS (BOL)", text: "MOMPOS (BOL)"},
+{id: "MONDOMO (CAU)", text: "MONDOMO (CAU)"},
+{id: "MONGUA (BOY)", text: "MONGUA (BOY)"},
+{id: "MONGUI (BOY)", text: "MONGUI (BOY)"},
+{id: "MONIQUIRA (BOY)", text: "MONIQUIRA (BOY)"},
+{id: "MOÑITOS (CORD)", text: "MOÑITOS (CORD)"},
+{id: "MONTEBELLO (ANT)", text: "MONTEBELLO (ANT)"},
+{id: "MONTEBONITO (CDAS)", text: "MONTEBONITO (CDAS)"},
+{id: "MONTECRISTO (BOL)", text: "MONTECRISTO (BOL)"},
+{id: "MONTELIBANO (CORD)", text: "MONTELIBANO (CORD)"},
+{id: "MONTENEGRO (QDIO)", text: "MONTENEGRO (QDIO)"},
+{id: "MONTERIA (CORD)", text: "MONTERIA (CORD)"},
+{id: "MONTERREY (C/NARE)", text: "MONTERREY (C/NARE)"},
+{id: "MORALES (BOL)", text: "MORALES (BOL)"},
+{id: "MORALES (CAU)", text: "MORALES (CAU)"},
+{id: "MORELIA (CAQ)", text: "MORELIA (CAQ)"},
+{id: "MORROA (SUCRE)", text: "MORROA (SUCRE)"},
+{id: "MOSQUERA (C/MARCA)", text: "MOSQUERA (C/MARCA)"},
+{id: "MOTAVITA (BOY)", text: "MOTAVITA (BOY)"},
+{id: "MURILLO (TOL)", text: "MURILLO (TOL)"},
+{id: "MURINDO (ANT)", text: "MURINDO (ANT)"},
+{id: "MUTATA (ANT)", text: "MUTATA (ANT)"},
+{id: "MUTISCUA (N/STDER)", text: "MUTISCUA (N/STDER)"},
+{id: "MUZO (BOY)", text: "MUZO (BOY)"},
+{id: "NARIÑO (ANT)", text: "NARIÑO (ANT)"},
+{id: "NARIÑO (BOY)", text: "NARIÑO (BOY)"},
+{id: "NARIÑO (C/MARCA)", text: "NARIÑO (C/MARCA)"},
+{id: "NARIÑO (NAR)", text: "NARIÑO (NAR)"},
+{id: "NATAGA (HLA)", text: "NATAGA (HLA)"},
+{id: "NATAGAIMA (TOL)", text: "NATAGAIMA (TOL)"},
+{id: "NECHI (ANT)", text: "NECHI (ANT)"},
+{id: "NECOCLI (ANT)", text: "NECOCLI (ANT)"},
+{id: "NEIRA (CDAS)", text: "NEIRA (CDAS)"},
+{id: "NEIVA (HLA)", text: "NEIVA (HLA)"},
+{id: "NEMOCON (C/MARCA)", text: "NEMOCON (C/MARCA)"},
+{id: "NILO (C/MARCA)", text: "NILO (C/MARCA)"},
+{id: "NIMAIMA (C/MARCA)", text: "NIMAIMA (C/MARCA)"},
+{id: "NOBSA (BOY)", text: "NOBSA (BOY)"},
+{id: "NOCAIMA (C/MARCA)", text: "NOCAIMA (C/MARCA)"},
+{id: "NORCASIA (CDAS)", text: "NORCASIA (CDAS)"},
+{id: "NOROSI (BOL)", text: "NOROSI (BOL)"},
+{id: "NOVITA (CHOCO)", text: "NOVITA (CHOCO)"},
+{id: "NUEVA COLONIA (ANT)", text: "NUEVA COLONIA (ANT)"},
+{id: "NUEVA GRANADA (MG/LENA)", text: "NUEVA GRANADA (MG/LENA)"},
+{id: "NUEVO COLON (BOY)", text: "NUEVO COLON (BOY)"},
+{id: "NUNCHIA (C/NARE)", text: "NUNCHIA (C/NARE)"},
+{id: "NUQUI (CHOCO)", text: "NUQUI (CHOCO)"},
+{id: "OBANDO (VALLE)", text: "OBANDO (VALLE)"},
+{id: "OBONUCO (NAR)", text: "OBONUCO (NAR)"},
+{id: "OCAÑA (N/STDER)", text: "OCAÑA (N/STDER)"},
+{id: "OIBA (STDER)", text: "OIBA (STDER)"},
+{id: "OICATA (BOY)", text: "OICATA (BOY)"},
+{id: "OLAYA (ANT)", text: "OLAYA (ANT)"},
+{id: "OLAYA HERRERA (TOL)", text: "OLAYA HERRERA (TOL)"},
+{id: "OLIVAL (STDER)", text: "OLIVAL (STDER)"},
+{id: "ONZAGA (STDER)", text: "ONZAGA (STDER)"},
+{id: "OPORAPA (HLA)", text: "OPORAPA (HLA)"},
+{id: "ORIHUECA (MG/LENA)", text: "ORIHUECA (MG/LENA)"},
+{id: "ORITO (P/MAYO)", text: "ORITO (P/MAYO)"},
+{id: "OROCUE (C/NARE)", text: "OROCUE (C/NARE)"},
+{id: "ORTEGA (TOL)", text: "ORTEGA (TOL)"},
+{id: "ORTIGAL (CAU)", text: "ORTIGAL (CAU)"},
+{id: "OSPINA (NAR)", text: "OSPINA (NAR)"},
+{id: "OTANCHE (BOY)", text: "OTANCHE (BOY)"},
+{id: "OVEJAS (SUCRE)", text: "OVEJAS (SUCRE)"},
+{id: "PACHAQUIARO (META)", text: "PACHAQUIARO (META)"},
+{id: "PACHAVITA (BOY)", text: "PACHAVITA (BOY)"},
+{id: "PACHO (C/MARCA)", text: "PACHO (C/MARCA)"},
+{id: "PACORA (CDAS)", text: "PACORA (CDAS)"},
+{id: "PADILLA (CAU)", text: "PADILLA (CAU)"},
+{id: "PADUA (TOL)", text: "PADUA (TOL)"},
+{id: "PAEZ (BOY)", text: "PAEZ (BOY)"},
+{id: "PAICOL (HLA)", text: "PAICOL (HLA)"},
+{id: "PAILITAS (CES)", text: "PAILITAS (CES)"},
+{id: "PAIME (C/MARCA)", text: "PAIME (C/MARCA)"},
+{id: "PAIPA (BOY)", text: "PAIPA (BOY)"},
+{id: "PAISPAMBA SOTARA (CAU)", text: "PAISPAMBA SOTARA (CAU)"},
+{id: "PAJARITO (BOY)", text: "PAJARITO (BOY)"},
+{id: "PALERMO (ANT)", text: "PALERMO (ANT)"},
+{id: "PALERMO (HLA)", text: "PALERMO (HLA)"},
+{id: "PALERMO (MG/LENA)", text: "PALERMO (MG/LENA)"},
+{id: "PALESTINA (CDAS)", text: "PALESTINA (CDAS)"},
+{id: "PALESTINA (HLA)", text: "PALESTINA (HLA)"},
+{id: "PALMAR DE VARELA (ATL)", text: "PALMAR DE VARELA (ATL)"},
+{id: "PALMIRA (VALLE)", text: "PALMIRA (VALLE)"},
+{id: "PALMITAS (ANT)", text: "PALMITAS (ANT)"},
+{id: "PALOCABILDO (TOL)", text: "PALOCABILDO (TOL)"},
+{id: "PAMPLONA (N/STDER)", text: "PAMPLONA (N/STDER)"},
+{id: "PAMPLONITA (N/STDER)", text: "PAMPLONITA (N/STDER)"},
+{id: "PANDI (C/MARCA)", text: "PANDI (C/MARCA)"},
+{id: "PANQUEBA (BOY)", text: "PANQUEBA (BOY)"},
+{id: "PANTANO DE VARGAS (BOY)", text: "PANTANO DE VARGAS (BOY)"},
+{id: "PARAMO (STDER)", text: "PARAMO (STDER)"},
+{id: "PARATEBUENO (C/MARCA)", text: "PARATEBUENO (C/MARCA)"},
+{id: "PASACABALLOS (BOL)", text: "PASACABALLOS (BOL)"},
+{id: "PASCA (C/MARCA)", text: "PASCA (C/MARCA)"},
+{id: "PASTALES NUEVO (TOL)", text: "PASTALES NUEVO (TOL)"},
+{id: "PASTALES VIEJO (TOL)", text: "PASTALES VIEJO (TOL)"},
+{id: "PASTO (NAR)", text: "PASTO (NAR)"},
+{id: "PAUNA (BOY)", text: "PAUNA (BOY)"},
+{id: "PAYANDE (TOL)", text: "PAYANDE (TOL)"},
+{id: "PAZ DE ARIPORO (C/NARE)", text: "PAZ DE ARIPORO (C/NARE)"},
+{id: "PAZ DE RIO (BOY)", text: "PAZ DE RIO (BOY)"},
+{id: "PELAYA (CES)", text: "PELAYA (CES)"},
+{id: "PENSILVANIA (CDAS)", text: "PENSILVANIA (CDAS)"},
+{id: "PEQUE (ANT)", text: "PEQUE (ANT)"},
+{id: "PEREIRA (RS)", text: "PEREIRA (RS)"},
+{id: "PESCA (BOY)", text: "PESCA (BOY)"},
+{id: "PESCADERO (STDER)", text: "PESCADERO (STDER)"},
+{id: "PESCADOR (CAU)", text: "PESCADOR (CAU)"},
+{id: "PIEDECUESTA (STDER)", text: "PIEDECUESTA (STDER)"},
+{id: "PIEDRAHANCHA (NAR)", text: "PIEDRAHANCHA (NAR)"},
+{id: "PIEDRASENTADA (CAU)", text: "PIEDRASENTADA (CAU)"},
+{id: "PIEDRAS (TOL)", text: "PIEDRAS (TOL)"},
+{id: "PIENDAMO (CAU)", text: "PIENDAMO (CAU)"},
+{id: "PIJAO (QDIO)", text: "PIJAO (QDIO)"},
+{id: "PIJIÑO DEL CARMEN (MG/LENA)", text: "PIJIÑO DEL CARMEN (MG/LENA)"},
+{id: "PILCUAN (NAR)", text: "PILCUAN (NAR)"},
+{id: "PINCHOTE (STDER)", text: "PINCHOTE (STDER)"},
+{id: "PINZON (NAR)", text: "PINZON (NAR)"},
+{id: "PIOJO (ATL)", text: "PIOJO (ATL)"},
+{id: "PITAL (HLA)", text: "PITAL (HLA)"},
+{id: "PITALITO (HLA)", text: "PITALITO (HLA)"},
+{id: "PIVIJAY (MG/LENA)", text: "PIVIJAY (MG/LENA)"},
+{id: "PLANADAS (TOL)", text: "PLANADAS (TOL)"},
+{id: "PLANETA RICA (CORD)", text: "PLANETA RICA (CORD)"},
+{id: "PLATO (MG/LENA)", text: "PLATO (MG/LENA)"},
+{id: "PLAYA MENDOZA (ATL)", text: "PLAYA MENDOZA (ATL)"},
+{id: "PLAYARRICA (TOL)", text: "PLAYARRICA (TOL)"},
+{id: "POLICARPA (NAR)", text: "POLICARPA (NAR)"},
+{id: "POLONUEVO (ATL)", text: "POLONUEVO (ATL)"},
+{id: "PONEDERA (ATL)", text: "PONEDERA (ATL)"},
+{id: "PONTEZUELA (BOL)", text: "PONTEZUELA (BOL)"},
+{id: "POPAYAN (CAU)", text: "POPAYAN (CAU)"},
+{id: "PORE (C/NARE)", text: "PORE (C/NARE)"},
+{id: "POTOSI (NAR)", text: "POTOSI (NAR)"},
+{id: "PRADERA (VALLE)", text: "PRADERA (VALLE)"},
+{id: "PRADO SEVILLA (MG/LENA)", text: "PRADO SEVILLA (MG/LENA)"},
+{id: "PRADO (TOL)", text: "PRADO (TOL)"},
+{id: "PRESIDENTE (VALLE)", text: "PRESIDENTE (VALLE)"},
+{id: "PROVIDENCIA (NAR)", text: "PROVIDENCIA (NAR)"},
+{id: "PROVIDENCIA (S/ANDRES)", text: "PROVIDENCIA (S/ANDRES)"},
+{id: "PUEBLO BELLO (CES)", text: "PUEBLO BELLO (CES)"},
+{id: "PUEBLO NUEVO (CORD)", text: "PUEBLO NUEVO (CORD)"},
+{id: "PUEBLONUEVO (MG/LENA)", text: "PUEBLONUEVO (MG/LENA)"},
+{id: "PUEBLO RICO (RS)", text: "PUEBLO RICO (RS)"},
+{id: "PUEBLORRICO (ANT)", text: "PUEBLORRICO (ANT)"},
+{id: "PUEBLOVIEJO (MG/LENA)", text: "PUEBLOVIEJO (MG/LENA)"},
+{id: "PUENTE BOYACA (BOY)", text: "PUENTE BOYACA (BOY)"},
+{id: "PUENTE DE PIEDRA (C/MARCA)", text: "PUENTE DE PIEDRA (C/MARCA)"},
+{id: "PUENTE NACIONAL (STDER)", text: "PUENTE NACIONAL (STDER)"},
+{id: "PUENTE QUETAME (C/MARCA)", text: "PUENTE QUETAME (C/MARCA)"},
+{id: "PUENTE TIERRA (VALLE)", text: "PUENTE TIERRA (VALLE)"},
+{id: "PUERRES (NAR)", text: "PUERRES (NAR)"},
+{id: "PUERTO ARAUJO (STDER)", text: "PUERTO ARAUJO (STDER)"},
+{id: "PUERTO ASIS (P/MAYO)", text: "PUERTO ASIS (P/MAYO)"},
+{id: "PUERTO BELGICA (ANT)", text: "PUERTO BELGICA (ANT)"},
+{id: "PUERTO BERRIO (ANT)", text: "PUERTO BERRIO (ANT)"},
+{id: "PUERTO BOGOTA (C/MARCA)", text: "PUERTO BOGOTA (C/MARCA)"},
+{id: "PUERTO BOYACA (BOY)", text: "PUERTO BOYACA (BOY)"},
+{id: "PUERTO CAICEDO (P/MAYO)", text: "PUERTO CAICEDO (P/MAYO)"},
+{id: "PUERTO CARREÑO (VICH)", text: "PUERTO CARREÑO (VICH)"},
+{id: "PUERTO COLOMBIA (ATL)", text: "PUERTO COLOMBIA (ATL)"},
+{id: "PUERTO CONCORDIA (META)", text: "PUERTO CONCORDIA (META)"},
+{id: "PUERTO ESCONDIDO (CORD)", text: "PUERTO ESCONDIDO (CORD)"},
+{id: "PUERTO GAITAN (META)", text: "PUERTO GAITAN (META)"},
+{id: "PUERTO GIRALDO (ATL)", text: "PUERTO GIRALDO (ATL)"},
+{id: "PUERTO GUZMAN (P/MAYO)", text: "PUERTO GUZMAN (P/MAYO)"},
+{id: "PUERTO LEGUIZAMO (P/MAYO)", text: "PUERTO LEGUIZAMO (P/MAYO)"},
+{id: "PUERTO LIBERTADOR (CORD)", text: "PUERTO LIBERTADOR (CORD)"},
+{id: "PUERTO LLERAS (META)", text: "PUERTO LLERAS (META)"},
+{id: "PUERTO LOPEZ (META)", text: "PUERTO LOPEZ (META)"},
+{id: "PUERTO NARE (ANT)", text: "PUERTO NARE (ANT)"},
+{id: "PUERTO NARIÑO (ARAU)", text: "PUERTO NARIÑO (ARAU)"},
+{id: "PUERTO OLAYA (STDER)", text: "PUERTO OLAYA (STDER)"},
+{id: "PUERTO PARRA (STDER)", text: "PUERTO PARRA (STDER)"},
+{id: "PUERTO RICO (CAQ)", text: "PUERTO RICO (CAQ)"},
+{id: "PUERTO RICO (META)", text: "PUERTO RICO (META)"},
+{id: "PUERTO RICO - TIQUISIO (BOL)", text: "PUERTO RICO - TIQUISIO (BOL)"},
+{id: "PUERTO RONDON (ARAU)", text: "PUERTO RONDON (ARAU)"},
+{id: "PUERTO SALGAR (C/MARCA)", text: "PUERTO SALGAR (C/MARCA)"},
+{id: "PUERTO SANTANDER (N/STDER)", text: "PUERTO SANTANDER (N/STDER)"},
+{id: "PUERTO SERVIEZ (BOY)", text: "PUERTO SERVIEZ (BOY)"},
+{id: "PUERTO TEJADA (CAU)", text: "PUERTO TEJADA (CAU)"},
+{id: "PUERTO TRIUNFO (ANT)", text: "PUERTO TRIUNFO (ANT)"},
+{id: "PUERTO UMBRIA (P/MAYO)", text: "PUERTO UMBRIA (P/MAYO)"},
+{id: "PUERTO VALDIVIA (ANT)", text: "PUERTO VALDIVIA (ANT)"},
+{id: "PUERTO WILCHES (STDER)", text: "PUERTO WILCHES (STDER)"},
+{id: "PULI (C/MARCA)", text: "PULI (C/MARCA)"},
+{id: "PUPIALES (NAR)", text: "PUPIALES (NAR)"},
+{id: "PURACE (CAU)", text: "PURACE (CAU)"},
+{id: "PURIFICACION (TOL)", text: "PURIFICACION (TOL)"},
+{id: "PURISIMA (CORD)", text: "PURISIMA (CORD)"},
+{id: "QUEBRADANEGRA (C/MARCA)", text: "QUEBRADANEGRA (C/MARCA)"},
+{id: "QUETAME (C/MARCA)", text: "QUETAME (C/MARCA)"},
+{id: "QUIBDO (CHOCO)", text: "QUIBDO (CHOCO)"},
+{id: "QUIMBAYA (QDIO)", text: "QUIMBAYA (QDIO)"},
+{id: "QUINCHIA (RS)", text: "QUINCHIA (RS)"},
+{id: "QUIPAMA (BOY)", text: "QUIPAMA (BOY)"},
+{id: "QUIPILE (C/MARCA)", text: "QUIPILE (C/MARCA)"},
+{id: "RAGONVALIA (N/STDER)", text: "RAGONVALIA (N/STDER)"},
+{id: "RAMIRIQUI (BOY)", text: "RAMIRIQUI (BOY)"},
+{id: "RAQUIRA (BOY)", text: "RAQUIRA (BOY)"},
+{id: "REGIDOR (BOL)", text: "REGIDOR (BOL)"},
+{id: "REMEDIOS (ANT)", text: "REMEDIOS (ANT)"},
+{id: "REMOLINO (MG/LENA)", text: "REMOLINO (MG/LENA)"},
+{id: "REMOLINO (VALLE)", text: "REMOLINO (VALLE)"},
+{id: "REPELON (ATL)", text: "REPELON (ATL)"},
+{id: "RESTREPO (META)", text: "RESTREPO (META)"},
+{id: "RESTREPO (VALLE)", text: "RESTREPO (VALLE)"},
+{id: "RETIRO (ANT)", text: "RETIRO (ANT)"},
+{id: "RICAURTE (C/MARCA)", text: "RICAURTE (C/MARCA)"},
+{id: "RICAURTE (NAR)", text: "RICAURTE (NAR)"},
+{id: "RINCON HONDO (CES)", text: "RINCON HONDO (CES)"},
+{id: "RIOBLANCO (TOL)", text: "RIOBLANCO (TOL)"},
+{id: "RIO DE ORO (CES)", text: "RIO DE ORO (CES)"},
+{id: "RIOFRIO (MG/LENA)", text: "RIOFRIO (MG/LENA)"},
+{id: "RIO FRIO (VALLE)", text: "RIO FRIO (VALLE)"},
+{id: "RIOHACHA (GUAJ)", text: "RIOHACHA (GUAJ)"},
+{id: "RIONEGRO (ANT)", text: "RIONEGRO (ANT)"},
+{id: "RIONEGRO (CAQ)", text: "RIONEGRO (CAQ)"},
+{id: "RIONEGRO (STDER)", text: "RIONEGRO (STDER)"},
+{id: "RIOSUCIO (CDAS)", text: "RIOSUCIO (CDAS)"},
+{id: "RIOSUCIO (CHOCO)", text: "RIOSUCIO (CHOCO)"},
+{id: "RIO VIEJO (BOL)", text: "RIO VIEJO (BOL)"},
+{id: "RISARALDA (CDAS)", text: "RISARALDA (CDAS)"},
+{id: "RIVERA (HLA)", text: "RIVERA (HLA)"},
+{id: "ROLDANILLO (VALLE)", text: "ROLDANILLO (VALLE)"},
+{id: "RONCESVALLES (TOL)", text: "RONCESVALLES (TOL)"},
+{id: "RONDON (BOY)", text: "RONDON (BOY)"},
+{id: "ROSAS (CAU)", text: "ROSAS (CAU)"},
+{id: "ROVIRA (TOL)", text: "ROVIRA (TOL)"},
+{id: "ROZO (VALLE)", text: "ROZO (VALLE)"},
+{id: "SABANA DE TORRES (STDER)", text: "SABANA DE TORRES (STDER)"},
+{id: "SABANAGRANDE (ATL)", text: "SABANAGRANDE (ATL)"},
+{id: "SABANALARGA (ANT)", text: "SABANALARGA (ANT)"},
+{id: "SABANALARGA (ATL)", text: "SABANALARGA (ATL)"},
+{id: "SABANALARGA (C/NARE)", text: "SABANALARGA (C/NARE)"},
+{id: "SABANAS DE SAN ANGEL (MG/LENA)", text: "SABANAS DE SAN ANGEL (MG/LENA)"},
+{id: "SABANETA (ANT)", text: "SABANETA (ANT)"},
+{id: "SABOYA (BOY)", text: "SABOYA (BOY)"},
+{id: "SACHICA (BOY)", text: "SACHICA (BOY)"},
+{id: "SAHAGUN (CORD)", text: "SAHAGUN (CORD)"},
+{id: "SALADO BLANCO (HLA)", text: "SALADO BLANCO (HLA)"},
+{id: "SALAMINA (CDAS)", text: "SALAMINA (CDAS)"},
+{id: "SALAMINA (MG/LENA)", text: "SALAMINA (MG/LENA)"},
+{id: "SALAZAR (N/STDER)", text: "SALAZAR (N/STDER)"},
+{id: "SALDANA (TOL)", text: "SALDANA (TOL)"},
+{id: "SALENTO (QDIO)", text: "SALENTO (QDIO)"},
+{id: "SALGAR (ANT)", text: "SALGAR (ANT)"},
+{id: "SALGAR (ATL)", text: "SALGAR (ATL)"},
+{id: "SALONICA LA MARINA (VALLE)", text: "SALONICA LA MARINA (VALLE)"},
+{id: "SAMACA (BOY)", text: "SAMACA (BOY)"},
+{id: "SAMANA (CDAS)", text: "SAMANA (CDAS)"},
+{id: "SAMANIEGO (NAR)", text: "SAMANIEGO (NAR)"},
+{id: "SAMARIA (CDAS)", text: "SAMARIA (CDAS)"},
+{id: "SAMPUES (SUCRE)", text: "SAMPUES (SUCRE)"},
+{id: "SAN ADOLFO (HLA)", text: "SAN ADOLFO (HLA)"},
+{id: "SAN AGUSTIN (HLA)", text: "SAN AGUSTIN (HLA)"},
+{id: "SAN ALBERTO (CES)", text: "SAN ALBERTO (CES)"},
+{id: "SAN ANDRES DE CUERQUIA (ANT)", text: "SAN ANDRES DE CUERQUIA (ANT)"},
+{id: "SAN ANDRES DE SOTAVENTO (CORD)", text: "SAN ANDRES DE SOTAVENTO (CORD)"},
+{id: "SAN ANDRES ISLA (S/ANDRES)", text: "SAN ANDRES ISLA (S/ANDRES)"},
+{id: "SAN ANDRES (STDER)", text: "SAN ANDRES (STDER)"},
+{id: "SAN ANT DE TEQUEN (C/MARCA)", text: "SAN ANT DE TEQUEN (C/MARCA)"},
+{id: "SAN ANTERO (CORD)", text: "SAN ANTERO (CORD)"},
+{id: "SAN ANTONIO DE PRADO (ANT)", text: "SAN ANTONIO DE PRADO (ANT)"},
+{id: "SAN ANTONIO (TOL)", text: "SAN ANTONIO (TOL)"},
+{id: "SAN BARTOLOME (CDAS)", text: "SAN BARTOLOME (CDAS)"},
+{id: "SAN BENITO ABAD (SUCRE)", text: "SAN BENITO ABAD (SUCRE)"},
+{id: "SAN BENITO (STDER)", text: "SAN BENITO (STDER)"},
+{id: "SAN BERNARDO (C/MARCA)", text: "SAN BERNARDO (C/MARCA)"},
+{id: "SAN BERNARDO DEL VIENTO (CORD)", text: "SAN BERNARDO DEL VIENTO (CORD)"},
+{id: "SAN BERNARDO (NAR)", text: "SAN BERNARDO (NAR)"},
+{id: "SAN BERNARDO (N/STDER)", text: "SAN BERNARDO (N/STDER)"},
+{id: "SAN CALIXTO (N/STDER)", text: "SAN CALIXTO (N/STDER)"},
+{id: "SAN CARLOS (ANT)", text: "SAN CARLOS (ANT)"},
+{id: "SAN CARLOS (CORD)", text: "SAN CARLOS (CORD)"},
+{id: "SAN CAYETANO (C/MARCA)", text: "SAN CAYETANO (C/MARCA)"},
+{id: "SAN CAYETANO (N/STDER)", text: "SAN CAYETANO (N/STDER)"},
+{id: "SAN CLEMENTE (RS)", text: "SAN CLEMENTE (RS)"},
+{id: "SAN DANIEL (CDAS)", text: "SAN DANIEL (CDAS)"},
+{id: "SAN DIEGO (CDAS)", text: "SAN DIEGO (CDAS)"},
+{id: "SAN DIEGO (CES)", text: "SAN DIEGO (CES)"},
+{id: "SANDONA (NAR)", text: "SANDONA (NAR)"},
+{id: "SAN EDUARDO (BOY)", text: "SAN EDUARDO (BOY)"},
+{id: "SAN ESTANISLAO (BOL)", text: "SAN ESTANISLAO (BOL)"},
+{id: "SAN FELIPE (TOL)", text: "SAN FELIPE (TOL)"},
+{id: "SAN FELIX (CDAS)", text: "SAN FELIX (CDAS)"},
+{id: "SAN FERNANDO (BOL)", text: "SAN FERNANDO (BOL)"},
+{id: "SAN FERNANDO (MG/LENA)", text: "SAN FERNANDO (MG/LENA)"},
+{id: "SAN FRANCISCO (ANT)", text: "SAN FRANCISCO (ANT)"},
+{id: "SAN FRANCISCO (C/MARCA)", text: "SAN FRANCISCO (C/MARCA)"},
+{id: "SAN FRANCISCO (P/MAYO)", text: "SAN FRANCISCO (P/MAYO)"},
+{id: "SAN GIL (STDER)", text: "SAN GIL (STDER)"},
+{id: "SAN JACINTO (BOL)", text: "SAN JACINTO (BOL)"},
+{id: "SAN JERONIMO (ANT)", text: "SAN JERONIMO (ANT)"},
+{id: "SAN JOAQUIN (STDER)", text: "SAN JOAQUIN (STDER)"},
+{id: "SAN JOSE (CAU)", text: "SAN JOSE (CAU)"},
+{id: "SAN JOSE (CDAS)", text: "SAN JOSE (CDAS)"},
+{id: "SAN JOSE DE ALBAN (NAR)", text: "SAN JOSE DE ALBAN (NAR)"},
+{id: "SAN JOSE DE ISNOS (HLA)", text: "SAN JOSE DE ISNOS (HLA)"},
+{id: "SAN JOSE DE LA MONTAÑA (ANT)", text: "SAN JOSE DE LA MONTAÑA (ANT)"},
+{id: "SAN JOSE DEL FRAGUA (CAQ)", text: "SAN JOSE DEL FRAGUA (CAQ)"},
+{id: "SAN JOSE DEL GUAVIARE (G/VIARE)", text: "SAN JOSE DEL GUAVIARE (G/VIARE)"},
+{id: "SAN JOSE DEL NUS (ANT)", text: "SAN JOSE DEL NUS (ANT)"},
+{id: "SAN JOSE DE MIRANDA (STDER)", text: "SAN JOSE DE MIRANDA (STDER)"},
+{id: "SAN JOSE DE PARE (BOY)", text: "SAN JOSE DE PARE (BOY)"},
+{id: "SAN JOSE DE URE (CORD)", text: "SAN JOSE DE URE (CORD)"},
+{id: "SAN JUAN DE ARAMA (META)", text: "SAN JUAN DE ARAMA (META)"},
+{id: "SAN JUAN DEL CESAR (GUAJ)", text: "SAN JUAN DEL CESAR (GUAJ)"},
+{id: "SAN JUAN DE RIOSECO (C/MARCA)", text: "SAN JUAN DE RIOSECO (C/MARCA)"},
+{id: "SAN JUAN DE URABA (ANT)", text: "SAN JUAN DE URABA (ANT)"},
+{id: "SAN JUAN NEPOMUCENO (BOL)", text: "SAN JUAN NEPOMUCENO (BOL)"},
+{id: "SAN LORENZO (CAU)", text: "SAN LORENZO (CAU)"},
+{id: "SAN LORENZO (NAR)", text: "SAN LORENZO (NAR)"},
+{id: "SAN LUIS (ANT)", text: "SAN LUIS (ANT)"},
+{id: "SAN LUIS DE GACENO (BOY)", text: "SAN LUIS DE GACENO (BOY)"},
+{id: "SAN LUIS DE PALENQUE (C/NARE)", text: "SAN LUIS DE PALENQUE (C/NARE)"},
+{id: "SAN LUIS (TOL)", text: "SAN LUIS (TOL)"},
+{id: "SAN MARCOS (SUCRE)", text: "SAN MARCOS (SUCRE)"},
+{id: "SAN MARTIN (CES)", text: "SAN MARTIN (CES)"},
+{id: "SAN MARTIN DE LOBA (BOL)", text: "SAN MARTIN DE LOBA (BOL)"},
+{id: "SAN MARTIN (META)", text: "SAN MARTIN (META)"},
+{id: "SAN MATEO (BOY)", text: "SAN MATEO (BOY)"},
+{id: "SAN MIGUEL (ANT)", text: "SAN MIGUEL (ANT)"},
+{id: "SAN MIGUEL DE SEMA (BOY)", text: "SAN MIGUEL DE SEMA (BOY)"},
+{id: "SAN ONOFRE (SUCRE)", text: "SAN ONOFRE (SUCRE)"},
+{id: "SAN PABLO (BOL)", text: "SAN PABLO (BOL)"},
+{id: "SAN PABLO DE BORBUR (BOY)", text: "SAN PABLO DE BORBUR (BOY)"},
+{id: "SAN PABLO (NAR)", text: "SAN PABLO (NAR)"},
+{id: "SAN PEDRO DE CARTAGO (NAR)", text: "SAN PEDRO DE CARTAGO (NAR)"},
+{id: "SAN PEDRO DE LOS MILAGROS (ANT)", text: "SAN PEDRO DE LOS MILAGROS (ANT)"},
+{id: "SAN PEDRO DE URABA (ANT)", text: "SAN PEDRO DE URABA (ANT)"},
+{id: "SAN PEDRO (SUCRE)", text: "SAN PEDRO (SUCRE)"},
+{id: "SAN PEDRO (VALLE)", text: "SAN PEDRO (VALLE)"},
+{id: "SAN PELAYO (CORD)", text: "SAN PELAYO (CORD)"},
+{id: "SAN RAFAEL (ANT)", text: "SAN RAFAEL (ANT)"},
+{id: "SAN RAFAEL (STDER)", text: "SAN RAFAEL (STDER)"},
+{id: "SAN ROQUE (ANT)", text: "SAN ROQUE (ANT)"},
+{id: "SAN ROQUE (CES)", text: "SAN ROQUE (CES)"},
+{id: "SAN SEBAST DE BUENAVI (MG/LENA)", text: "SAN SEBAST DE BUENAVI (MG/LENA)"},
+{id: "SAN SEBASTIAN (CAU)", text: "SAN SEBASTIAN (CAU)"},
+{id: "SAN SEBASTIAN (CORD)", text: "SAN SEBASTIAN (CORD)"},
+{id: "SANTA ANA (BOL)", text: "SANTA ANA (BOL)"},
+{id: "SANTA ANA (MG/LENA)", text: "SANTA ANA (MG/LENA)"},
+{id: "SANTA BARBARA (ANT)", text: "SANTA BARBARA (ANT)"},
+{id: "SANTA BARBARA (BOY)", text: "SANTA BARBARA (BOY)"},
+{id: "SANTA BARBARA DE PINTO (MG/LENA)", text: "SANTA BARBARA DE PINTO (MG/LENA)"},
+{id: "SANTA CATALINA (BOL)", text: "SANTA CATALINA (BOL)"},
+{id: "SANTA CATALINA (S/ANDRES)", text: "SANTA CATALINA (S/ANDRES)"},
+{id: "SANTA ELENA (ANT)", text: "SANTA ELENA (ANT)"},
+{id: "SANTA ELENA (VALLE)", text: "SANTA ELENA (VALLE)"},
+{id: "SANTA FE DE ANTIOQUIA (ANT)", text: "SANTA FE DE ANTIOQUIA (ANT)"},
+{id: "SANTA HELENA DEL OPON (STDER)", text: "SANTA HELENA DEL OPON (STDER)"},
+{id: "SANTA ISABELL (ANT)", text: "SANTA ISABELL (ANT)"},
+{id: "SANTA ISABEL (TOL)", text: "SANTA ISABEL (TOL)"},
+{id: "SANTA LUCIA (ATL)", text: "SANTA LUCIA (ATL)"},
+{id: "SANTA MARIA (BOY)", text: "SANTA MARIA (BOY)"},
+{id: "SANTA MARIA (HLA)", text: "SANTA MARIA (HLA)"},
+{id: "SANTA MARTA (MG/LENA)", text: "SANTA MARTA (MG/LENA)"},
+{id: "SANTANA (BOY)", text: "SANTANA (BOY)"},
+{id: "SANTANA (P/MAYO)", text: "SANTANA (P/MAYO)"},
+{id: "SANTANDER DE QUILICHAO (CAU)", text: "SANTANDER DE QUILICHAO (CAU)"},
+{id: "SANTANDERSITO (C/MARCA)", text: "SANTANDERSITO (C/MARCA)"},
+{id: "SANTA ROSA (BOL)", text: "SANTA ROSA (BOL)"},
+{id: "SANTA ROSA DE CABAL (RS)", text: "SANTA ROSA DE CABAL (RS)"},
+{id: "SANTA ROSA DEL SUR (BOL)", text: "SANTA ROSA DEL SUR (BOL)"},
+{id: "SANTA ROSA DE OSOS (ANT)", text: "SANTA ROSA DE OSOS (ANT)"},
+{id: "SANTA ROSA DE VITERBO (BOY)", text: "SANTA ROSA DE VITERBO (BOY)"},
+{id: "SANTA ROSALIA (VICH)", text: "SANTA ROSALIA (VICH)"},
+{id: "SANTA SOFIA (BOY)", text: "SANTA SOFIA (BOY)"},
+{id: "SANTA TERESA (TOL)", text: "SANTA TERESA (TOL)"},
+{id: "SANTA VERONICA (ATL)", text: "SANTA VERONICA (ATL)"},
+{id: "SANTIAGO (ANT)", text: "SANTIAGO (ANT)"},
+{id: "SANTIAGO (N/STDER)", text: "SANTIAGO (N/STDER)"},
+{id: "SANTIAGO PEREZ (TOL)", text: "SANTIAGO PEREZ (TOL)"},
+{id: "SANTIAGO (P/MAYO)", text: "SANTIAGO (P/MAYO)"},
+{id: "SANTO DOMINGO (ANT)", text: "SANTO DOMINGO (ANT)"},
+{id: "SANTO TOMAS (ATL)", text: "SANTO TOMAS (ATL)"},
+{id: "SANTUARIO (RS)", text: "SANTUARIO (RS)"},
+{id: "SAN VICENTE (ANT)", text: "SAN VICENTE (ANT)"},
+{id: "SAN VICENTE DE CHUCURI (STDER)", text: "SAN VICENTE DE CHUCURI (STDER)"},
+{id: "SAN VICENTE DEL CAGUAN (CAQ)", text: "SAN VICENTE DEL CAGUAN (CAQ)"},
+{id: "SAN ZENON (MG/LENA)", text: "SAN ZENON (MG/LENA)"},
+{id: "SAPUYES (NAR)", text: "SAPUYES (NAR)"},
+{id: "SARAVENA (ARAU)", text: "SARAVENA (ARAU)"},
+{id: "SARDINATA (N/STDER)", text: "SARDINATA (N/STDER)"},
+{id: "SASAIMA (C/MARCA)", text: "SASAIMA (C/MARCA)"},
+{id: "SATIVANORTE (BOY)", text: "SATIVANORTE (BOY)"},
+{id: "SATIVASUR (BOY)", text: "SATIVASUR (BOY)"},
+{id: "SEGOVIA (ANT)", text: "SEGOVIA (ANT)"},
+{id: "SESQUILE (C/MARCA)", text: "SESQUILE (C/MARCA)"},
+{id: "SEVILLA (ANT)", text: "SEVILLA (ANT)"},
+{id: "SEVILLA (VALLE)", text: "SEVILLA (VALLE)"},
+{id: "SIACHOQUE (BOY)", text: "SIACHOQUE (BOY)"},
+{id: "SIBATE (C/MARCA)", text: "SIBATE (C/MARCA)"},
+{id: "SIBUNDOY (P/MAYO)", text: "SIBUNDOY (P/MAYO)"},
+{id: "SILOS (N/STDER)", text: "SILOS (N/STDER)"},
+{id: "SILVANIA (C/MARCA)", text: "SILVANIA (C/MARCA)"},
+{id: "SILVIA (CAU)", text: "SILVIA (CAU)"},
+{id: "SIMACOTA (STDER)", text: "SIMACOTA (STDER)"},
+{id: "SIMIJACA (C/MARCA)", text: "SIMIJACA (C/MARCA)"},
+{id: "SIMITI (BOL)", text: "SIMITI (BOL)"},
+{id: "SINCELEJO (SUCRE)", text: "SINCELEJO (SUCRE)"},
+{id: "SINCE (SUCRE)", text: "SINCE (SUCRE)"},
+{id: "SIPI (CHOCO)", text: "SIPI (CHOCO)"},
+{id: "SITIO NUEVO (MG/LENA)", text: "SITIO NUEVO (MG/LENA)"},
+{id: "SOACHA (C/MARCA)", text: "SOACHA (C/MARCA)"},
+{id: "SOATA (BOY)", text: "SOATA (BOY)"},
+{id: "SOCHA (BOY)", text: "SOCHA (BOY)"},
+{id: "SOCORRO (STDER)", text: "SOCORRO (STDER)"},
+{id: "SOCOTA (BOY)", text: "SOCOTA (BOY)"},
+{id: "SOGAMOSO (BOY)", text: "SOGAMOSO (BOY)"},
+{id: "SOLEDAD (ATL)", text: "SOLEDAD (ATL)"},
+{id: "SOLITA (CAQ)", text: "SOLITA (CAQ)"},
+{id: "SOMONDOCO (BOY)", text: "SOMONDOCO (BOY)"},
+{id: "SONSON (ANT)", text: "SONSON (ANT)"},
+{id: "SONSO (VALLE)", text: "SONSO (VALLE)"},
+{id: "SOPETRAN (ANT)", text: "SOPETRAN (ANT)"},
+{id: "SOPLAVIENTO (BOL)", text: "SOPLAVIENTO (BOL)"},
+{id: "SOPO (C/MARCA)", text: "SOPO (C/MARCA)"},
+{id: "SORA (BOY)", text: "SORA (BOY)"},
+{id: "SORACA (BOY)", text: "SORACA (BOY)"},
+{id: "SOTAQUIRÁ (BOY)", text: "SOTAQUIRÁ (BOY)"},
+{id: "SOTOMAYOR (NAR)", text: "SOTOMAYOR (NAR)"},
+{id: "SUAITA (STDER)", text: "SUAITA (STDER)"},
+{id: "SUAN (ATL)", text: "SUAN (ATL)"},
+{id: "SUAREZ (CAU)", text: "SUAREZ (CAU)"},
+{id: "SUAREZ (TOL)", text: "SUAREZ (TOL)"},
+{id: "SUAZA (HLA)", text: "SUAZA (HLA)"},
+{id: "SUBACHOQUE (C/MARCA)", text: "SUBACHOQUE (C/MARCA)"},
+{id: "SUBIA (C/MARCA)", text: "SUBIA (C/MARCA)"},
+{id: "SUCRE (STDER)", text: "SUCRE (STDER)"},
+{id: "SUCRE (SUCRE)", text: "SUCRE (SUCRE)"},
+{id: "SUESCA (C/MARCA)", text: "SUESCA (C/MARCA)"},
+{id: "SUPATA (C/MARCA)", text: "SUPATA (C/MARCA)"},
+{id: "SUPIA (CDAS)", text: "SUPIA (CDAS)"},
+{id: "SUSA (C/MARCA)", text: "SUSA (C/MARCA)"},
+{id: "SUSACON (BOY)", text: "SUSACON (BOY)"},
+{id: "SUTAMARCHAN (BOY)", text: "SUTAMARCHAN (BOY)"},
+{id: "SUTATAUSA (C/MARCA)", text: "SUTATAUSA (C/MARCA)"},
+{id: "SUTATENZA (BOY)", text: "SUTATENZA (BOY)"},
+{id: "TABIO (C/MARCA)", text: "TABIO (C/MARCA)"},
+{id: "TADO (CHOCO)", text: "TADO (CHOCO)"},
+{id: "TAGANGA (MG/LENA)", text: "TAGANGA (MG/LENA)"},
+{id: "TALAIGUA NUEVO (BOL)", text: "TALAIGUA NUEVO (BOL)"},
+{id: "TAMALAMEQUE (CES)", text: "TAMALAMEQUE (CES)"},
+{id: "TAME (ARAU)", text: "TAME (ARAU)"},
+{id: "TAMESIS (ANT)", text: "TAMESIS (ANT)"},
+{id: "TAMINANGO (NAR)", text: "TAMINANGO (NAR)"},
+{id: "TANGAREAL CARRETERA (NAR)", text: "TANGAREAL CARRETERA (NAR)"},
+{id: "TANGAREAL DEL MIRA (NAR)", text: "TANGAREAL DEL MIRA (NAR)"},
+{id: "TANGUA (NAR)", text: "TANGUA (NAR)"},
+{id: "TARAZA (ANT)", text: "TARAZA (ANT)"},
+{id: "TARQUI (HLA)", text: "TARQUI (HLA)"},
+{id: "TARSO (ANT)", text: "TARSO (ANT)"},
+{id: "TASCO (BOY)", text: "TASCO (BOY)"},
+{id: "TAURAMENA (C/NARE)", text: "TAURAMENA (C/NARE)"},
+{id: "TAUSA (C/MARCA)", text: "TAUSA (C/MARCA)"},
+{id: "TELLO (HLA)", text: "TELLO (HLA)"},
+{id: "TENA (C/MARCA)", text: "TENA (C/MARCA)"},
+{id: "TENERIFE (MG/LENA)", text: "TENERIFE (MG/LENA)"},
+{id: "TENJO (C/MARCA)", text: "TENJO (C/MARCA)"},
+{id: "TENZA (BOY)", text: "TENZA (BOY)"},
+{id: "TEORAMA (N/STDER)", text: "TEORAMA (N/STDER)"},
+{id: "TERUEL (HLA)", text: "TERUEL (HLA)"},
+{id: "TESALIA (HLA)", text: "TESALIA (HLA)"},
+{id: "TIBACUY (C/MARCA)", text: "TIBACUY (C/MARCA)"},
+{id: "TIBANA (BOY)", text: "TIBANA (BOY)"},
+{id: "TIBASOSA (BOY)", text: "TIBASOSA (BOY)"},
+{id: "TIBIRITA (C/MARCA)", text: "TIBIRITA (C/MARCA)"},
+{id: "TIBU (N/STDER)", text: "TIBU (N/STDER)"},
+{id: "TIERRA ALTA (CORD)", text: "TIERRA ALTA (CORD)"},
+{id: "TIMANA (HLA)", text: "TIMANA (HLA)"},
+{id: "TIMBA (CAU)", text: "TIMBA (CAU)"},
+{id: "TIMBIO (CAU)", text: "TIMBIO (CAU)"},
+{id: "TIMBIQUI (CAU)", text: "TIMBIQUI (CAU)"},
+{id: "TINJACA (BOY)", text: "TINJACA (BOY)"},
+{id: "TIPACOQUE (BOY)", text: "TIPACOQUE (BOY)"},
+{id: "TITIRIBI (ANT)", text: "TITIRIBI (ANT)"},
+{id: "TOBIA (C/MARCA)", text: "TOBIA (C/MARCA)"},
+{id: "TOCA (BOY)", text: "TOCA (BOY)"},
+{id: "TOCAIMA (C/MARCA)", text: "TOCAIMA (C/MARCA)"},
+{id: "TOCANCIPA (C/MARCA)", text: "TOCANCIPA (C/MARCA)"},
+{id: "TOGUI (BOY)", text: "TOGUI (BOY)"},
+{id: "TOLEDO (ANT)", text: "TOLEDO (ANT)"},
+{id: "TOLEDO (N/STDER)", text: "TOLEDO (N/STDER)"},
+{id: "TOLU (SUCRE)", text: "TOLU (SUCRE)"},
+{id: "TOLU VIEJO (SUCRE)", text: "TOLU VIEJO (SUCRE)"},
+{id: "TOPAGA (BOY)", text: "TOPAGA (BOY)"},
+{id: "TOPAIPI (C/MARCA)", text: "TOPAIPI (C/MARCA)"},
+{id: "TORIBIO (CAU)", text: "TORIBIO (CAU)"},
+{id: "TORO (VALLE)", text: "TORO (VALLE)"},
+{id: "TOTA (BOY)", text: "TOTA (BOY)"},
+{id: "TOTORO (CAU)", text: "TOTORO (CAU)"},
+{id: "TRES ESQUINAS (TOL)", text: "TRES ESQUINAS (TOL)"},
+{id: "TRINIDAD (C/NARE)", text: "TRINIDAD (C/NARE)"},
+{id: "TRUJILLO (VALLE)", text: "TRUJILLO (VALLE)"},
+{id: "TUBARA (ATL)", text: "TUBARA (ATL)"},
+{id: "TUCHIN (CORD)", text: "TUCHIN (CORD)"},
+{id: "TUCURINCA (MG/LENA)", text: "TUCURINCA (MG/LENA)"},
+{id: "TUDELA (C/MARCA)", text: "TUDELA (C/MARCA)"},
+{id: "TULUA (VALLE)", text: "TULUA (VALLE)"},
+{id: "TUMACO (NAR)", text: "TUMACO (NAR)"},
+{id: "TUNIA (CAU)", text: "TUNIA (CAU)"},
+{id: "TUNJA (BOY)", text: "TUNJA (BOY)"},
+{id: "TUNUNGUA (BOY)", text: "TUNUNGUA (BOY)"},
+{id: "TUQUERRES (NAR)", text: "TUQUERRES (NAR)"},
+{id: "TURBACO (BOL)", text: "TURBACO (BOL)"},
+{id: "TURBANA (BOL)", text: "TURBANA (BOL)"},
+{id: "TURBO (ANT)", text: "TURBO (ANT)"},
+{id: "TURMEQUE (BOY)", text: "TURMEQUE (BOY)"},
+{id: "TUTA (BOY)", text: "TUTA (BOY)"},
+{id: "TUTAZA (BOY)", text: "TUTAZA (BOY)"},
+{id: "TUTUNENDO (CHOCO)", text: "TUTUNENDO (CHOCO)"},
+{id: "UBALA (C/MARCA)", text: "UBALA (C/MARCA)"},
+{id: "UBAQUE (C/MARCA)", text: "UBAQUE (C/MARCA)"},
+{id: "UBATE (C/MARCA)", text: "UBATE (C/MARCA)"},
+{id: "ULLOA (VALLE)", text: "ULLOA (VALLE)"},
+{id: "UMBITA (BOY)", text: "UMBITA (BOY)"},
+{id: "UNE (C/MARCA)", text: "UNE (C/MARCA)"},
+{id: "UNGUIA (CHOCO)", text: "UNGUIA (CHOCO)"},
+{id: "URAMITA (ANT)", text: "URAMITA (ANT)"},
+{id: "URIBE (META)", text: "URIBE (META)"},
+{id: "URIBIA (GUAJ)", text: "URIBIA (GUAJ)"},
+{id: "URRAO (ANT)", text: "URRAO (ANT)"},
+{id: "URUMITA (GUAJ)", text: "URUMITA (GUAJ)"},
+{id: "USIACURI (ATL)", text: "USIACURI (ATL)"},
+{id: "UTICA (C/MARCA)", text: "UTICA (C/MARCA)"},
+{id: "VADO REAL (STDER)", text: "VADO REAL (STDER)"},
+{id: "VALDIVIA (ANT)", text: "VALDIVIA (ANT)"},
+{id: "VALENCIA (CORD)", text: "VALENCIA (CORD)"},
+{id: "VALLE DE SAN JOSE (STDER)", text: "VALLE DE SAN JOSE (STDER)"},
+{id: "VALLE DE SAN JUAN (TOL)", text: "VALLE DE SAN JUAN (TOL)"},
+{id: "VALLEDUPAR (CES)", text: "VALLEDUPAR (CES)"},
+{id: "VALPARAISO (ANT)", text: "VALPARAISO (ANT)"},
+{id: "VALPARAISO (CAQ)", text: "VALPARAISO (CAQ)"},
+{id: "VEGACHI (ANT)", text: "VEGACHI (ANT)"},
+{id: "VEGALARGA (HLA)", text: "VEGALARGA (HLA)"},
+{id: "VELEZ (STDER)", text: "VELEZ (STDER)"},
+{id: "VELU (TOL)", text: "VELU (TOL)"},
+{id: "VENADILLO (TOL)", text: "VENADILLO (TOL)"},
+{id: "VENECIA (ANT)", text: "VENECIA (ANT)"},
+{id: "VENECIA -  (C/MARCA)", text: "VENECIA -  (C/MARCA)"},
+{id: "VENECIA (C/MARCA)", text: "VENECIA (C/MARCA)"},
+{id: "VENTAQUEMADA (BOY)", text: "VENTAQUEMADA (BOY)"},
+{id: "VERGARA (C/MARCA)", text: "VERGARA (C/MARCA)"},
+{id: "VERSALLES (ANT)", text: "VERSALLES (ANT)"},
+{id: "VERSALLES (VALLE)", text: "VERSALLES (VALLE)"},
+{id: "VIANI (C/MARCA)", text: "VIANI (C/MARCA)"},
+{id: "VICTORIA (CDAS)", text: "VICTORIA (CDAS)"},
+{id: "VIJES (VALLE)", text: "VIJES (VALLE)"},
+{id: "VILLACAROLA (C/NARE)", text: "VILLACAROLA (C/NARE)"},
+{id: "VILLA CARO (N/STDER)", text: "VILLA CARO (N/STDER)"},
+{id: "VILLA DE LEYVA (BOY)", text: "VILLA DE LEYVA (BOY)"},
+{id: "VILLA DEL ROSARIO (N/STDER)", text: "VILLA DEL ROSARIO (N/STDER)"},
+{id: "VILLA FATIMA (CORD)", text: "VILLA FATIMA (CORD)"},
+{id: "VILLAGARZON (P/MAYO)", text: "VILLAGARZON (P/MAYO)"},
+{id: "VILLAGOMEZ (C/MARCA)", text: "VILLAGOMEZ (C/MARCA)"},
+{id: "VILLA GORGONA (VALLE)", text: "VILLA GORGONA (VALLE)"},
+{id: "VILLAHERMOSA (TOL)", text: "VILLAHERMOSA (TOL)"},
+{id: "VILLAMARIA (CDAS)", text: "VILLAMARIA (CDAS)"},
+{id: "VILLANUEVA (BOL)", text: "VILLANUEVA (BOL)"},
+{id: "VILLANUEVA (C/NARE)", text: "VILLANUEVA (C/NARE)"},
+{id: "VILLANUEVA (GUAJ)", text: "VILLANUEVA (GUAJ)"},
+{id: "VILLANUEVA (STDER)", text: "VILLANUEVA (STDER)"},
+{id: "VILLAPINZON (C/MARCA)", text: "VILLAPINZON (C/MARCA)"},
+{id: "VILLARESTREPO (TOL)", text: "VILLARESTREPO (TOL)"},
+{id: "VILLA RICA (CAU)", text: "VILLA RICA (CAU)"},
+{id: "VILLA RICA (TOL)", text: "VILLA RICA (TOL)"},
+{id: "VILLAVICENCIO (META)", text: "VILLAVICENCIO (META)"},
+{id: "VILLA VIEJA (HLA)", text: "VILLA VIEJA (HLA)"},
+{id: "VILLETA (C/MARCA)", text: "VILLETA (C/MARCA)"},
+{id: "VIOTA (C/MARCA)", text: "VIOTA (C/MARCA)"},
+{id: "VIRACACHA (BOY)", text: "VIRACACHA (BOY)"},
+{id: "VISTA HERMOSA (META)", text: "VISTA HERMOSA (META)"},
+{id: "VITERBO (CDAS)", text: "VITERBO (CDAS)"},
+{id: "YACOPI (C/MARCA)", text: "YACOPI (C/MARCA)"},
+{id: "YACUANQUER (NAR)", text: "YACUANQUER (NAR)"},
+{id: "YAGUARA (HLA)", text: "YAGUARA (HLA)"},
+{id: "YALI (ANT)", text: "YALI (ANT)"},
+{id: "YARUMAL (ANT)", text: "YARUMAL (ANT)"},
+{id: "YOLOMBO (ANT)", text: "YOLOMBO (ANT)"},
+{id: "YONDO CASABE (ANT)", text: "YONDO CASABE (ANT)"},
+{id: "YOPAL (C/NARE)", text: "YOPAL (C/NARE)"},
+{id: "YOTOCO (VALLE)", text: "YOTOCO (VALLE)"},
+{id: "YUMBO (VALLE)", text: "YUMBO (VALLE)"},
+{id: "YUTO (CHOCO)", text: "YUTO (CHOCO)"},
+{id: "ZAMBRANO (BOL)", text: "ZAMBRANO (BOL)"},
+{id: "ZAPATOCA (STDER)", text: "ZAPATOCA (STDER)"},
+{id: "ZARAGOZA (ANT)", text: "ZARAGOZA (ANT)"},
+{id: "ZARZAL (VALLE)", text: "ZARZAL (VALLE)"},
+{id: "ZETAQUIRA (BOY)", text: "ZETAQUIRA (BOY)"},
+{id: "ZIPACON (C/MARCA)", text: "ZIPACON (C/MARCA)"},
+{id: "ZIPAQUIRA (C/MARCA)", text: "ZIPAQUIRA (C/MARCA)"},
+
+    ];
+
+    // Función para inicializar el select2 con las ciudades
+    function inicializarSelectCiudades() {
+        $('.js-ciudades').select2({
+            data: ciudades,
+            placeholder: "Buscar ciudad...",
+            allowClear: true,
+            width: 'resolve'
+        });
+    }
+
+    // Función para actualizar la fecha automáticamente
+    function actualizarFecha() {
+        const hoy = new Date();
+        const fechaFormateada = hoy.toISOString().split('T')[0];
+        document.getElementById('fecha').value = fechaFormateada;
+    }
+
+    // Función para actualizar dirección y ciudad según la unidad seleccionada
+    function actualizarDireccionYCiudad() {
+        const unidad = document.getElementById('unidad').value;
+        const direccionDestino = document.getElementById('direccionDestino');
+        const ciudadDestino = document.getElementById('ciudadDestino');
+        
+        switch(unidad) {
+            case 'CENTR':
+                direccionDestino.value = 'Carrera 31A # 10- 85 barrio Pensilvania';
+                ciudadDestino.value = 'BOGOTA';
+                break;
+            case 'AKCED':
+                direccionDestino.value = 'Parque san carlos 3 bodega alkosto - carretera troncal de occidente kilometro 6 via bogota- facatativa costado sur';
+                ciudadDestino.value = 'FUNZA';
+                break;
+            case 'AKCE2':
+                direccionDestino.value = 'Kilometro 3.5 Via Mosquera Parque Industrial San Carlos 2 Muelle de Devoluciones';
+                ciudadDestino.value = 'FUNZA';
+                break;
+            default:
+                direccionDestino.value = '';
+                ciudadDestino.value = '';
+        }
+    }
+
+    // Función para generar el archivo con el formato específico
+    function generarArchivo() {
+        // 1. Línea de ENCABEZADOS (títulos)
+        const encabezados = "CI\tnumero\trnit\trdiv\trnombre\trciudad\trdireccion\trtelefono\tdnit\tddiv\tdnombre\tdciudad\tddireccion\tdtelefono\tvaloracion\tcuenta\tproducto\tcontenido\treferencia\tordenamiento\tobservacion\ttotalPeso\ttotalVolumen\ttotalUnidades\tdetalle (UBL:Volumen:Peso:Unidades)\tcentro_costos\tcuenta_contable\ttipo_notificacion\tdestino_notif\tdrnombre\tdrciudaad\tdrdir\tdrtel\tnro_sobre\tdosc_radicar";
+
+        // 2. Línea de VALORES (respuestas del formulario)
+        const valores = [
+            "29503", // CI
+            "", // numero
+            document.getElementById('cedulaCliente').value || "", // rnit
+            "02", // rdiv
+            document.getElementById('nombreCliente').value || "", // rnombre
+            document.getElementById('ciudadRemitente').value || "", // rciudad
+            document.getElementById('direccionCliente').value || "", // rdireccion
+            document.getElementById('telCliente').value || "", // rtelefono
+            document.getElementById('cedulaDestinatario').value || "", // dnit
+            "23", // ddiv
+            document.getElementById('unidad').value || "", // dnombre
+            document.getElementById('ciudadDestino').value || "", // dciudad
+            document.getElementById('direccionDestino').value || "", // ddireccion
+            document.getElementById('telefonoDestino').value || "", // dtelefono
+            document.getElementById('valorAsegurado').value || "", // valoracion
+            "1", // cuenta
+            "1", // producto
+            document.getElementById('descripcionContenido').value || "", // contenido
+            document.getElementById('referencia').value || "", // referencia
+            "", // ordenamiento
+            document.getElementById('observaciones').value || "", // observacion
+            document.getElementById('totalPeso').value || "", // totalPeso
+            document.getElementById('totalVolumen').value || "", // totalVolumen
+            document.getElementById('totalUnidades').value || "", // totalUnidades
+            `1:${document.getElementById('totalVolumen').value || ""}:${document.getElementById('totalPeso').value || ""}:${document.getElementById('totalUnidades').value || ""}`, // detalle
+            document.getElementById('referencia').value || "", // centro_costos
+            "", // cuenta_contable
+            document.getElementById('notificarCorreo').value || "", // tipo_notificacion
+            document.getElementById('correoNotificar').value || "", // destino_notif
+            "", // drnombre
+            "", // drciudaad
+            "", // drdir
+            "", // drtel
+            "", // nro_sobre
+            ""  // dosc_radicar
+        ].join('\t');
+        
+        // Mostrar ambas líneas en el textarea
+        document.getElementById('textoResultado').value = encabezados + '\n' + valores;
+        
+        alert('Archivo generado correctamente con 2 líneas.');
+    }
+
+    // Función para generar el ID de recolección
+    function generarRecoleccion() {
+        // 1. Línea de ENCABEZADOS para recolección
+        const encabezadosRecoleccion = "origen\tEmpresa\tDireccion Recogida\tTelefono\tFecha\tCorreo\tObservaciones\tReferencia";
+        
+        // 2. Línea de VALORES para recolección
+        const valoresRecoleccion = [
+            document.getElementById('ciudadRemitente').value || "", // origen
+            document.getElementById('nombreCliente').value || "", // Empresa
+            document.getElementById('direccionCliente').value || "", // Direccion Recogida
+            document.getElementById('telCliente').value || "", // Telefono
+            document.getElementById('fecha').value || "", // Fecha
+            document.getElementById('correoNotificar').value || "", // Correo
+            `${document.getElementById('guia').value || ""} - ${document.getElementById('referencia').value || ""}`, // Observaciones (Guia - REFERENCIA)
+            document.getElementById('caso').value || "" // Referencia (Caso)
+        ].join('\t');
+        
+        // Mostrar ambas líneas en el textarea de recolección
+        document.getElementById('textoRecoleccion').value = encabezadosRecoleccion + '\n' + valoresRecoleccion;
+        
+        alert('ID de recolección generado correctamente.');
+    }
+
+    // Función para descargar el archivo generado
+    function descargarArchivo() {
+        const contenido = document.getElementById('textoResultado').value;
+        if (!contenido) {
+            alert('Primero debe generar el archivo');
+            return;
+        }
+        
+        const blob = new Blob([contenido], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'guia_envio_' + document.getElementById('fecha').value + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Función para descargar el ID de recolección
+    function descargarRecoleccion() {
+        const contenido = document.getElementById('textoRecoleccion').value;
+        if (!contenido) {
+            alert('Primero debe generar el ID de recolección');
+            return;
+        }
+        
+        const blob = new Blob([contenido], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'id_recoleccion_' + document.getElementById('fecha').value + '.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    // Inicializar al cargar la página
+    $(document).ready(function() {
+        inicializarSelectCiudades();
+        actualizarFecha();
+    });
+</script>
+
+</body>
+</html>
