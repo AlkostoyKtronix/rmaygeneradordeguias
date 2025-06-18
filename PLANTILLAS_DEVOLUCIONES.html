@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario CONFIRN</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f5f5;
+        }
+        .titulo {
+            width: 103%;
+            background-color: #000000;
+            text-align: center;
+            color: white;
+            margin-bottom: 0px;
+            padding: 15px 0;
+        }
+        .botones-container {
+            background-color: #000000;
+            margin-top: 0px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            border: 40px solid #000000;
+        }
+        .botones-container button {
+            background-color: #000000;
+            color: white;
+            padding: 12px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .botones-container button:hover {
+            background-color: #333;
+        }
+        .formulario {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .formulario label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        .formulario input, .formulario textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0 15px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .dropzone {
+            border: 2px dashed #999;
+            border-radius: 5px;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            background-color: #fafafa;
+        }
+        .dropzone.dragover {
+            background-color: #e0e0e0;
+        }
+        button {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="titulo">
+        <h1>Generador de PDF Devoluciones</h1>
+    </div>
+
+    <div class="botones-container">
+    <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
+    <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
+    <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
+    </div>
+
+    <div class="formulario">
+        <label>Número de Factura (obligatorio)</label>
+        <input type="text" id="numFactura" required>
+
+        <label>Número de Caso</label>
+        <input type="text" id="numCaso">
+
+        <label>Número de PAK</label>
+        <input type="text" id="numPak">
+
+        <label>Tipo de Procedimiento</label>
+        <input type="text" id="tipoProcedimiento">
+
+        <label>Imagen de Cédula o RMA</label>
+        <div id="rmaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
+
+        <label>Factura Jasper</label>
+        <div id="facturaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
+
+        <label>Devolución Jasper</label>
+        <input type="file" id="pdfDevolucion" accept="application/pdf">
+
+        <button onclick="generarPDF()">Generar Documento PDF</button>
+    </div>
+
+<script>
+let rmaImg = null;
+let facturaImg = null;
+
+function setupPasteDrop(divId, assignImgFn) {
+    const drop = document.getElementById(divId);
+    drop.addEventListener('paste', (e) => {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf("image") !== -1) {
+                const file = items[i].getAsFile();
+                const reader = new FileReader();
+                reader.onload = () => {
+                    assignImgFn(reader.result);
+                    drop.innerHTML = `<img src="${reader.result}" style="max-width:100%;">`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+    drop.addEventListener('dragover', e => {
+        e.preventDefault();
+        drop.classList.add("dragover");
+    });
+    drop.addEventListener('dragleave', () => drop.classList.remove("dragover"));
+    drop.addEventListener('drop', e => {
+        e.preventDefault();
+        drop.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith("image")) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                assignImgFn(reader.result);
+                drop.innerHTML = `<img src="${reader.result}" style="max-width:100%;">`;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+setupPasteDrop("rmaDrop", (data) => rmaImg = data);
+setupPasteDrop("facturaDrop", (data) => facturaImg = data);
+
+async function generarPDF() {
+    const factura = document.getElementById("numFactura").value.trim();
+    if (!factura) {
+        alert("Debes ingresar el número de factura.");
+        return;
+    }
+
+    const caso = document.getElementById("numCaso").value.trim();
+    const pak = document.getElementById("numPak").value.trim();
+    const procedimiento = document.getElementById("tipoProcedimiento").value.trim();
+    const devolucionPDF = document.getElementById("pdfDevolucion").files[0];
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    let y = 10;
+
+    if (rmaImg) {
+        doc.addImage(rmaImg, 'JPEG', 10, y, 180, 100);
+        y += 110;
+    }
+
+    if (caso) {
+        doc.setFont(undefined, 'bold');
+        doc.text(`CASO: ${caso}`, 10, y);
+        y += 10;
+    }
+
+    if (pak) {
+        doc.setFont(undefined, 'bold');
+        doc.text(`PAK: ${pak}`, 10, y);
+        y += 10;
+    }
+
+    if (procedimiento) {
+        doc.setFont(undefined, 'bold');
+        doc.text(procedimiento, 10, y);
+        y += 10;
+    }
+
+    if (facturaImg) {
+        doc.addImage(facturaImg, 'JPEG', 10, y, 180, 100);
+        y += 110;
+    }
+
+    const pdfBytes = doc.output("arraybuffer");
+    const finalPdf = await PDFLib.PDFDocument.load(pdfBytes);
+
+    if (devolucionPDF) {
+        const devolucionBytes = await devolucionPDF.arrayBuffer();
+        const devolucionDoc = await PDFLib.PDFDocument.load(devolucionBytes);
+        const copiedPages = await finalPdf.copyPages(devolucionDoc, devolucionDoc.getPageIndices());
+        copiedPages.forEach(p => finalPdf.addPage(p));
+    }
+
+    const finalBytes = await finalPdf.save();
+    const blob = new Blob([finalBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${factura} CONFIRN.pdf`;
+    link.click();
+}
+</script>
+</body>
+</html>
