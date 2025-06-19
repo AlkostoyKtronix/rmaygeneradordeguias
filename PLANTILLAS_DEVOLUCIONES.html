@@ -11,15 +11,13 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            padding: 0;
             background-color: #f5f5f5;
+            min-width: 100vw;
+            overflow-x: hidden;
         }
         .titulo {
-            width: 103%;
+            width: 100%;
             background-color: #000000;
             text-align: center;
             color: white;
@@ -35,7 +33,9 @@
             align-items: center;
             flex-wrap: wrap;
             margin-bottom: 30px;
+            padding: 20px 0;
             border: 40px solid #000000;
+            box-sizing: border-box;
         }
         .botones-container button {
             background-color: #000000;
@@ -50,13 +50,49 @@
         .botones-container button:hover {
             background-color: #333;
         }
+        .contenedor-principal {
+            display: flex;
+            width: 100%;
+            max-width: 100%;
+            gap: 20px;
+            justify-content: space-between;
+            padding: 0 10px;
+            box-sizing: border-box;
+        }
+        .info-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            width: calc(33% - 20px);
+            min-width: 300px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow-y: auto;
+            max-height: 700px;
+            margin: 0 10px;
+        }
+        .info-box h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #000000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .info-box ol {
+            padding-left: 25px;
+        }
+        .info-box li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
         .formulario {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
-            width: 100%;
-            max-width: 600px;
+            width: calc(34% - 20px);
+            min-width: 400px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin: 0 10px;
         }
         .formulario label {
             font-weight: bold;
@@ -69,6 +105,7 @@
             margin: 5px 0 15px 0;
             border-radius: 5px;
             border: 1px solid #ccc;
+            box-sizing: border-box;
         }
         .dropzone {
             border: 2px dashed #999;
@@ -77,11 +114,12 @@
             padding: 20px;
             margin-bottom: 15px;
             background-color: #fafafa;
+            box-sizing: border-box;
         }
         .dropzone.dragover {
             background-color: #e0e0e0;
         }
-        button {
+        button[onclick="generarPDF()"] {
             background-color: #000;
             color: white;
             border: none;
@@ -89,9 +127,21 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        button:hover {
+        button[onclick="generarPDF()"]:hover {
             background-color: #333;
+        }
+        @media (max-width: 1200px) {
+            .contenedor-principal {
+                flex-direction: column;
+                align-items: center;
+            }
+            .info-box, .formulario {
+                width: 90%;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
@@ -101,34 +151,80 @@
     </div>
 
     <div class="botones-container">
-    <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
-    <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
-    <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
+        <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
+        <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
+        <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
     </div>
 
-    <div class="formulario">
-        <label>Número de Factura (obligatorio)</label>
-        <input type="text" id="numFactura" required>
+    <div class="contenedor-principal">
+        <!-- Cuadro de información PAK (izquierda) -->
+        <div class="info-box">
+            <h2>DEVOLUCION CON PAK</h2>
+            <ol>
+                <li>Validar que tenga PAK creado y los datos estén correctos</li>
+                <li>Validar que la persona que se comunica es el cliente autorizado en el PAK</li>
+                <li>Consultar la factura (Unidad venta, producto vs. caso, comentarios, casado y precio)</li>
+                <li>Validar si la factura y el producto tiene devolución (Jasper con búsqueda desde la fecha de recogida)</li>
+                <li>Validar si el precio de la factura vs. Precio internet es igual</li>
+                <li>Si todo esta ok, antes de ofrecer re facturación, validar inventario en ATP para ofrecer o no el proceso de re facturación.</li>
+                <li>Consultar con el cliente que proceso desea (envío bono, re facturación o devolución de dinero), confirmando siempre correo, dirección y siempre solicitar cedula (imagen o foto). (Indicar generaremos el proceso y quedaremos por whatsapp comunicados para confirmar cuando finalicemos)</li>
+                <li>Verificar que la caja no este en uso por otro compañero e ingresar a la caja con usuario y contraseña asignado</li>
+                <li>Generar proceso en caja (DEVOLUCION O REFACTURACION SEGÚN APLIQUE)</li>
+                <li>Si es reversión Cupo (Adjuntar bono en Eskucha y cambiar manualmente a cola de caja general) / ESTADO en proceso (devolución dinero / cupo)</li>
+                <li>Adjuntar soportes en link (Adjuntar soporte devolución e imagen de cedula)</li>
+                <li>Legalizar por medio de PAK filtro en voz cliente (Adjuntar soporte devolución e imagen de cedula)</li>
+                <li>Dejar registro en archivo (Registro devoluciones A2)</li>
+                <li>Confirmar con el cliente proceso efectivo (Whatsapp o llamada)</li>
+                <li>Cerrar caso con la gestión realizada (Hacer uso de las plantillas definidas)</li>
+            </ol>
+        </div>
 
-        <label>Número de Caso</label>
-        <input type="text" id="numCaso">
+        <!-- Formulario central -->
+        <div class="formulario">
+            <label>Número de Factura (obligatorio)</label>
+            <input type="text" id="numFactura" required>
 
-        <label>Número de PAK</label>
-        <input type="text" id="numPak">
+            <label>Número de Caso</label>
+            <input type="text" id="numCaso">
 
-        <label>Tipo de Procedimiento</label>
-        <input type="text" id="tipoProcedimiento">
+            <label>Número de PAK</label>
+            <input type="text" id="numPak">
 
-        <label>Imagen de Cédula (Solo PAK) o RMA</label>
-        <div id="rmaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
+            <label>Tipo de Procedimiento</label>
+            <input type="text" id="tipoProcedimiento">
 
-        <label>Factura Jasper</label>
-        <div id="facturaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
+            <label>Imagen de Cédula (Solo PAK) o RMA</label>
+            <div id="rmaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
 
-        <label>Devolución Jasper</label>
-        <input type="file" id="pdfDevolucion" accept="application/pdf">
+            <label>Factura Jasper</label>
+            <div id="facturaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
 
-        <button onclick="generarPDF()">Generar Documento PDF</button>
+            <label>Devolución Jasper</label>
+            <input type="file" id="pdfDevolucion" accept="application/pdf">
+
+            <button onclick="generarPDF()">Generar Documento PDF</button>
+        </div>
+
+        <!-- Cuadro de información RMA (derecha) -->
+        <div class="info-box">
+            <h2>DEVOLUCION CON RMA</h2>
+            <ol>
+                <li>Validar el estado de la RMA (Cerrado), si no esta cerrada el cliente debe contar con el soporte de recolección o debe registrar recogido en Voz cliente</li>
+                <li>Validar que la persona que se comunica es cliente envió o cliente factura para el proceso de devolución.</li>
+                <li>Consultar la factura (Unidad venta, producto vs. caso, comentarios, casado y precio)</li>
+                <li>Validar si la factura y el producto tiene devolución (Jasper con búsqueda desde la fecha de recogida)</li>
+                <li>Validar si el precio de la factura vs. Precio internet es igual</li>
+                <li>Si todo esta ok, antes de ofrecer re facturación, validar inventario en ATP para ofrecer o no el proceso de re facturación.</li>
+                <li>Consultar con el cliente que proceso desea (envío bono, re facturación o devolución de dinero), confirmando siempre correo y dirección. (Indicar generaremos el proceso y quedaremos por whatsapp comunicados para confirmar cuando finalicemos)</li>
+                <li>Verificar que la caja no este en uso por otro compañero e ingresar a la caja con usuario y contraseña asignado</li>
+                <li>Generar proceso en caja (DEVOLUCION O REFACTURACION SEGÚN APLIQUE)</li>
+                <li>Si es reversión Cupo (Adjuntar bono en Eskucha y cambiar manualmente a cola de caja general) / ESTADO en proceso (devolución dinero / cupo)</li>
+                <li>Adjuntar soportes en link (RMA/Soporte devolución/ Si aplica cedula)</li>
+                <li>Dejar registro en archivo (Registro devoluciones A2)</li>
+                <li>Confirmar con el cliente proceso efectivo (Whatsapp o llamada)</li>
+                <li>Cerrar caso con la gestión realizada (Hacer uso de las plantillas definidas)</li>
+            </ol>
+        </div>
     </div>
 
 <script>
