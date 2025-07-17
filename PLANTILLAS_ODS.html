@@ -235,6 +235,7 @@
         <select id="unidad" name="unidad" onchange="actualizarDireccionYCiudad()">
             <option value="">Seleccione...</option>
             <option value="CENTR">CENTR</option>
+            <option value="CENT1">CENT1</option>
             <option value="AKCED">AKCED</option>
             <option value="AKCE2">AKCE2</option>
         </select>
@@ -1616,6 +1617,10 @@
             case 'CENTR':
                 direccionDestino.value = 'CALLE 11 # 30 -78 PUERTA 3 ENTRADA POR LA CRA 31 BARRIO PENSILVANIA';
                 ciudadDestino.value = 'BOGOTA';
+                break;
+	    case 'CENT1': // Nuevo caso agregado
+            	direccionDestino.value = 'Carrera 31A # 10-85 barrio Pensilvania';
+            	ciudadDestino.value = 'BOGOTA';
                 break;
             case 'AKCED':
                 direccionDestino.value = 'Parque san carlos 3 bodega alkosto - carretera troncal de occidente kilometro 6 via bogota- facatativa costado sur';
