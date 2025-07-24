@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formulario de Gestión Backoffice HFC</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.6/flatpickr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -25,65 +25,62 @@
     margin-bottom: 0px;
   }
 
-    .botones-container {
-        background-color: #000000; /* Azul oscuro */
-        margin-top: 0px;
-        width: 100%; /* Ajuste de ancho */
-        display: flex;
-        justify-content: center; /* Centrar los elementos horizontalmente */
-        align-items: center; /* Centrar los elementos verticalmente */
-        flex-wrap: wrap; /* Envolver elementos */
-        margin-bottom: 30px;
-        border: 40px solid #000000;
-    }
+  .botones-container {
+    background-color: #000000;
+    margin-top: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    border: 40px solid #000000;
+  }
 
-.form-container {
-  display: flex;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 20px;
-  padding: 20px;
-}
+  .form-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+    padding: 20px;
+  }
 
-/* Contenedor para los formularios */
-.forms-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
+  .forms-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
-    .botones-container button {
-        background-color: #000000; /* Azul oscuro */
-        color: white; /* Letras blancas */
-        padding: 12px 20px; /* Aumentar el espacio interno */
-        border: 2px solid white;
-        border-radius: 5px;
-        margin: 2px; /* Espacio entre los botones */
-        cursor: pointer;
-        font-size: 16px; /* Tamaño de letra */
-    }
+  .botones-container button {
+    background-color: #000000;
+    color: white;
+    padding: 12px 20px;
+    border: 2px solid white;
+    border-radius: 5px;
+    margin: 2px;
+    cursor: pointer;
+    font-size: 16px;
+  }
 
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    overflow: hidden;
+    padding: 20px;
+  }
 
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: flex-start;
-        flex-wrap: wrap;
-        overflow: hidden; /* Evita el colapso de márgenes */
-        padding: 20px; /* Añade padding al contenedor */
+  #mini-form, #main-form, #details-form, .text-container {
+    max-width: 400px;
+    padding: 50px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 20px;
+    margin-bottom: 40px;
+  }
 
-    }
-
-    #mini-form, #main-form, #details-form, .text-container {
-        max-width: 400px;
-        padding: 50px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin: 20px; /* Ajusta el margen según lo necesites */
-        margin-bottom: 40px;
-    }
-
-#details-form {
+  #details-form {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -92,212 +89,317 @@
     margin-top: 40px;
     margin-right: 30px;
     padding-left: 40px;
-}
+  }
 
-#details-form .form-section {
+  #details-form .form-section {
     width: 100%;
-}
+  }
 
-#details-form .form-section textarea {
+  #details-form .form-section textarea {
     width: 100%;
-    box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
-}
+    box-sizing: border-box;
+  }
 
-    .form-section {
-        border: 1px solid #ccc;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-        margin-bottom: 20px;
+  .form-section {
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin-bottom: 20px;
+  }
 
-    }
+  .form-section label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+  }
 
-.form-section label {
-        display: block;
-        margin-bottom: 8px;
-        color: #333;
-    }
+  .form-section input, 
+  .form-section select, 
+  .form-section textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+  }
 
-    .form-section input, 
-    .form-section select, 
-    .form-section textarea {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 10px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-family: Arial, sans-serif;
-        font-size: 14px;
-    }
+  .form-section textarea {
+    height: 100px;
+    resize: vertical;
+  }
 
-    .form-section textarea {
-        height: 100px;
-        resize: vertical;
-    }
+  button {
+    background-color: #000000;
+    color: white;
+    padding: 10px 130px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 20px;
+  }
 
-    button {
-        background-color: #000000;
-        color: white;
-        padding: 10px 130px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-        font-size: 20px;
-    }
+  button:hover {
+    background-color: #ddd;
+  }
 
-    button:hover {
-        background-color: #ddd;
-    }
+  .text-container {
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin: 0px;
+    gap: 15px; 
+    margin-left: 30px;
+    padding-top: 20px;
+    border-top-width: 0px;
+    border-left-width: 0px;
+    border-right-width: 0px;
+    border-bottom-width: 0px;
+  }
 
-    .text-container {
-        max-width: 400px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin: 0px; /* Ajusta el margen según lo necesites */
-        gap: 15px; 
-        margin-left: 30px;
-        padding-top: 20px;
-    	border-top-width: 0px;
-    	border-left-width: 0px;
-    	border-right-width: 0px;
-    	border-bottom-width: 0px;
-    }
+  .textarea-item {
+    max-width: 400px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+  }
 
-    .textarea-item {
-        max-width: 400px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        background-color: #fff;
-    }
+  .textarea-item label {
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+  }
 
-    .textarea-item label {
-        margin-bottom: 5px;
-        display: block;
-        color: #333;
-    }
+  .textarea-item button {
+    background-color: #000000;
+    color: white;
+    padding: 10px 150px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 16px;
+  }
 
-    .textarea-item button {
-        background-color: #000000;
-        color: white;
-        padding: 10px 150px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        margin-top: 10px;
-        font-size: 16px;
-    }
+  .textarea-item button:hover {
+    background-color: #ccc;
+  }
 
+  #text1, #text2, #text3 {
+    width: 350px;
+    height: 200px;
+  }
 
-    .textarea-item button:hover {
-        background-color: #ccc;
-    }
+  #Observaciones, #PDSR, #redAccesoDet, #ruta, #ping, #capa2, #capa3 {
+    width: 400px;
+    height: 100px;
+  }
 
-    #text1, #text2, #text3 {
-        width: 350px;
-        height: 200px;
-    }
+  .horizontal-textareas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
 
-    #Observaciones, #PDSR, #redAccesoDet, #ruta, #ping, #capa2, #capa3 {
-        width: 400px;
-        height: 100px;
-    }
+  .horizontal-textareas div {
+    flex: 1 1 calc(33.33% - 15px);
+    min-width: 250px;
+  }
 
-    .horizontal-textareas {
-        display: flex;
-        flex-wrap: wrap; /* Permite que los elementos se muevan a una nueva línea si no caben */
-        gap: 15px; /* Espacio entre los cuadros */
-    }
+  .horizontal-textareas textarea {
+    width: 100%;
+    height: 80px;
+  }
 
-    .horizontal-textareas div {
-        flex: 1 1 calc(33.33% - 15px); /* Cada textarea ocupa un 33% del ancho del contenedor con espacio entre ellos */
-        min-width: 250px; /* Evita que se hagan demasiado pequeños */
-    }
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .horizontal-textareas textarea {
-        width: 100%;
-        height: 80px; /* Ajuste de altura */
-    }
+  .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+  }
 
-    .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none; /* Oculto por defecto */
-            justify-content: center;
-            align-items: center;
-        }
+  .popup-content h2 {
+    margin-top: 0;
+  }
 
-        .popup-content {
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            width: 80%;
-            max-width: 600px;
-        }
+  .tabs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
 
-        .popup-content h2 {
-            margin-top: 0;
-        }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border: 1px solid #ccc;
+  }
 
-        .tabs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
+  .tab.active {
+    background-color: #ddd;
+    font-weight: bold;
+  }
 
-        .tab {
-            flex: 1;
-            text-align: center;
-            padding: 10px;
-            cursor: pointer;
-            background-color: #f1f1f1;
-            border: 1px solid #ccc;
-        }
+  .tab-content {
+    display: none;
+  }
 
-        .tab.active {
-            background-color: #ddd;
-            font-weight: bold;
-        }
+  .tab-content.active {
+    display: block;
+  }
 
-        .tab-content {
-            display: none;
-        }
+  .close-btn {
+    background-color: #000;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
 
-        .tab-content.active {
-            display: block;
-        }
+  .close-btn:hover {
+    background-color: #333;
+  }
 
-        .close-btn {
-            background-color: #000;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+  .form-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+  }
 
-        .close-btn:hover {
-            background-color: #333;
-        }
- 
-        .form-container {
-            display: flex;
-            align-items: flex-start; /* Alinea la parte superior */
-            justify-content: flex-start;
-            gap: 20px; /* Espacio entre el formulario y la textarea */
-        }
+  /* Estilos para las plantillas de formato */
+  .formato-template {
+    position: fixed;
+    top: -10000px;
+    left: -10000px;
+    visibility: hidden;
+    width: 210mm;
+    height: 297mm;
+  }
+  
+  .formato-p-container {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: white;
+  }
 
+  .formato-averi-container {
+    width: 210mm;
+    height: 297mm;
+    position: relative;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: white;
+  }
+
+  /* ESTILOS ACTUALIZADOS PARA FORMATO P */
+  .p-grid {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    width: 180mm;
+    height: 90mm;
+    border: 1px solid #000;
+  }
+
+  .p-cell {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 2px 2px 2px 10px; /* Texto movido a la derecha */
+  }
+
+  .p-yellow {
+    background-color: #FFD400;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none !important;
+    outline: none !important;
+  }
+
+  .p-big-text {
+    font-size: 80px;
+    font-weight: bold;
+  }
+
+  .p-center-text {
+    text-align: center;
+  }
+
+  .p-observaciones-container {
+    position: absolute;
+    width: 60mm;
+    height: 15mm;
+    top: 45mm;
+    left: 60mm;
+    padding: 2px 2px 2px 10px;
+    box-sizing: border-box;
+  }
+
+  .p-linea-vertical {
+    position: absolute;
+    width: 0;
+    height: 15mm;
+    border-left: 1px solid #000;
+    left: 60mm;
+    top: 60mm;
+  }
+
+  /* Estilos específicos para el formato AVERI */
+  .averi-grid {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    width: 180mm;
+    height: 247mm;
+    border: 1px solid #000;
+  }
+
+  .averi-cell {
+    position: absolute;
+    box-sizing: border-box;
+    padding-left: 5px;
+    display: flex;
+    align-items: center;
+  }
+
+  .averi-bold {
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  .averi-obs {
+    align-items: flex-start;
+    padding: 5px;
+  }
 </style>
-
 </head>
 <body>
 
@@ -311,116 +413,279 @@
     <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
 </div>
 
-    <div class="form-container">
-    <!-- Formulario Principal -->
+<div class="form-container">
     <div class="form-section">
+        <div class="container">
+            <form id="mini-form">
+                <label for="caso">Caso/ODS:</label>
+                <input type="text" id="caso" name="caso" required><br>
 
-<div class="container">
-  <form id="mini-form">
-    <label for="caso">Caso/ODS:</label>
-    <input type="text" id="caso" name="caso" required><br>
+                <label for="accesorios">Accesorios:</label>
+                <input type="text" id="accesorios" name="accesorios" required><br>
 
-    <label for="accesorios">Accesorios:</label>
-    <input type="text" id="accesorios" name="accesorios" required><br>
+                <label for="origen">Origen:</label>
+                <input type="text" id="origen" name="origen" required><br>
 
-    <label for="origen">Origen:</label>
-    <input type="text" id="origen" name="origen" required><br>
+                <label for="unidad">Unidad de Negocio:</label>
+                <input type="text" id="unidad" name="unidad" required><br>
 
-    <label for="unidad">Unidad de Negocio:</label>
-    <input type="text" id="unidad" name="unidad" required><br>
+                <label for="fecha">Fecha de Solicitud:</label>
+                <input type="text" id="fecha" name="fecha" class="datepicker" required><br>
 
-    <label for="fecha">Fecha de Solicitud:</label>
-    <input type="text" id="fecha" name="fecha" required><br>
+                <label for="tecnico">Tecnico:</label>
+                <input type="text" id="tecnico" name="tecnico" required><br>
 
-    <label for="tecnico">Tecnico:</label>
-    <input type="text" id="tecnico" name="tecnico" required><br>
+                <label for="abreviatura">Motivo Recoleccion:</label>
+                <select id="abreviatura" name="abreviatura" required>
+                    <option value="falla">falla</option>
+                    <option value="REC_NO_SA">REC_NO_SA</option>
+                    <option value="REC_DÑ_EX">REC_DÑ_EX</option>
+                    <option value="REC_DÑ_IN">REC_DÑ_IN</option>
+                    <option value="REC_INCOM">REC_INCOM</option>
+                    <option value="PANRT">PANRT</option>
+                </select><br>
+            </form>
 
-    <label for="abreviatura">Motivo Recoleccion:</label>
-    <select id="abreviatura" name="abreviatura" required>
-        <option value="falla">falla</option>
-        <option value="REC_NO_SA">REC_NO_SA</option>
-      	<option value="REC_DÑ_EX">REC_DÑ_EX</option>
-      	<option value="REC_DÑ_IN">REC_DÑ_IN</option>
-      	<option value="REC_INCOM">REC_INCOM</option>
-      	<option value="PANRT">PANRT</option>
-    </select><br>
-    </form>
+            <form id="main-form">
+                <h2>Plantilla RMA</h2>
+                <label for="ean">EAN:</label>
+                <input type="text" id="ean" name="ean">
 
-        <form id="main-form">
-            <h2>Plantilla RMA</h2>
-            <label for="ean">EAN:</label>
-            <input type="text" id="ean" name="ean">
+                <label for="estadoproducto">Estado de producto:</label>
+                <input type="text" id="estadoproducto" name="estadoproducto">
 
-            <label for="estadoproducto">Estado de producto:</label>
-            <input type="text" id="estadoproducto" name="estadoproducto">
+                <label for="serial">Serial:</label>
+                <input type="text" id="serial" name="serial">
 
-            <label for="serial">Serial:</label>
-            <input type="text" id="serial" name="serial">
+                <label for="formato">Formato:</label>
+                <input type="text" id="formato" name="formato">
 
-            <label for="formato">Formato:</label>
-            <input type="text" id="formato" name="formato">
+                <label for="motivo">Motivo:</label>
+                <input type="text" id="motivo" name="motivo">
 
-            <label for="motivo">Motivo:</label>
-            <input type="text" id="motivo" name="motivo">
+                <label for="proceso">Proceso (RMA - ODS):</label>
+                <select id="proceso" name="proceso" required>
+                    <option value="RMA">RMA</option>
+                    <option value="ODS">ODS</option>
+                </select><br>
 
-    	    <label for="proceso">Proceso (RMA - ODS):</label>
-            <select id="proceso" name="proceso" required>
-      		<option value="RMA">RMA</option>
-      		<option value="ODS">ODS</option>
-    	    </select><br>
+                <label for="trasportador">Trasportador (Pro - coordi):</label>
+                <select id="trasportador" name="trasportador" required>
+                    <option value="Propio">Propio</option>
+                    <option value="Coordinadora">Coordinadora</option>
+                    <option value="Envia">Envia</option>
+                </select><br>
 
-    	    <label for="trasportador">Trasportador (Pro - coordi):</label>
-            <select id="trasportador" name="trasportador" required>
-      		<option value="Propio">Propio</option>
-      		<option value="Coordinadora">Coordinadora</option>
- 		<option value="Envia">Envia</option>
-    	    </select><br>
+                <label for="destino">Destino:</label>
+                <input type="text" id="destino" name="destino">
 
-            <label for="destino">Destino:</label>
-            <input type="text" id="destino" name="destino">
+                <label for="direccion">Dirección:</label>
+                <input type="text" id="direccion" name="direccion">
 
-            <label for="direccion">Dirección:</label>
-            <input type="text" id="direccion" name="direccion">
+                <label for="telefonos">Telefonos:</label>
+                <input type="text" id="telefonos" name="telefonos">
 
-            <label for="telefonos">Telefonos:</label>
-            <input type="text" id="telefonos" name="telefonos">
+                <label for="fecharecoleccion">Fecha recolección:</label>
+                <input type="text" id="fecharecoleccion" name="fecharecoleccion" class="datepicker-next-day"><br>
 
-            <label for="fecharecoleccion">Fecha recolección:</label>
-            <input type="text" id="fecharecoleccion" name="fecharecoleccion">
+                <label for="frecuencia">Dia - Frecuencia:</label>
+                <input type="text" id="frecuencia" name="frecuencia">
 
-            <label for="frecuencia">Dia - Frecuencia:</label>
-            <input type="text" id="frecuencia" name="frecuencia">
-
-            <label for="observaciones">Observaciones del caso:</label>
-            <input type="text" id="observaciones" name="observaciones">
-           
-            <button type="button" onclick="generarPlantillas()">Generar Plantillas</button>
-            <button type="button" onclick="generarFormatoP()">Generar Formato P</button>
-            <button type="button" onclick="generarFormatoAveri()">Generar Formato Averi</button>
-        </form>
-        
-    <!-- Textareas para resultados con botones de copiar -->
-    <div class="text-container">       
-        <!-- Textarea 1 -->
-        <div class="textarea-item">
-            <label for="text1">Plantilla RMA:</label>
-            <textarea id="text1" readonly></textarea>
-            <button onclick="copyToClipboard('text1')">Copiar</button>
-        </div>
-        
-        <!-- Textarea 2 -->
-        <div class="textarea-item">
-            <label for="text2">Plantilla Observaciones RMA:</label>
-            <textarea id="text2" readonly></textarea>
-            <button onclick="copyToClipboard('text2')">Copiar</button>
+                <label for="observaciones">Observaciones del caso:</label>
+                <input type="text" id="observaciones" name="observaciones">
+            
+                <button type="button" onclick="generarPlantillas()">Generar Plantillas</button>
+                <button type="button" onclick="generarFormatoP()">Generar Formato P</button>
+                <button type="button" onclick="generarFormatoAveri()">Generar Formato Averi</button>
+            </form>
+            
+            <div class="text-container">       
+                <div class="textarea-item">
+                    <label for="text1">Plantilla RMA:</label>
+                    <textarea id="text1" readonly></textarea>
+                    <button onclick="copyToClipboard('text1')">Copiar</button>
+                </div>
+                
+                <div class="textarea-item">
+                    <label for="text2">Plantilla Observaciones RMA:</label>
+                    <textarea id="text2" readonly></textarea>
+                    <button onclick="copyToClipboard('text2')">Copiar</button>
+                </div>
+            </div>
         </div>
     </div>
- </div>
+</div>
 
+<!-- Plantilla para el Formato P - VERSIÓN FINAL -->
+<div id="formato-p-template" class="formato-template">
+    <div class="formato-p-container">
+        <div class="p-grid">
+            <!-- Celda P amarilla SIN BORDES INTERNOS -->
+            <div class="p-cell p-yellow" style="width:60mm; height:45mm; top:0; left:120mm;">
+                <span class="p-big-text">P</span>
+            </div>
+            
+            <!-- Líneas horizontales principales - MODIFICADAS PARA NO CRUZAR EL RECUADRO AMARILLO -->
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:15mm; left:0;"></div>
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:30mm; left:0;"></div>
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:45mm; left:0;"></div>
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:60mm;"></div>
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:75mm;"></div>
+            
+            <!-- Líneas verticales principales -->
+            <div style="position:absolute; width:0; height:60mm; border-left:1px solid #000; left:60mm; top:0;"></div>
+            <div style="position:absolute; width:0; height:45mm; border-left:1px solid #000; left:120mm; top:0;"></div>
+            
+            <!-- Línea vertical entre EAN y Accesorios -->
+            <div class="p-linea-vertical"></div>
+            
+            <!-- Contenido principal -->
+            <div class="p-cell p-center-text" style="width:60mm; height:15mm; top:0; left:0;">PV</div>
+            <div class="p-cell p-center-text" id="p-pv-value" style="width:60mm; height:15mm; top:15mm; left:0;"></div>
+            
+            <div class="p-cell p-center-text" style="width:60mm; height:15mm; top:0; left:60mm;">Fecha</div>
+            <div class="p-cell p-center-text" id="p-fecha-value" style="width:60mm; height:15mm; top:15mm; left:60mm;"></div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:30mm; left:0;">
+                <span>Serial: </span><span id="p-serial-value"></span>
+            </div>
+            <div class="p-cell" style="width:60mm; height:15mm; top:30mm; left:60mm;">
+                <span>OT: </span><span id="p-ot-value"></span>
+            </div>
+            
+            <!-- OBSERVACIONES en posición correcta -->
+            <div class="p-observaciones-container">
+                <span style="font-weight:bold;">OBSERVACIONES: </span>
+                <span id="p-observaciones-value" style="white-space: nowrap;"></span>
+            </div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:45mm; left:0;">
+                <span>Tecnico: </span><span id="p-tecnico-value"></span>
+            </div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:60mm; left:0;">
+                <span>EAN: </span><span id="p-ean-value"></span>
+            </div>
+            <div class="p-cell" style="width:60mm; height:15mm; top:60mm; left:60mm;">
+                <span>Accesorios: </span><span id="p-accesorios-value"></span>
+            </div>
+            
+            <!-- Campo FT con espacios corregidos -->
+            <div class="p-cell" style="width:180mm; height:15mm; top:75mm; left:0; border-top:1px solid #000;">
+                <span>FT: </span><span id="p-ft-value"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Plantilla para el Formato AVERI -->
+<div id="formato-averi-template" class="formato-template">
+    <div class="formato-averi-container">
+        <div class="averi-grid">
+            <!-- Celda AVE -->
+            <div class="averi-cell averi-bold" style="width:120mm; height:15mm; top:0; left:0; border-right:1px solid #000; border-bottom:1px solid #000;">
+                AVE
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:0; left:120mm; border-bottom:1px solid #000;">
+                Unidad de Negocio: <span id="averi-destino-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:5mm; left:120mm; border-bottom:1px solid #000;">
+                Origen: <span id="averi-origen-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:10mm; left:120mm;">
+                Cambios:    PTOV:    N/A: X
+            </div>
+            
+            <!-- Línea horizontal divisoria -->
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:15mm;"></div>
+            
+            <!-- Filas 4-9 -->
+            <div class="averi-cell" style="width:60mm; height:5mm; top:15mm; left:0; border-right:1px solid #000;">
+                EAN: <span id="averi-ean-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:15mm; left:60mm; border-right:1px solid #000;">
+                OT: <span id="averi-ot-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:15mm; left:120mm;">
+                Serial: <span id="averi-serial-value"></span>
+            </div>
+            
+            <!-- Línea horizontal divisoria -->
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:20mm;"></div>
+            
+            <div class="averi-cell" style="width:60mm; height:5mm; top:20mm; left:0; border-right:1px solid #000;">
+                ACCESORIOS: 
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:20mm; left:60mm; border-right:1px solid #000;">
+                <span id="averi-accesorios-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:20mm; left:120mm;">
+                FT: N/A
+            </div>
+            
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:25mm;"></div>
+            
+            <div class="averi-cell" style="width:60mm; height:5mm; top:25mm; left:0; border-right:1px solid #000;">
+                Solicitado el día:
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:25mm; left:60mm; border-right:1px solid #000;">
+                <span id="averi-fecha-value"></span>
+            </div>
+            <div class="averi-cell" style="width:60mm; height:5mm; top:25mm; left:120mm;">
+                Solicitante: <span id="averi-tecnico-value"></span>
+            </div>
+            
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:30mm;"></div>
+            
+            <div class="averi-cell" style="width:180mm; height:5mm; top:30mm; left:0;">
+                Autoriza Coordinador:
+            </div>
+            
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:35mm;"></div>
+            
+            <div class="averi-cell" style="width:60mm; height:5mm; top:35mm; left:0; border-right:1px solid #000;">
+                Técnico que valida:
+            </div>
+            <div class="averi-cell" style="width:120mm; height:5mm; top:35mm; left:60mm;">
+                Sebastian Ovalle
+            </div>
+            
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:40mm;"></div>
+            
+            <div class="averi-cell averi-obs" style="width:180mm; height:15mm; top:40mm; left:0;">
+                Observaciones: <span id="averi-observaciones-value"></span>
+            </div>
+            
+            <!-- Líneas verticales principales -->
+            <div style="position:absolute; width:0; height:25mm; border-left:1px solid #000; left:60mm; top:15mm;"></div>
+            <div style="position:absolute; width:0; height:25mm; border-left:1px solid #000; left:120mm; top:15mm;"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.6/flatpickr.min.js"></script>
 <script>
+// Configuración de los calendarios
+document.addEventListener('DOMContentLoaded', function() {
+    // Fecha actual
+    flatpickr("#fecha", {
+        dateFormat: "d/m/Y",
+        defaultDate: "today",
+        allowInput: true
+    });
+    
+    // Fecha siguiente al día actual
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    flatpickr("#fecharecoleccion", {
+        dateFormat: "d/m/Y",
+        defaultDate: tomorrow,
+        allowInput: true
+    });
+});
 
 function generarPlantillas() {
-
     // Obtener valores del formulario
     const ean = document.getElementById('ean').value;
     const estadoproducto = document.getElementById('estadoproducto').value;
@@ -453,397 +718,137 @@ Fecha recolección: ${fecharecoleccion}
 Dia - Frecuencia: ${frecuencia}
 Observaciones del caso: ${observaciones}`;
 
-    // Generar contenido para text2 (sin redeclarar variables)
+    // Generar contenido para text2
     document.getElementById('text2').value = `Caso: ${caso} // ${direccion} // ${telefonos} // Estado: ${abreviatura} // Formato: ${formato} // Destino: ${destino} // Serial: ${serial} // Motivo: ${motivo}`;
 }
 
-    function copyToClipboard(textareaId) {
-        const textarea = document.getElementById(textareaId);
-        textarea.select();
-        document.execCommand('copy');
-        alert('Texto copiado al portapapeles');
-    }
+function copyToClipboard(textareaId) {
+    const textarea = document.getElementById(textareaId);
+    textarea.select();
+    document.execCommand('copy');
+    alert('Texto copiado al portapapeles');
+}
 
- // FORMATO P
-    async function generarFormatoP() {
+// Función mejorada para generar y descargar imagen JPG
+async function generarImagen(contenedorId, nombreArchivo) {
     try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const elemento = document.getElementById(contenedorId);
         
-        // Obtener valores del formulario
-        const getValue = id => document.getElementById(id).value;
-        const valores = {
-            origen: getValue('origen'),
-            fecha: getValue('fecha'),
-            serial: getValue('serial'),
-	    estadoproducto: getValue('estadoproducto'),
-            caso: getValue('caso'),
-            tecnico: getValue('tecnico'),
-            ean: getValue('ean'),
-            accesorios: getValue('accesorios'),
-            observaciones: getValue('observaciones')
+        // Hacer visible temporalmente el elemento
+        elemento.style.position = 'absolute';
+        elemento.style.visibility = 'visible';
+        elemento.style.top = '0';
+        elemento.style.left = '0';
+        elemento.style.zIndex = '9999';
+        
+        // Esperar un momento para que el navegador renderice los cambios
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Configuración de html2canvas
+        const opciones = {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            backgroundColor: '#FFFFFF',
+            allowTaint: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: elemento.offsetWidth,
+            windowHeight: elemento.offsetHeight
         };
-
-        // ====== CONFIGURACIÓN PRECISA ======
-        const config = {
-            colWidth: 30,    // 6 columnas = 180mm
-            rowHeight: 15,   // 6 filas = 90mm
-            startX: 10,      // Margen izquierdo
-            startY: 20       // Margen superior
-        };
-
-doc.setDrawColor(0, 0, 0);
-doc.setLineWidth(0.5);
-
-const x = Math.floor(config.startX);
-const y = Math.floor(config.startY);
-const cw = Math.floor(config.colWidth);
-const rh = Math.floor(config.rowHeight);
-
-// === MARCO EXTERIOR ===
-doc.line(x, y, x + cw * 6, y);                     // Superior
-doc.line(x, y + rh * 6, x + cw * 6, y + rh * 6);   // Inferior
-doc.line(x, y, x, y + rh * 6);                     // Izquierda
-doc.line(x + cw * 6, y, x + cw * 6, y + rh * 6);   // Derecha
-
-// === LÍNEAS HORIZONTALES ===
-doc.line(x, y + rh, x + cw * 4, y + rh);           // Bajo PV / Fecha
-doc.line(x, y + rh * 2, x + cw * 4, y + rh * 2);   // Bajo Fecha
-doc.line(x, y + rh * 3, x + cw * 2, y + rh * 3);   // Bajo Serial
-doc.line(x, y + rh * 4, x + cw * 2, y + rh * 4);   // Bajo Técnico
-doc.line(x, y + rh * 5, x + cw * 2, y + rh * 5);   // Bajo EAN
-
-doc.line(x + cw * 2, y + rh * 3, x + cw * 6, y + rh * 3); // Bajo OT
-doc.line(x + cw * 2, y + rh * 4, x + cw * 6, y + rh * 4); // Bajo OBSERVACIONES
-doc.line(x + cw * 2, y + rh * 5, x + cw * 6, y + rh * 5); // Bajo Accesorios
-
-// === LÍNEAS VERTICALES ===
-// doc.line(x + cw * 2, y, x + cw * 2, y + rh * 6);   // Entre Fecha y OT
-doc.line(x + cw * 2, y, x + cw * 2, y + rh * 4);
-doc.line(x + cw * 2, y, x + cw * 2, y + rh * 5);
-doc.line(x + cw * 4, y, x + cw * 4, y + rh);       // Límite izquierdo del cuadro "P"
-
-// ❌ IMPORTANTE: Estas líneas NO deben estar presentes:
-// doc.line(x + cw * 3, y + rh * 3, x + cw * 3, y + rh * 6);  ← Línea fantasma OT/OBS
-// doc.line(x + cw, y + rh * 3, x + cw, y + rh * 6);          ← Línea entre EAN/FT
-
-        // ====== CELDA "P" (2 cols x 3 filas) ======
-        doc.setFillColor(255, 212, 0);
-        doc.rect(
-            config.startX + (4 * config.colWidth),
-            config.startY,
-            2 * config.colWidth,
-            3 * config.rowHeight,
-            'F'
-        );
-        doc.setFontSize(80);
-        doc.text("P", 
-            config.startX + (5 * config.colWidth),
-            config.startY + (1.5 * config.rowHeight),
-            { align: 'center', baseline: 'middle' }
-        );
-
-        // ====== TEXTO ALINEADO A LA IZQUIERDA ======
-        doc.setFontSize(10);
-        const textos = [            
-            // Fila 3
-            { text: `Serial: ${valores.serial}`, x: config.startX + 1, y: config.startY + 40 },
-            { text: `OT: ${valores.caso}`, x: config.startX + (2 * config.colWidth) + 1, y: config.startY + 40 },
-            
-            // Fila 4
-            { text: `Tecnico: ${valores.tecnico}`, x: config.startX + 1, y: config.startY + 55 },
-            
-            // Fila 5
-            { text: `EAN: ${valores.ean}`, x: config.startX + 1, y: config.startY + 70 },
-            { text: `Accesorios: ${valores.accesorios}`, x: config.startX + (2 * config.colWidth) + 1, y: config.startY + 70 },
-            
-        ];
-        textos.forEach(t => {
-    doc.text(t.text, t.x, t.y, t.options || {});
-});
-
-// Agregar PV, Fecha y sus valores (sin duplicación)
-doc.setFontSize(10);
-doc.text("PV", config.startX + config.colWidth, config.startY + 10, { align: "center" });
-doc.text(valores.origen, config.startX + config.colWidth, config.startY + 25, { align: "center" });
-
-doc.text("Fecha", config.startX + config.colWidth * 3, config.startY + 10, { align: "center" });
-doc.text(valores.fecha, config.startX + config.colWidth * 3, config.startY + 25, { align: "center" });
-
-// OBSERVACIONES alineado arriba a la izquierda
-doc.text("OBSERVACIONES:", config.startX + (2 * config.colWidth) + 1, config.startY + (3 * config.rowHeight) + 2, {
-    align: "left",
-    baseline: "top"
-});
-const obsTexto = doc.splitTextToSize(valores.estadoproducto, (4 * config.colWidth) - 10);
-doc.text(obsTexto, config.startX + (2 * config.colWidth) + 1, config.startY + (3 * config.rowHeight) + 7, {
-    align: "left",
-    baseline: "top"
-});
-
-// FT alineado arriba a la izquierda
-doc.text("FT:", config.startX + 1, config.startY + (5 * config.rowHeight) + 2, {
-    align: "left",
-    baseline: "top"
-});
-const ftTexto = doc.splitTextToSize(valores.observaciones, (6 * config.colWidth) - 15);
-doc.text(ftTexto, config.startX + 8, config.startY + (5 * config.rowHeight) + 2, {
-    align: "left",
-    baseline: "top"
-});
-const areasClave = [
-    // Fila 1: PV (cols 1-2)
-    { x: config.startX, y: config.startY, cols: 2, rows: 1 },
-    // Fila 1: Fecha (cols 3-4)
-    { x: config.startX + (2 * config.colWidth), y: config.startY, cols: 2, rows: 1 },
-    
-    // Fila 2: PV (cols 1-2)
-    { x: config.startX, y: config.startY + config.rowHeight, cols: 2, rows: 1 },
-    // Fila 2: Fecha (cols 3-4)
-    { x: config.startX + (2 * config.colWidth), y: config.startY + config.rowHeight, cols: 2, rows: 1 },
-
-    // Fila 3: Serial (cols 1-2)
-    { x: config.startX, y: config.startY + (2 * config.rowHeight), cols: 2, rows: 1 },
-    // Fila 3: OT (cols 3-4)
-    { x: config.startX + (2 * config.colWidth), y: config.startY + (2 * config.rowHeight), cols: 2, rows: 1 },
-    
-    // Fila 4: Técnico (cols 1-2)
-    { x: config.startX, y: config.startY + (3 * config.rowHeight), cols: 2, rows: 1 },
-    // Fila 4: Observaciones (cols 3-6)
-    { x: config.startX + (2 * config.colWidth), y: config.startY + (3 * config.rowHeight), cols: 4, rows: 1 },
-    
-    // Fila 5: EAN (cols 1-2)
-    { x: config.startX, y: config.startY + (4 * config.rowHeight), cols: 2, rows: 1 },
-    // Fila 5: Accesorios (cols 3-6)
-    { x: config.startX + (2 * config.colWidth), y: config.startY + (4 * config.rowHeight), cols: 4, rows: 1 },
-    
-    // Fila 6: FT (cols 1-6)
-    { x: config.startX, y: config.startY + (5 * config.rowHeight), cols: 6, rows: 1 }
-];
-
-
-        doc.setLineWidth(0.001); // Grosor más delgado solo para las líneas blancas
-doc.setDrawColor(255, 255, 255); // Color blanco
-
-areasClave.forEach(area => {
-    // Eliminar líneas verticales internas
-    for (let c = 1; c < area.cols; c++) {
-        doc.line(
-            area.x + (c * config.colWidth),
-            area.y,
-            area.x + (c * config.colWidth),
-            area.y + (area.rows * config.rowHeight)
-        );
-    }
-    // Eliminar líneas horizontales internas
-    for (let r = 1; r < area.rows; r++) {
-        doc.line(
-            area.x,
-            area.y + (r * config.rowHeight),
-            area.x + (area.cols * config.colWidth),
-            area.y + (r * config.rowHeight)
-        );
-    }
-});
-
-// Restaurar configuración original para continuar
-doc.setDrawColor(0, 0, 0); // Negro
-doc.setLineWidth(0.001); // Grosor normal
-        doc.save(`Formato_P_${valores.caso}.pdf`);
-
+        
+        const canvas = await html2canvas(elemento, opciones);
+        
+        // Ocultar el elemento nuevamente
+        elemento.style.position = 'fixed';
+        elemento.style.visibility = 'hidden';
+        elemento.style.top = '-10000px';
+        elemento.style.left = '-10000px';
+        elemento.style.zIndex = '';
+        
+        // Crear enlace de descarga
+        const link = document.createElement('a');
+        link.download = nombreArchivo + '.jpg';
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        
+        // Simular clic en el enlace para descargar
+        document.body.appendChild(link);
+        link.click();
+        
+        // Eliminar el enlace después de la descarga
+        setTimeout(() => {
+            document.body.removeChild(link);
+        }, 100);
     } catch (error) {
-        console.error("Error:", error);
-        alert("Error al generar PDF. Verifica la consola.");
+        console.error("Error al generar imagen:", error);
+        alert("Error al generar la imagen. Verifica la consola.");
     }
 }
 
-// FORMATO AVERI - RECOLECCIÓN
+// FORMATO P (solo imagen JPG)
+async function generarFormatoP() {
+    // Obtener valores del formulario
+    const getValue = id => document.getElementById(id).value;
+    const valores = {
+        origen: getValue('origen'),
+        fecha: getValue('fecha'),
+        serial: getValue('serial'),
+        estadoproducto: getValue('estadoproducto'),
+        caso: getValue('caso'),
+        tecnico: getValue('tecnico'),
+        ean: getValue('ean'),
+        accesorios: getValue('accesorios'),
+        observaciones: getValue('observaciones')
+    };
+
+    // Actualizar plantilla con valores reales
+    document.getElementById('p-pv-value').textContent = valores.origen;
+    document.getElementById('p-fecha-value').textContent = valores.fecha;
+    document.getElementById('p-serial-value').textContent = valores.serial;
+    document.getElementById('p-ot-value').textContent = valores.caso;
+    document.getElementById('p-tecnico-value').textContent = valores.tecnico;
+    document.getElementById('p-ean-value').textContent = valores.ean;
+    document.getElementById('p-accesorios-value').textContent = valores.accesorios;
+    document.getElementById('p-observaciones-value').textContent = valores.estadoproducto;
+    
+    // Corregir espacios en el texto FT
+    const textoFT = valores.observaciones.replace(/([A-Z])([A-Z])/g, '$1 $2');
+    document.getElementById('p-ft-value').textContent = textoFT;
+
+    // Generar imagen
+    await generarImagen('formato-p-template', `Formato_P_${valores.caso}`);
+}
+
+// FORMATO AVERI (solo imagen JPG)
 async function generarFormatoAveri() {
-    try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+    // Obtener valores del formulario
+    const getValue = id => document.getElementById(id).value;
+    const valores = {
+        destino: getValue('destino'),
+        origen: getValue('origen'),
+        ean: getValue('ean'),
+        caso: getValue('caso'),
+        serial: getValue('serial'),
+        accesorios: getValue('accesorios'),
+        fecha: getValue('fecha'),
+        observaciones: getValue('observaciones'),
+        tecnico: getValue('tecnico')
+    };
 
-        // Obtener valores del formulario
-        const getValue = id => document.getElementById(id).value;
-        const valores = {
-            destino: getValue('destino'),
-            origen: getValue('origen'),
-            ean: getValue('ean'),
-            caso: getValue('caso'),
-            serial: getValue('serial'),
-            accesorios: getValue('accesorios'),
-            fecha: getValue('fecha'),
-            observaciones: getValue('observaciones')
-        };
+    // Actualizar plantilla con valores reales
+    document.getElementById('averi-destino-value').textContent = valores.destino;
+    document.getElementById('averi-origen-value').textContent = valores.origen;
+    document.getElementById('averi-ean-value').textContent = valores.ean;
+    document.getElementById('averi-ot-value').textContent = valores.caso;
+    document.getElementById('averi-serial-value').textContent = valores.serial;
+    document.getElementById('averi-accesorios-value').textContent = valores.accesorios;
+    document.getElementById('averi-fecha-value').textContent = valores.fecha;
+    document.getElementById('averi-observaciones-value').textContent = valores.observaciones;
+    document.getElementById('averi-tecnico-value').textContent = valores.tecnico;
 
-        // ====== CONFIGURACIÓN ======
-        const config = {
-            cols: 3,
-            rows: 9,
-            colWidth: 60,
-            rowHeight: 5,
-            startX: 10,
-            startY: 20
-        };
-
-        const totalWidth = config.colWidth * config.cols;
-        const totalHeight = config.rowHeight * config.rows;
-
-        // ====== DIBUJAR BORDES DE LA TABLA ======
-        // Altura personalizada por fila
-const rowHeights = Array(config.rows).fill(config.rowHeight);
-rowHeights[8] = 15; // Hacer más alta la fila 8 (Observaciones)
-
-// Dibujar líneas horizontales
-let currentY = config.startY;
-for (let i = 0; i <= config.rows; i++) {
-    if (i === 1 || i === 2) {
-        // Solo dibujar desde columna 2 hacia la derecha (evitar AVE)
-        const col2Start = config.startX + config.colWidth * 2;
-        doc.line(col2Start, currentY, col2Start + config.colWidth, currentY);
-    } else {
-        // Dibujar la línea completa normalmente
-        doc.line(config.startX, currentY, config.startX + totalWidth, currentY);
-    }
-
-    if (i < config.rows) currentY += rowHeights[i];
+    // Generar imagen
+    await generarImagen('formato-averi-template', `Formato_Averi_${valores.caso}`);
 }
-
-// Dibujar líneas verticales
-for (let i = 0; i <= config.cols; i++) {
-    let y = config.startY;
-    for (let r = 0; r < config.rows; r++) {
-        const nextY = y + rowHeights[r];
-
-        const isInsideAve = (i === 1) && r < 3;
-        const isInsideObservaciones = r === 8 && (i === 1 || i === 2);
-        const isInsideTecnicoYCoordinador = (i === 2) && (r === 6 || r === 7);
-
-        if (!isInsideAve && !isInsideObservaciones && !isInsideTecnicoYCoordinador) {
-            doc.line(config.startX + (i * config.colWidth), y, config.startX + (i * config.colWidth), nextY);
-        }
-
-        y = nextY;
-    }
-}
-
-        // ====== COMBINACIÓN DE CELDAS ======
-        const merge = (colIndex, rowIndex, colspan, rowspan) => {
-    doc.setDrawColor(255, 255, 255); // color blanco para "borrar"
-    let yOffset = 0;
-    for (let i = 0; i < rowIndex; i++) yOffset += rowHeights[i];
-    const yStart = config.startY + yOffset;
-
-    let yEnd = yStart;
-    for (let i = rowIndex; i < rowIndex + rowspan; i++) yEnd += rowHeights[i];
-
-    // Eliminar líneas verticales internas
-    for (let c = 1; c < colspan; c++) {
-        const x = config.startX + ((colIndex + c) * config.colWidth);
-        doc.line(x, yStart, x, yEnd);
-    }
-
-    // Eliminar líneas horizontales internas
-    let xStart = config.startX + (colIndex * config.colWidth);
-    let xEnd = config.startX + ((colIndex + colspan) * config.colWidth);
-    let tempY = yStart;
-    for (let r = 1; r < rowspan; r++) {
-        tempY += rowHeights[rowIndex + r - 1];
-        doc.line(xStart, tempY, xEnd, tempY);
-    }
-
-    doc.setDrawColor(0, 0, 0); // restaurar color negro
-};
-
-        // Aplicar combinaciones
-        merge(0, 0, 2, 3);  // Celda "AVE" (2 columnas, 3 filas)
-        merge(2, 0, 1, 1);  // Unidad de Negocio (fila 0)
-        merge(2, 1, 1, 1);  // Origen (fila 1)
-        merge(2, 2, 1, 1);  // Cambios (fila 2)
-        merge(1, 6, 2, 1);  // Autoriza Coordinador (columnas vacías)
-        merge(1, 7, 2, 1);  // Técnico que valida (combinar 2 columnas)
-        merge(0, 8, 3, 1);  // Observaciones (combinar 3 columnas)
-
-        // ====== DIBUJAR LÍNEA FALTANTE (COLUMNA DERECHA) ======
-        doc.line(
-            config.startX + (2 * config.colWidth),  // Columna 2
-            config.startY + (2 * config.rowHeight), // Fila 2
-            config.startX + (2 * config.colWidth),  // Misma columna
-            config.startY + (3 * config.rowHeight)  // Hasta fila 3
-        );
-
-        // ====== TEXTO Y FORMATO ======
-        doc.setFontSize(18);
-        doc.setFont("helvetica", "bold");
-        doc.text("AVE",
-    	   config.startX + 5,                     // Margen izquierdo de la celda
-    	   config.startY + (15 / 2) + 1.5         // Centrado vertical en 3 filas + ajuste visual
-	);
-
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-
-        const text = [
-            // Sección derecha de "AVE"
-            { text: `Unidad de Negocio: ${valores.destino}`, col: 2, row: 0 },
-            { text: `Origen: ${valores.origen}`, col: 2, row: 1 },
-            { text: `Cambios:    PTOV:    N/A: X`, col: 2, row: 2 },
-
-            // Fila 4 (EAN, OT, Serial)
-            { text: `EAN: ${valores.ean}`, col: 0, row: 3 },
-            { text: `OT: ${valores.caso}`, col: 1, row: 3 },
-            { text: `Serial: ${valores.serial}`, col: 2, row: 3 },
-
-            // Fila 5 (Accesorios y FT)
-            { text: `ACCESORIOS: ${valores.accesorios}`, col: 0, row: 4 },
-            { text: `FT: N/A`, col: 2, row: 4 },
-
-            // Fila 6 (Solicitado el día, Fecha, Solicitante)
-            { text: `Solicitado el día:`, col: 0, row: 5 },
-            { text: `${valores.fecha}`, col: 1, row: 5 },
-            { text: `Solicitante: Sebastian Ovalle`, col: 2, row: 5 },
-
-            // Fila 7 (Autoriza Coordinador)
-            { text: `Autoriza Coordinador:`, col: 0, row: 6 },
-
-            // Fila 8 (Técnico que valida)
-            { text: `Técnico que valida:`, col: 0, row: 7 },
-            { text: `Sebastian Ovalle`, col: 1, row: 7 },
-
-            // Fila 9 (Observaciones)
-            { text: `Observaciones: ${valores.observaciones}`, col: 0, row: 8 }
-        ];
-
-        // Dibujar texto
-        // Dibujar texto (ajustando Observaciones)
-text.forEach(item => {
-    const x = config.startX + (item.col * config.colWidth) + 1;
-    let yOffset = 0;
-    for (let i = 0; i < item.row; i++) {
-        yOffset += rowHeights[i];
-    }
-    const yBase = config.startY + yOffset;
-
-    if (item.row === 8) {
-        // Texto multilínea para Observaciones
-        const maxWidth = config.colWidth * 3 - 4; // 3 columnas menos margen
-        const lines = doc.splitTextToSize(item.text, maxWidth);
-        doc.text(lines, x, yBase + 4);
-    } else {
-        const y = yBase + (rowHeights[item.row] / 2) + 1.5;
-        doc.text(item.text, x, y);
-    }
-});
-
-
-        doc.save(`Formato_Averi_${valores.caso}.pdf`);
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Error al generar el Formato AVE. Revisa la consola.");
-    }
-}
-</script>
-
 </script>
 </body>
 </html>
