@@ -345,11 +345,13 @@
     margin-top: 10px;
   }
 
-  .despachos-table th, .despachos-table td {
+ .despachos-table th, .despachos-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
-  }
+    max-width: 200px; /* Ajusta según necesites */
+    word-wrap: break-word;
+}
 
   .despachos-table th {
     background-color: #000;
@@ -454,6 +456,25 @@
     left: 60mm;
     top: 60mm;
   }
+
+   #observaciones {
+    width: 100%;
+    min-height: 100px; /* Altura mínima */
+    resize: vertical; /* Permite redimensionar solo verticalmente */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+/* Opcional: Estilo cuando el textarea tiene foco */
+   #observaciones:focus {
+    border-color: #000;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+}
 </style>
 </head>
 <body>
@@ -475,14 +496,15 @@
     
     <div class="despachos-container">
         <table class="despachos-table" id="despachosTable">
-            <thead>
-                <tr>
-                    <th>Despacho</th>
-                    <th>Dane</th>
-                    <th>Ciudad</th>
-                    <th>Frecuencia</th>
-                </tr>
-            </thead>
+    <thead>
+        <tr>
+            <th>Despacho</th>
+            <th>Dane</th>
+            <th>Ciudad</th>
+            <th>Frecuencia</th>
+            <th>Observaciones</th> <!-- Nueva columna -->
+        </tr>
+    </thead>
             <tbody id="despachosBody">
                 <!-- Los datos de despachos se llenarán con JavaScript -->
             </tbody>
@@ -494,6 +516,10 @@
     <div class="form-section">
         <div class="container">
             <form id="mini-form">
+                <!-- Nuevo campo para ciudad del cliente -->
+                <label for="ciudadCliente">Ciudad del Cliente:</label>
+<input type="text" id="ciudadCliente" name="ciudadCliente" placeholder="Ingrese la ciudad para validar despacho" onchange="validarDespacho()" required><br>
+
                 <label for="caso">Caso/ODS:</label>
                 <input type="text" id="caso" name="caso" required><br>
 
@@ -505,10 +531,6 @@
 
                 <label for="unidad">Unidad de Negocio:</label>
                 <input type="text" id="unidad" name="unidad" required><br>
-
-                <!-- Nuevo campo para ciudad del cliente -->
-                <label for="ciudadCliente">Ciudad del Cliente:</label>
-                <input type="text" id="ciudadCliente" name="ciudadCliente" placeholder="Ingrese la ciudad para validar despacho" onchange="validarDespacho()"><br>
 
                 <label for="fecha">Fecha de Solicitud:</label>
                 <input type="text" id="fecha" name="fecha" class="datepicker" required><br>
@@ -572,8 +594,8 @@
                 <label for="frecuencia">Dia - Frecuencia:</label>
                 <input type="text" id="frecuencia" name="frecuencia">
 
-                <label for="observaciones">Observaciones del caso:</label>
-                <input type="text" id="observaciones" name="observaciones">
+		<label for="observaciones">Observaciones del caso:</label>
+		<textarea id="observaciones" name="observaciones" rows="4"></textarea>
             
                 <button type="button" onclick="generarPlantillas()">Generar Plantillas</button>
                 <button type="button" onclick="generarFormatoP()">Generar Formato P</button>
@@ -759,385 +781,416 @@
 <script>
 // Datos de despachos actualizados con la información proporcionada
 const despachos = [
-    { despacho: "AKSIN", dane: "70221", poblacion: "Coveñas", frecuencia: "Ma - S" },
-    { despacho: "AKSIN", dane: "23672", poblacion: "San Antero", frecuencia: "Ma - S" },
-    { despacho: "AKSIN", dane: "70713", poblacion: "San Onofre", frecuencia: "Ma - S" },
-    { despacho: "AKSIN", dane: "70820", poblacion: "Santiago de tolu", frecuencia: "Ma - S" },
-    { despacho: "AKSIN", dane: "70823", poblacion: "Toluviejo", frecuencia: "Ma - S" },
-    { despacho: "AKSIN", dane: "70215", poblacion: "Corozal", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKSIN", dane: "70473", poblacion: "Morroa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKSIN", dane: "70001", poblacion: "Sincelejo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKSIN", dane: "70742", poblacion: "Sincé", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKSIN", dane: "70702", poblacion: "Betulia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKSIN", dane: "23162", poblacion: "Cereté", frecuencia: "L - Mi - S" },
-    { despacho: "AKSIN", dane: "23001", poblacion: "Montería", frecuencia: "L - Mi - S" },
-    { despacho: "AKSIN", dane: "23189", poblacion: "Ciénaga de Oro", frecuencia: "L - Mi - S" },
-    { despacho: "AKSIN", dane: "70400", poblacion: "La Unión", frecuencia: "L - J" },
-    { despacho: "AKSIN", dane: "23660", poblacion: "Sahagún", frecuencia: "L - J" },
-    { despacho: "AKSIN", dane: "70708", poblacion: "San Marcos", frecuencia: "L - J" },
-    { despacho: "AKSIN", dane: "23182", poblacion: "Chinú", frecuencia: "L - J" },
-    { despacho: "AKSIN", dane: "70678", poblacion: "San Benito Abad", frecuencia: "L - J" },
-    { despacho: "AKSIN", dane: "13244", poblacion: "El Carmen de Bolívar", frecuencia: "V" },
-    { despacho: "AKSIN", dane: "47555", poblacion: "El plato", frecuencia: "V" },
-    { despacho: "AKSIN", dane: "13894", poblacion: "Zambrano", frecuencia: "V" },
-    { despacho: "AKSIN", dane: "70508", poblacion: "Ovejas", frecuencia: "V" },
-    { despacho: "AKSIN", dane: "70418", poblacion: "Los Palmitos", frecuencia: "V" },
-    { despacho: "AKSIN", dane: "23417", poblacion: "Santa Cruz de Lorica", frecuencia: "Mi" },
-    { despacho: "AKSIN", dane: "23464", poblacion: "Momil", frecuencia: "Mi" },
-    { despacho: "AKSIN", dane: "23815", poblacion: "Tuchín", frecuencia: "Mi" },
-    { despacho: "AKSIN", dane: "23670", poblacion: "San Andrés de Sotavento", frecuencia: "Mi" },
-    { despacho: "AKSIN", dane: "13430", poblacion: "Magangué", frecuencia: "Ma - V" },
-    { despacho: "AKSIN", dane: "70717", poblacion: "San Pedro", frecuencia: "Ma - V" },
-    { despacho: "AKSIN", dane: "13468", poblacion: "Santa Cruz de Mompox", frecuencia: "Ma - V" },
-    { despacho: "AKSIN", dane: "70670", poblacion: "Sampués", frecuencia: "J" },
-    { despacho: "AKSIN", dane: "23555", poblacion: "Planeta Rica", frecuencia: "J" },
-    { despacho: "AKSIN", dane: "23570", poblacion: "Pueblo Nuevo", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "17174", poblacion: "Chinchiná", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "17001", poblacion: "Manizales", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "66682", poblacion: "SANTA ROSA DE CABAL", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "17873", poblacion: "Villamaría", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "17524", poblacion: "Palestina", frecuencia: "Mi - S" },
-    { despacho: "AKCEP", dane: "17050", poblacion: "Aranzazu", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "17486", poblacion: "Neira", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "17653", poblacion: "Salamina", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "17013", poblacion: "Aguadas", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "17513", poblacion: "Pácora", frecuencia: "J" },
-    { despacho: "AKCEP", dane: "66440", poblacion: "Marsella", frecuencia: "V" },
-    { despacho: "AKCEP", dane: "76020", poblacion: "Alcalá", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63190", poblacion: "Círcasia", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63272", poblacion: "Filandia", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63470", poblacion: "Montenegro", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63594", poblacion: "Quimbaya", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63690", poblacion: "Salento", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "76845", poblacion: "Ulloa", frecuencia: "L - Ma - Mi - V" },
-    { despacho: "AKCEP", dane: "63001", poblacion: "Armenia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "63111", poblacion: "Buenavista", frecuencia: "Mi" },
-    { despacho: "AKCEP", dane: "76122", poblacion: "Caicedonia", frecuencia: "Mi" },
-    { despacho: "AKCEP", dane: "63130", poblacion: "Calarcá", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "63401", poblacion: "La Tebaida", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "63548", poblacion: "PIJAO", frecuencia: "Mi" },
-    { despacho: "AKCEP", dane: "76736", poblacion: "Sevilla", frecuencia: "Mi" },
-    { despacho: "AKCEP", dane: "17042", poblacion: "Anserma", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "17088", poblacion: "BELALCÁZAR", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "66318", poblacion: "Guática", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "66594", poblacion: "QUINCHÍA", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "17614", poblacion: "Riosucio", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "17616", poblacion: "Risaralda", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "17665", poblacion: "SAN JOSÉ", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "17777", poblacion: "Supía", frecuencia: "L - J - S" },
-    { despacho: "AKCEP", dane: "66075", poblacion: "Balboa", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "66088", poblacion: "Belén De Umbría", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "66383", poblacion: "La Celia", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "17877", poblacion: "Viterbo", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "66045", poblacion: "Apia", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "66456", poblacion: "Mistrato", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "66687", poblacion: "Santuario", frecuencia: "Ma - V" },
-    { despacho: "AKCEP", dane: "76041", poblacion: "Ansermanuevo", frecuencia: "L - Mi - V - S" },
-    { despacho: "AKCEP", dane: "76250", poblacion: "El Dovio", frecuencia: "L" },
-    { despacho: "AKCEP", dane: "76400", poblacion: "La Unión", frecuencia: "L - Mi - V - S" },
-    { despacho: "AKCEP", dane: "66400", poblacion: "La Virginia", frecuencia: "L - Mi - V - S" },
-    { despacho: "AKCEP", dane: "76622", poblacion: "Roldanillo", frecuencia: "L - Mi - V - S" },
-    { despacho: "AKCEP", dane: "76823", poblacion: "Toro", frecuencia: "L - Mi - V - S" },
-    { despacho: "AKCEP", dane: "76863", poblacion: "VERSALLES", frecuencia: "V" },
-    { despacho: "AKCEP", dane: "76243", poblacion: "El aguila", frecuencia: "V" },
-    { despacho: "AKCEP", dane: "76054", poblacion: "Argelia", frecuencia: "V" },
-    { despacho: "AKCEP", dane: "76147", poblacion: "Cartago", frecuencia: "Ma - Mi - J - S" },
-    { despacho: "AKCEP", dane: "76403", poblacion: "La Victoria", frecuencia: "Ma - Mi - J - S" },
-    { despacho: "AKCEP", dane: "76497", poblacion: "Obando", frecuencia: "Ma - Mi - J - S" },
-    { despacho: "AKCEP", dane: "76895", poblacion: "Zarzal", frecuencia: "Ma - Mi - J - S" },
-    { despacho: "AKCEP", dane: "66170", poblacion: "Dosquebradas", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEP", dane: "66001", poblacion: "Pereira", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50400", poblacion: "Lejanias", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50683", poblacion: "San Juan de Arama", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50689", poblacion: "San Martin", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50150", poblacion: "Castilla La Nueva", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50223", poblacion: "Cubarral", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50006", poblacion: "Acacias", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50318", poblacion: "Guamal", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50001", poblacion: "Villavicencio", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50226", poblacion: "Cumaral", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50110", poblacion: "Barranca De Upia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "25438", poblacion: "Medina", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "25530", poblacion: "Paratebueno", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50606", poblacion: "Restrepo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50287", poblacion: "Fuente de Oro", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50313", poblacion: "Granada", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50450", poblacion: "Puerto Concordia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50568", poblacion: "Puerto Gaitan", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50577", poblacion: "Puerto Lleras", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50573", poblacion: "Puerto Lopez", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "50590", poblacion: "Puerto Rico", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEV", dane: "95001", poblacion: "San Jose del Guaviare", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "70221", poblacion: "Coveñas", frecuencia: "Ma - S" },
-    { despacho: "AKCSN", dane: "23672", poblacion: "San Antero", frecuencia: "Ma - S" },
-    { despacho: "AKCSN", dane: "70713", poblacion: "San Onofre", frecuencia: "Ma - S" },
-    { despacho: "AKCSN", dane: "70820", poblacion: "Santiago de tolu", frecuencia: "Ma - S" },
-    { despacho: "AKCSN", dane: "70823", poblacion: "Toluviejo", frecuencia: "Ma - S" },
-    { despacho: "AKCSN", dane: "70215", poblacion: "Corozal", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "70473", poblacion: "Morroa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "70001", poblacion: "Sincelejo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "70742", poblacion: "Sincé", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "70702", poblacion: "Betulia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCSN", dane: "23162", poblacion: "Cereté", frecuencia: "L - Mi - S" },
-    { despacho: "AKCSN", dane: "23001", poblacion: "Montería", frecuencia: "L - Mi - S" },
-    { despacho: "AKCSN", dane: "23189", poblacion: "Ciénaga de Oro", frecuencia: "L - Mi - S" },
-    { despacho: "AKCSN", dane: "70400", poblacion: "La Unión", frecuencia: "L - J" },
-    { despacho: "AKCSN", dane: "23660", poblacion: "Sahagún", frecuencia: "L - J" },
-    { despacho: "AKCSN", dane: "70708", poblacion: "San Marcos", frecuencia: "L - J" },
-    { despacho: "AKCSN", dane: "23182", poblacion: "Chinú", frecuencia: "L - J" },
-    { despacho: "AKCSN", dane: "70678", poblacion: "San Benito Abad", frecuencia: "L - J" },
-    { despacho: "AKCSN", dane: "13244", poblacion: "El Carmen de Bolívar", frecuencia: "V" },
-    { despacho: "AKCSN", dane: "47555", poblacion: "El plato", frecuencia: "V" },
-    { despacho: "AKCSN", dane: "13894", poblacion: "Zambrano", frecuencia: "V" },
-    { despacho: "AKCSN", dane: "70508", poblacion: "Ovejas", frecuencia: "V" },
-    { despacho: "AKCSN", dane: "70418", poblacion: "Los Palmitos", frecuencia: "V" },
-    { despacho: "AKCSN", dane: "23417", poblacion: "Santa Cruz de Lorica", frecuencia: "Mi" },
-    { despacho: "AKCSN", dane: "23464", poblacion: "Momil", frecuencia: "Mi" },
-    { despacho: "AKCSN", dane: "23815", poblacion: "Tuchín", frecuencia: "Mi" },
-    { despacho: "AKCSN", dane: "23670", poblacion: "San Andrés de Sotavento", frecuencia: "Mi" },
-    { despacho: "AKCSN", dane: "13430", poblacion: "Magangué", frecuencia: "Ma - V" },
-    { despacho: "AKCSN", dane: "70717", poblacion: "San Pedro", frecuencia: "Ma - V" },
-    { despacho: "AKCSN", dane: "13468", poblacion: "Santa Cruz de Mompox", frecuencia: "Ma - V" },
-    { despacho: "AKCSN", dane: "70670", poblacion: "Sampués", frecuencia: "J" },
-    { despacho: "AKCSN", dane: "23555", poblacion: "Planeta Rica", frecuencia: "J" },
-    { despacho: "AKCSN", dane: "23570", poblacion: "Pueblo Nuevo", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25001", poblacion: "Agua De Dios", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "41016", poblacion: "Aipe", frecuencia: "Ma - J - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25019", poblacion: "Alban", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25035", poblacion: "Anapoima", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25599", poblacion: "Apulo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25053", poblacion: "Arbelaez", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15051", poblacion: "Arcabuco", frecuencia: "Ma - J- V" },
-    { despacho: "AKCE2 - AKCED", dane: "68077", poblacion: "Barbosa", frecuencia: "Ma - J- V" },
-    { despacho: "AKCE2 - AKCED", dane: "15087", poblacion: "Belen", frecuencia: "L - V" },
-    { despacho: "AKCE2 - AKCED", dane: "11001", poblacion: "Bogota", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25099", poblacion: "Bojaca", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15104", poblacion: "Boyaca", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25126", poblacion: "Cajica", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "73148", poblacion: "Carmen De Apicala", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "73168", poblacion: "Chaparral", frecuencia: "Mi - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25175", poblacion: "Chia", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15172", poblacion: "Chinavita", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "15176", poblacion: "Chiquinquira", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25183", poblacion: "Choconta", frecuencia: "L - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25200", poblacion: "Cogua", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25214", poblacion: "Cota", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15224", poblacion: "Cucaita", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "15238", poblacion: "Duitama", frecuencia: "L - Ma - Mi -J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25260", poblacion: "El Rosal", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "73268", poblacion: "Espinal", frecuencia: "Ma- Mi - v - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25269", poblacion: "Facatativa", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "73275", poblacion: "Flandes", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25286", poblacion: "Funza", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25290", poblacion: "Fusagasuga", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25295", poblacion: "Gachancipa", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15299", poblacion: "Garagoa", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25307", poblacion: "Girardot", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25312", poblacion: "Granada (Cund)", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25320", poblacion: "GUADUAS", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "73319", poblacion: "Guamo", frecuencia: "Ma- Mi - v - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25322", poblacion: "Guasca", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15322", poblacion: "Guateque", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25328", poblacion: "Guayabal De Siquima", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "73349", poblacion: "Honda", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "73001", poblacion: "Ibague", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15367", poblacion: "Jenesano", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25377", poblacion: "La Calera", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "17380", poblacion: "La Dorada", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25386", poblacion: "La Mesa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25402", poblacion: "Lavega", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25426", poblacion: "Macheta", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25430", poblacion: "Madrid", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "73443", poblacion: "Mariquita", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "73449", poblacion: "Melgar", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25245", poblacion: "Mesitas (El Colegio)", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15469", poblacion: "Moniquirá", frecuencia: "Ma -J - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25473", poblacion: "Mosquera", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "73483", poblacion: "Natagaima", frecuencia: "Ma - J - V" },
-    { despacho: "AKCE2 - AKCED", dane: "41001", poblacion: "Neiva", frecuencia: "Ma - J - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25486", poblacion: "Nemocon", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25488", poblacion: "Nilo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15491", poblacion: "Nobsa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25491", poblacion: "Nocaima", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25513", poblacion: "Pacho", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15516", poblacion: "Paipa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25535", poblacion: "Pasca", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "73563", poblacion: "Prado", frecuencia: "Ma- V" },
-    { despacho: "AKCE2 - AKCED", dane: "68572", poblacion: "Puente Nacional", frecuencia: "Ma - J- V" },
-    { despacho: "AKCE2 - AKCED", dane: "15572", poblacion: "Puerto Boyaca", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25572", poblacion: "Puerto Salgar", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "73585", poblacion: "Purificacion", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "15599", poblacion: "Ramiriqui", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25612", poblacion: "Ricaurte", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15638", poblacion: "Sachica", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "73671", poblacion: "Saldana", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "15646", poblacion: "Samacá", frecuencia: "M-V" },
-    { despacho: "AKCE2 - AKCED", dane: "25645", poblacion: "San Antonio Del Tequendama", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25658", poblacion: "San Francisco", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15693", poblacion: "Santa Rosa de Viterbo", frecuencia: "Ma - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25718", poblacion: "Sasaima", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25736", poblacion: "Sesquile", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25740", poblacion: "Sibate", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25743", poblacion: "Silvania", frecuencia: "L -Ma Mi - J -V- S" },
-    { despacho: "AKCE2 - AKCED", dane: "25745", poblacion: "Simijaca", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25754", poblacion: "Soacha", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15759", poblacion: "Sogamoso", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25758", poblacion: "Sopo", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15764", poblacion: "Soraca", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "25769", poblacion: "Subachoque", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25772", poblacion: "Suesca", frecuencia: "L - MI - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25777", poblacion: "Supata", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25779", poblacion: "Susa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15776", poblacion: "Sutamarchán", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25785", poblacion: "Tabio", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "25797", poblacion: "Tena", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25799", poblacion: "Tenjo", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15804", poblacion: "Tibaná", frecuencia: "J" },
-    { despacho: "AKCE2 - AKCED", dane: "15806", poblacion: "Tibasosa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15808", poblacion: "Tinjacá", frecuencia: "Ma - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25815", poblacion: "Tocaima", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25817", poblacion: "Tocancipa", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCE2 - AKCED", dane: "15001", poblacion: "Tunja", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15837", poblacion: "Tuta", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25843", poblacion: "Ubate", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25851", poblacion: "Utica", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "68861", poblacion: "Velez", frecuencia: "V" },
-    { despacho: "AKCE2 - AKCED", dane: "15861", poblacion: "Ventaquemada", frecuencia: "Ma - S" },
-    { despacho: "AKCE2 - AKCED", dane: "15407", poblacion: "Villa de Leyva", frecuencia: "Ma - J - V" },
-    { despacho: "AKCE2 - AKCED", dane: "25873", poblacion: "Villapinzon", frecuencia: "L - Ma - Mi -J - V - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25875", poblacion: "Villeta", frecuencia: "L - Mi - J - S" },
-    { despacho: "AKCE2 - AKCED", dane: "25899", poblacion: "Zipaquira", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76036", poblacion: "Andalucía", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76109", poblacion: "Buenaventura", frecuencia: "L- Ma - Mi -J - V" },
-    { despacho: "AKCA2 - ALCE2", dane: "76113", poblacion: "Bugalagrande", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76001", poblacion: "Cali", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCA2 - ALCE2", dane: "76126", poblacion: "Calima (Darien)", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76130", poblacion: "Candelaria", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76233", poblacion: "Dagua", frecuencia: "L- Ma - Mi -J - V" },
-    { despacho: "AKCA2 - ALCE2", dane: "76248", poblacion: "El Cerrito", frecuencia: "L - Ma - Mi - J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76275", poblacion: "Florida", frecuencia: "Mi - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76306", poblacion: "Ginebra", frecuencia: "L - Ma - Mi - J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76318", poblacion: "Guacarí", frecuencia: "L - Ma - Mi - J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76111", poblacion: "Guadalajara de Buga", frecuencia: "Ma- V - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76364", poblacion: "Jamundi", frecuencia: "L - Ma - Mi - J - V - S - D" },
-    { despacho: "AKCA2 - ALCE2", dane: "76377", poblacion: "La Cumbre", frecuencia: "Mi - V" },
-    { despacho: "AKCA2 - ALCE2", dane: "19455", poblacion: "Miranda", frecuencia: "Mi - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76520", poblacion: "Palmira", frecuencia: "L - Ma - Mi - J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "19001", poblacion: "Popayán", frecuencia: "L - Ma - Mi - J - V -S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76563", poblacion: "Pradera", frecuencia: "L - Ma - J - V" },
-    { despacho: "AKCA2 - ALCE2", dane: "19573", poblacion: "Puerto Tejada", frecuencia: "L- Mi -J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76606", poblacion: "Restrepo", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76616", poblacion: "Riofrío", frecuencia: "V" },
-    { despacho: "AKCA2 - ALCE2", dane: "76670", poblacion: "San Pedro", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "19698", poblacion: "Santander De Quilichao", frecuencia: "L- Mi -J - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "19807", poblacion: "Timbio", frecuencia: "Mi - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76828", poblacion: "Trujillo", frecuencia: "V" },
-    { despacho: "AKCA2 - ALCE2", dane: "76834", poblacion: "Tuluá", frecuencia: "Ma- V - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76869", poblacion: "Vijes", frecuencia: "Mi - V" },
-    { despacho: "AKCA2 - ALCE2", dane: "19845", poblacion: "Villa Rica", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76890", poblacion: "Yotoco", frecuencia: "Ma - S" },
-    { despacho: "AKCA2 - ALCE2", dane: "76892", poblacion: "Yumbo", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5079", poblacion: "Barbosa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5088", poblacion: "Bello", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5129", poblacion: "Caldas", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5197", poblacion: "Cocorna", frecuencia: "Ma - S" },
-    { despacho: "KTCED-- ALCED", dane: "5212", poblacion: "Copacabana", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5541", poblacion: "El peñol", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5148", poblacion: "El Carmen De Viboral", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5697", poblacion: "El Santuario", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5266", poblacion: "Envigado", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5308", poblacion: "Girardota", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5360", poblacion: "Itaguí", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5380", poblacion: "La Estrella", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5318", poblacion: "Guarne", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5376", poblacion: "La Ceja", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5321", poblacion: "Guatapé", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5400", poblacion: "La Unión", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5440", poblacion: "Marinilla", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5001", poblacion: "Medellín", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5607", poblacion: "Retiro", frecuencia: "L - Mi - V" },
-    { despacho: "KTCED-- ALCED", dane: "5615", poblacion: "Rionegro", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5631", poblacion: "Sabaneta", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "KTCED-- ALCED", dane: "5674", poblacion: "San Vicente", frecuencia: "L - Mi" },
-    { despacho: "KTCED-- ALCED", dane: "5837", poblacion: "Turbo", frecuencia: "L,V*" },
-    { despacho: "KTCED-- ALCED", dane: "5045", poblacion: "Apartado", frecuencia: "L,W,V *" },
-    { despacho: "KTCED-- ALCED", dane: "27361", poblacion: "Istmina", frecuencia: "J*" },
-    { despacho: "KTCED-- ALCED", dane: "5480", poblacion: "Mutata", frecuencia: "Mi *" },
-    { despacho: "KTCED-- ALCED", dane: "27001", poblacion: "Quibdo", frecuencia: "M,J,S*" },
-    { despacho: "AKCEB", dane: "44001", poblacion: "Riohacha", frecuencia: "Ma - J" },
-    { despacho: "AKCEB", dane: "44430", poblacion: "Maicao", frecuencia: "Ma - J" },
-    { despacho: "AKCEB", dane: "8433", poblacion: "Malambo", frecuencia: "Ma V" },
-    { despacho: "AKCEB", dane: "8372", poblacion: "Juan De Acosta", frecuencia: "Ma V" },
-    { despacho: "AKCEB", dane: "8832", poblacion: "Tubará", frecuencia: "Ma V" },
-    { despacho: "AKCEB", dane: "13001", poblacion: "Cartagena", frecuencia: "L - Ma - Mi - J - V" },
-    { despacho: "AKCEB", dane: "47189", poblacion: "Ciénaga", frecuencia: "L - Ma - Mi - J - V" },
-    { despacho: "AKCEB", dane: "47001", poblacion: "Santa Marta", frecuencia: "L - Ma - Mi - J - V" },
-    { despacho: "AKCEB", dane: "8001", poblacion: "BarranquiIIa", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEB", dane: "8573", poblacion: "Puerto Colombia", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEB", dane: "8758", poblacion: "Soledad", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKCEB", dane: "8078", poblacion: "Baranoa", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "8296", poblacion: "Galapa", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "8520", poblacion: "Palmar De Varela", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "8634", poblacion: "Sabanagrande", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "8685", poblacion: "Santo Tomás", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "8638", poblacion: "Sabanalarga", frecuencia: "L - Mi - V" },
-    { despacho: "AKCEB", dane: "20060", poblacion: "Bosconia", frecuencia: "L - Mi - J - V" },
-    { despacho: "AKCEB", dane: "47288", poblacion: "FUNDACIÓN", frecuencia: "L - Mi - J - V" },
-    { despacho: "AKCEB", dane: "20001", poblacion: "Valledupar", frecuencia: "L - Mi - J - V" },
-    { despacho: "AKCEB", dane: "13836", poblacion: "Turbaco", frecuencia: "Mi - V" },
-    { despacho: "AKGIR", dane: "68001", poblacion: "Bucaramanga", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68276", poblacion: "Floridablanca", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68307", poblacion: "Girón", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68418", poblacion: "La Mesa De Los Santos", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68547", poblacion: "Piedecuesta", frecuencia: "L - Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68406", poblacion: "Lebrija", frecuencia: "Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "5893", poblacion: "Yondo", frecuencia: "Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68081", poblacion: "Barrancabermeja", frecuencia: "Ma - Mi - J - V - S" },
-    { despacho: "AKGIR", dane: "68051", poblacion: "Aratoca", frecuencia: "Ma - J- S" },
-    { despacho: "AKGIR", dane: "68079", poblacion: "Barichara", frecuencia: "Ma - J" },
-    { despacho: "AKGIR", dane: "68167", poblacion: "Charalá", frecuencia: "Ma - J" },
-    { despacho: "AKGIR", dane: "68229", poblacion: "Curití", frecuencia: "Ma - J" },
-    { despacho: "AKGIR", dane: "68533", poblacion: "Páramo", frecuencia: "Ma - J" },
-    { despacho: "AKGIR", dane: "68549", poblacion: "Pinchote", frecuencia: "Ma - J- S" },
-    { despacho: "AKGIR", dane: "68679", poblacion: "San Gil", frecuencia: "Ma - J- S" },
-    { despacho: "AKGIR", dane: "68755", poblacion: "Socorro", frecuencia: "Ma - J- S" },
-    { despacho: "AKGIR", dane: "68855", poblacion: "Valle Del San José", frecuencia: "Ma - J" },
-    { despacho: "AKGIR", dane: "54405", poblacion: "LOS PATIOS", frecuencia: "L - Ma Mi - J - V" },
-    { despacho: "AKGIR", dane: "54518", poblacion: "PAMPLONA", frecuencia: "L - Ma Mi - J - V" },
-    { despacho: "AKGIR", dane: "54001", poblacion: "CÚCUTA", frecuencia: "L - Ma Mi - J - V" },
-    { despacho: "AKGIR", dane: "54874", poblacion: "VILLA DEL ROSARIO", frecuencia: "L - Ma Mi - J - V" },
-    { despacho: "AKGIR", dane: "54520", poblacion: "Pamponita", frecuencia: "L - Ma Mi - J - V" },
-    { despacho: "AKGIR", dane: "20770", poblacion: "SAN MARTIN", frecuencia: "L - Mi - V" },
-    { despacho: "AKGIR", dane: "68655", poblacion: "Sabana de Torres", frecuencia: "L - Mi - V" },
-    { despacho: "AKGIR", dane: "20710", poblacion: "San Alberto", frecuencia: "L - Mi - V" },
-    { despacho: "AKGIR", dane: "54498", poblacion: "Ocaña", frecuencia: "L - Mi -V" },
-    { despacho: "AKGIR", dane: "20011", poblacion: "Aguachica", frecuencia: "L - Mi -V" },
-    { despacho: "CENT1", dane: "25754", poblacion: "Soacha", frecuencia: "L-Ma-Mi-J-V" },
-    { despacho: "CENT1", dane: "25473", poblacion: "Mosquera", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25430", poblacion: "Madrid", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25286", poblacion: "Funza", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25377", poblacion: "La calera", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25175", poblacion: "Chia", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25126", poblacion: "Cajica", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25758", poblacion: "Sopo", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25214", poblacion: "Bsogamoso", frecuencia: "S" },
-    { despacho: "CENT1", dane: "25740", poblacion: "Sibate", frecuencia: "S" },
-    { despacho: "CENT1", dane: "11001", poblacion: "Bogota", frecuencia: "L-Ma-Mi-J-V" }
+    { despacho: "AKSIN", dane: "70221", poblacion: "Coveñas", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23672", poblacion: "San Antero", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70713", poblacion: "San Onofre", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70820", poblacion: "Santiago de tolu", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70823", poblacion: "Toluviejo", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70215", poblacion: "Corozal", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70473", poblacion: "Morroa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70001", poblacion: "Sincelejo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70742", poblacion: "Sincé", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70702", poblacion: "Betulia", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23162", poblacion: "Cereté", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23001", poblacion: "Montería", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23189", poblacion: "Ciénaga de Oro", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70400", poblacion: "La Unión", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23660", poblacion: "Sahagún", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70708", poblacion: "San Marcos", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23182", poblacion: "Chinú", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70678", poblacion: "San Benito Abad", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "13244", poblacion: "El Carmen de Bolívar", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "47555", poblacion: "El plato", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "13894", poblacion: "Zambrano", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70508", poblacion: "Ovejas", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70418", poblacion: "Los Palmitos", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23417", poblacion: "Santa Cruz de Lorica", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23464", poblacion: "Momil", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23815", poblacion: "Tuchín", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23670", poblacion: "San Andrés de Sotavento", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "13430", poblacion: "Magangué", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70717", poblacion: "San Pedro", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "13468", poblacion: "Santa Cruz de Mompox", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "70670", poblacion: "Sampués", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23555", poblacion: "Planeta Rica", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKSIN", dane: "23570", poblacion: "Pueblo Nuevo", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17174", poblacion: "Chinchiná", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17001", poblacion: "Manizales", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66682", poblacion: "SANTA ROSA DE CABAL", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17873", poblacion: "Villamaría", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17524", poblacion: "Palestina", frecuencia: "Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17050", poblacion: "Aranzazu", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17486", poblacion: "Neira", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17653", poblacion: "Salamina", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17013", poblacion: "Aguadas", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17513", poblacion: "Pácora", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66440", poblacion: "Marsella", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76020", poblacion: "Alcalá", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63190", poblacion: "Círcasia", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63272", poblacion: "Filandia", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63470", poblacion: "Montenegro", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63594", poblacion: "Quimbaya", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63690", poblacion: "Salento", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76845", poblacion: "Ulloa", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63001", poblacion: "Armenia", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63111", poblacion: "Buenavista", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76122", poblacion: "Caicedonia", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63130", poblacion: "Calarcá", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63401", poblacion: "La Tebaida", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "63548", poblacion: "PIJAO", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76736", poblacion: "Sevilla", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17042", poblacion: "Anserma", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17088", poblacion: "BELALCÁZAR", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66318", poblacion: "Guática", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66594", poblacion: "QUINCHÍA", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17614", poblacion: "Riosucio", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17616", poblacion: "Risaralda", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17665", poblacion: "SAN JOSÉ", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17777", poblacion: "Supía", frecuencia: "L - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66075", poblacion: "Balboa", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66088", poblacion: "Belén De Umbría", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66383", poblacion: "La Celia", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "17877", poblacion: "Viterbo", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66045", poblacion: "Apia", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66456", poblacion: "Mistrato", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66687", poblacion: "Santuario", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76041", poblacion: "Ansermanuevo", frecuencia: "L - Mi - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76250", poblacion: "El Dovio", frecuencia: "L", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76400", poblacion: "La Unión", frecuencia: "L - Mi - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66400", poblacion: "La Virginia", frecuencia: "L - Mi - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76622", poblacion: "Roldanillo", frecuencia: "L - Mi - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76823", poblacion: "Toro", frecuencia: "L - Mi - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76863", poblacion: "VERSALLES", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76243", poblacion: "El aguila", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76054", poblacion: "Argelia", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76147", poblacion: "Cartago", frecuencia: "Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76403", poblacion: "La Victoria", frecuencia: "Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76497", poblacion: "Obando", frecuencia: "Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "76895", poblacion: "Zarzal", frecuencia: "Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEP", dane: "66170", poblacion: "Dosquebradas", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "PROGRAMAR DOMINGOS DE AGOSTO" },
+    { despacho: "AKCEP", dane: "66001", poblacion: "Pereira", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "PROGRAMAR DOMINGOS DE AGOSTO" },
+    { despacho: "AKCEV", dane: "50400", poblacion: "Lejanias", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50683", poblacion: "San Juan de Arama", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50689", poblacion: "San Martin", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50150", poblacion: "Castilla La Nueva", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50223", poblacion: "Cubarral", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50006", poblacion: "Acacias", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50318", poblacion: "Guamal", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50001", poblacion: "Villavicencio", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "PROGRAMAR DOMINGOS DE AGOSTO" },
+    { despacho: "AKCEV", dane: "50226", poblacion: "Cumaral", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50110", poblacion: "Barranca De Upia", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "25438", poblacion: "Medina", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "25530", poblacion: "Paratebueno", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50606", poblacion: "Restrepo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50287", poblacion: "Fuente de Oro", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50313", poblacion: "Granada", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50450", poblacion: "Puerto Concordia", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50568", poblacion: "Puerto Gaitan", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50577", poblacion: "Puerto Lleras", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50573", poblacion: "Puerto Lopez", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "50590", poblacion: "Puerto Rico", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEV", dane: "95001", poblacion: "San Jose del Guaviare", frecuencia: "*L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85162", poblacion: "Monterrey", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85440", poblacion: "Villanueva", frecuencia: "L - Ma - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85139", poblacion: "Mani", frecuencia: "L - Mi  - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85010", poblacion: "Aguazul", frecuencia: "L - Mi  - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85440", poblacion: "Tauramena", frecuencia: "L - Mi  - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85125", poblacion: "Hato Corozal", frecuencia: "Ma - J - S ", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85250", poblacion: "Paz de ariporo", frecuencia: "Ma - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85263", poblacion: "Pore", frecuencia: "Ma - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85325", poblacion: "San Luis de Palenque", frecuencia: "Ma - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85430", poblacion: "Trinidad", frecuencia: "Ma - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKYOP", dane: "85001", poblacion: "Yopal", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "PROGRAMAR DOMINGOS DE AGOSTO" },
+    { despacho: "AKCSN", dane: "70221", poblacion: "Coveñas", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23672", poblacion: "San Antero", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70713", poblacion: "San Onofre", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70820", poblacion: "Santiago de tolu", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70823", poblacion: "Toluviejo", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70215", poblacion: "Corozal", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70473", poblacion: "Morroa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70001", poblacion: "Sincelejo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70742", poblacion: "Sincé", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70702", poblacion: "Betulia", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23162", poblacion: "Cereté", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23001", poblacion: "Montería", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23189", poblacion: "Ciénaga de Oro", frecuencia: "L - Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70400", poblacion: "La Unión", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23660", poblacion: "Sahagún", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70708", poblacion: "San Marcos", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23182", poblacion: "Chinú", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70678", poblacion: "San Benito Abad", frecuencia: "L - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "13244", poblacion: "El Carmen de Bolívar", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "47555", poblacion: "El plato", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "13894", poblacion: "Zambrano", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70508", poblacion: "Ovejas", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70418", poblacion: "Los Palmitos", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23417", poblacion: "Santa Cruz de Lorica", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23464", poblacion: "Momil", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23815", poblacion: "Tuchín", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23670", poblacion: "San Andrés de Sotavento", frecuencia: "Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "13430", poblacion: "Magangué", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70717", poblacion: "San Pedro", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "13468", poblacion: "Santa Cruz de Mompox", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "70670", poblacion: "Sampués", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23555", poblacion: "Planeta Rica", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCSN", dane: "23570", poblacion: "Pueblo Nuevo", frecuencia: "J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25001", poblacion: "Agua De Dios", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "41016", poblacion: "Aipe", frecuencia: "Ma - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25019", poblacion: "Alban", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25035", poblacion: "Anapoima", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25599", poblacion: "Apulo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25053", poblacion: "Arbelaez", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15051", poblacion: "Arcabuco", frecuencia: "*Ma - J- V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "68077", poblacion: "Barbosa", frecuencia: "*Ma - J- V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15087", poblacion: "Belen", frecuencia: "L - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "11001", poblacion: "Bogota", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25099", poblacion: "Bojaca", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15104", poblacion: "Boyaca", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25126", poblacion: "Cajica", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "73148", poblacion: "Carmen De Apicala", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73168", poblacion: "Chaparral", frecuencia: "Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25175", poblacion: "Chia", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15172", poblacion: "Chinavita", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15176", poblacion: "Chiquinquira", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25183", poblacion: "Choconta", frecuencia: "L - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25200", poblacion: "Cogua", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25214", poblacion: "Cota", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15224", poblacion: "Cucaita", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15238", poblacion: "Duitama", frecuencia: "L - Ma - Mi -J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25260", poblacion: "El Rosal", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "73268", poblacion: "Espinal", frecuencia: "Ma- Mi - v - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25269", poblacion: "Facatativa", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "73275", poblacion: "Flandes", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25286", poblacion: "Funza", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25290", poblacion: "Fusagasuga", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25295", poblacion: "Gachancipa", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15299", poblacion: "Garagoa", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25307", poblacion: "Girardot", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25312", poblacion: "Granada (Cund)", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25320", poblacion: "GUADUAS", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73319", poblacion: "Guamo", frecuencia: "Ma- Mi - v - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25322", poblacion: "Guasca", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15322", poblacion: "Guateque", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25328", poblacion: "Guayabal De Siquima", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73349", poblacion: "Honda", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73001", poblacion: "Ibague", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15367", poblacion: "Jenesano", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25377", poblacion: "La Calera", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "17380", poblacion: "La Dorada", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25386", poblacion: "La Mesa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25402", poblacion: "Lavega", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25426", poblacion: "Macheta", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25430", poblacion: "Madrid", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "73443", poblacion: "Mariquita", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73449", poblacion: "Melgar", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25245", poblacion: "Mesitas (El Colegio)", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15469", poblacion: "Moniquirá", frecuencia: "*Ma -J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25473", poblacion: "Mosquera", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "73483", poblacion: "Natagaima", frecuencia: "Ma - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "41001", poblacion: "Neiva", frecuencia: "*Ma - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25486", poblacion: "Nemocon", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25488", poblacion: "Nilo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15491", poblacion: "Nobsa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25491", poblacion: "Nocaima", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25513", poblacion: "Pacho", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15516", poblacion: "Paipa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25535", poblacion: "Pasca", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73563", poblacion: "Prado", frecuencia: "Ma- V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "68572", poblacion: "Puente Nacional", frecuencia: "*Ma - J- V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15572", poblacion: "Puerto Boyaca", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25572", poblacion: "Puerto Salgar", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73585", poblacion: "Purificacion", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15599", poblacion: "Ramiriqui", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25612", poblacion: "Ricaurte", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15638", poblacion: "Sachica", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "73671", poblacion: "Saldana", frecuencia: "Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15646", poblacion: "Samacá", frecuencia: "*M-V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25645", poblacion: "San Antonio Del Tequendama", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25658", poblacion: "San Francisco", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15693", poblacion: "Santa Rosa de Viterbo", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25718", poblacion: "Sasaima", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25736", poblacion: "Sesquile", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25740", poblacion: "Sibate", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25743", poblacion: "Silvania", frecuencia: "L -Ma Mi - J -V- S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25745", poblacion: "Simijaca", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25754", poblacion: "Soacha", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15759", poblacion: "Sogamoso", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25758", poblacion: "Sopo", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15764", poblacion: "Soraca", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25769", poblacion: "Subachoque", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25772", poblacion: "Suesca", frecuencia: "L - MI - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25777", poblacion: "Supata", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25779", poblacion: "Susa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15776", poblacion: "Sutamarchán", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25785", poblacion: "Tabio", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "25797", poblacion: "Tena", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25799", poblacion: "Tenjo", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15804", poblacion: "Tibaná", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15806", poblacion: "Tibasosa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15808", poblacion: "Tinjacá", frecuencia: "*Ma - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25815", poblacion: "Tocaima", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25817", poblacion: "Tocancipa", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCE2 - AKCED", dane: "15001", poblacion: "Tunja", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15837", poblacion: "Tuta", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25843", poblacion: "Ubate", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25851", poblacion: "Utica", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "68861", poblacion: "Velez", frecuencia: "*V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15861", poblacion: "Ventaquemada", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "15407", poblacion: "Villa de Leyva", frecuencia: "*Ma - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25873", poblacion: "Villapinzon", frecuencia: "L - Ma - Mi -J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25875", poblacion: "Villeta", frecuencia: "L - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCE2 - AKCED", dane: "25899", poblacion: "Zipaquira", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76036", poblacion: "Andalucía", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76109", poblacion: "Buenaventura", frecuencia: "L- Ma - Mi -J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76113", poblacion: "Bugalagrande", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76001", poblacion: "Cali", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCA2 - ALCE2", dane: "76126", poblacion: "Calima (Darien)", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76130", poblacion: "Candelaria", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76233", poblacion: "Dagua", frecuencia: "L- Ma - Mi -J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76248", poblacion: "El Cerrito", frecuencia: "L - Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76275", poblacion: "Florida", frecuencia: "Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76306", poblacion: "Ginebra", frecuencia: "L - Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76318", poblacion: "Guacarí", frecuencia: "L - Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76111", poblacion: "Guadalajara de Buga", frecuencia: "Ma- V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76364", poblacion: "Jamundi", frecuencia: "L - Ma - Mi - J - V - S - D", observaciones: "Urbano" },
+    { despacho: "AKCA2 - ALCE2", dane: "76377", poblacion: "La Cumbre", frecuencia: "Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19455", poblacion: "Miranda", frecuencia: "Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76520", poblacion: "Palmira", frecuencia: "L - Ma - Mi - J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19001", poblacion: "Popayán", frecuencia: "L - Ma - Mi - J - V -S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76563", poblacion: "Pradera", frecuencia: "L - Ma - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19573", poblacion: "Puerto Tejada", frecuencia: "L- Mi -J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76606", poblacion: "Restrepo", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76616", poblacion: "Riofrío", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76670", poblacion: "San Pedro", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19698", poblacion: "Santander De Quilichao", frecuencia: "L- Mi -J - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19807", poblacion: "Timbio", frecuencia: "Mi - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76828", poblacion: "Trujillo", frecuencia: "V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76834", poblacion: "Tuluá", frecuencia: "Ma- V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76869", poblacion: "Vijes", frecuencia: "Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "19845", poblacion: "Villa Rica", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76890", poblacion: "Yotoco", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCA2 - ALCE2", dane: "76892", poblacion: "Yumbo", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5079", poblacion: "Barbosa", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5088", poblacion: "Bello", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5129", poblacion: "Caldas", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5197", poblacion: "Cocorna", frecuencia: "Ma - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5212", poblacion: "Copacabana", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5541", poblacion: "El peñol", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5148", poblacion: "El Carmen De Viboral", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5697", poblacion: "El Santuario", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5266", poblacion: "Envigado", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5308", poblacion: "Girardota", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5360", poblacion: "Itaguí", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5380", poblacion: "La Estrella", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5318", poblacion: "Guarne", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5376", poblacion: "La Ceja", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5321", poblacion: "Guatapé", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5400", poblacion: "La Unión", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5440", poblacion: "Marinilla", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5001", poblacion: "Medellín", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5607", poblacion: "Retiro", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5615", poblacion: "Rionegro", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5631", poblacion: "Sabaneta", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5674", poblacion: "San Vicente", frecuencia: "*L - Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "KTCED-- ALCED", dane: "5837", poblacion: "Turbo", frecuencia: "*L,V", observaciones: "*2 Dias - Domingos y Festivos NO opera (NO APLICA RECOGIDAS)" },
+    { despacho: "KTCED-- ALCED", dane: "5045", poblacion: "Apartado", frecuencia: "*L,W,V", observaciones: "*2 Dias - Domingos y Festivos NO opera (NO APLICA RECOGIDAS)" },
+    { despacho: "KTCED-- ALCED", dane: "27361", poblacion: "Istmina", frecuencia: "*J", observaciones: "*2 Dias - Domingos y Festivos NO opera (NO APLICA RECOGIDAS)" },
+    { despacho: "KTCED-- ALCED", dane: "5480", poblacion: "Mutata", frecuencia: "*Mi", observaciones: "*2 Dias - Domingos y Festivos NO opera (NO APLICA RECOGIDAS)" },
+    { despacho: "KTCED-- ALCED", dane: "27001", poblacion: "Quibdo", frecuencia: "*M,J,S", observaciones: "*2 Dias - Domingos y Festivos NO opera (NO APLICA RECOGIDAS)" },
+    { despacho: "AKCEB", dane: "44001", poblacion: "Riohacha", frecuencia: "*Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "44430", poblacion: "Maicao", frecuencia: "*Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8433", poblacion: "Malambo", frecuencia: "Ma V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8372", poblacion: "Juan De Acosta", frecuencia: "Ma V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8832", poblacion: "Tubará", frecuencia: "Ma V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "13001", poblacion: "Cartagena", frecuencia: "L - Ma - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "47189", poblacion: "Ciénaga", frecuencia: "L - Ma - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "47001", poblacion: "Santa Marta", frecuencia: "L - Ma - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8001", poblacion: "Barranquilla", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8573", poblacion: "Puerto Colombia", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8758", poblacion: "Soledad", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8078", poblacion: "Baranoa", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8296", poblacion: "Galapa", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8520", poblacion: "Palmar De Varela", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8634", poblacion: "Sabanagrande", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8685", poblacion: "Santo Tomás", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "8638", poblacion: "Sabanalarga", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "20060", poblacion: "Bosconia", frecuencia: "L - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "47288", poblacion: "FUNDACIÓN", frecuencia: "L - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "20001", poblacion: "Valledupar", frecuencia: "L - Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKCEB", dane: "13836", poblacion: "Turbaco", frecuencia: "Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68001", poblacion: "Bucaramanga", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68276", poblacion: "Floridablanca", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68307", poblacion: "Girón", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68418", poblacion: "La Mesa De Los Santos", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68547", poblacion: "Piedecuesta", frecuencia: "L - Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68406", poblacion: "Lebrija", frecuencia: "Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "5893", poblacion: "Yondo", frecuencia: "Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68081", poblacion: "Barrancabermeja", frecuencia: "Ma - Mi - J - V - S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68051", poblacion: "Aratoca", frecuencia: "Ma - J- S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68079", poblacion: "Barichara", frecuencia: "Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68167", poblacion: "Charalá", frecuencia: "Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68229", poblacion: "Curití", frecuencia: "Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68533", poblacion: "Páramo", frecuencia: "Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68549", poblacion: "Pinchote", frecuencia: "Ma - J- S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68679", poblacion: "San Gil", frecuencia: "Ma - J- S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68755", poblacion: "Socorro", frecuencia: "Ma - J- S", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68855", poblacion: "Valle Del San José", frecuencia: "Ma - J", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54405", poblacion: "LOS PATIOS", frecuencia: "*L - Ma Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54518", poblacion: "PAMPLONA", frecuencia: "L - Ma Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54001", poblacion: "CÚCUTA", frecuencia: "*L - Ma Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54874", poblacion: "VILLA DEL ROSARIO", frecuencia: "*L - Ma Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54520", poblacion: "Pamponita", frecuencia: "L - Ma Mi - J - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "20770", poblacion: "SAN MARTIN", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "68655", poblacion: "Sabana de Torres", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "20710", poblacion: "San Alberto", frecuencia: "L - Mi - V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "54498", poblacion: "Ocaña", frecuencia: "*L - Mi -V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "AKGIR", dane: "20011", poblacion: "Aguachica", frecuencia: "*L - Mi -V", observaciones: "*2 Dias - Domingos y Festivos NO opera" },
+    { despacho: "CENT1", dane: "25754", poblacion: "Soacha", frecuencia: "L-Ma-Mi-J-V", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25473", poblacion: "Mosquera", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25430", poblacion: "Madrid", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25286", poblacion: "Funza", frecuencia: "S", observaciones: "*Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25377", poblacion: "La calera", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25175", poblacion: "Chia", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25126", poblacion: "Cajica", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25758", poblacion: "Sopo", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25214", poblacion: "Bsogamoso", frecuencia: "S", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "25740", poblacion: "Sibate", frecuencia: "S", observaciones: "*Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
+    { despacho: "CENT1", dane: "11001", poblacion: "Bogota", frecuencia: "L-Ma-Mi-J-V", observaciones: "Domingos y Festivos NO opera (SOLO APLICA RECOGIDAS)" },
 ];
+
+// Función para normalizar texto (eliminar tildes y convertir a minúsculas)
+function normalizarTexto(texto) {
+    return texto
+        .normalize("NFD") // Descompone los caracteres acentuados
+        .replace(/[\u0300-\u036f]/g, "") // Elimina los diacríticos
+        .toLowerCase() // Convierte a minúsculas
+        .replace(/[^a-z0-9\s]/g, ""); // Opcional: elimina caracteres especiales (excepto espacios y números)
+}
 
 // Función para cargar los despachos en la tabla
 function cargarDespachos(filtro = '') {
     const tbody = document.getElementById('despachosBody');
     tbody.innerHTML = '';
     
-    const filtroLower = filtro.toLowerCase();
+    const filtroNormalizado = normalizarTexto(filtro);
     
-    const despachosFiltrados = despachos.filter(despacho => 
-        despacho.despacho.toLowerCase().includes(filtroLower) ||
-        despacho.dane.toLowerCase().includes(filtroLower) ||
-        despacho.poblacion.toLowerCase().includes(filtroLower) ||
-        despacho.frecuencia.toLowerCase().includes(filtroLower)
-    );
+    const despachosFiltrados = despachos.filter(despacho => {
+        const despachoNormalizado = {
+            despacho: normalizarTexto(despacho.despacho),
+            dane: normalizarTexto(despacho.dane),
+            poblacion: normalizarTexto(despacho.poblacion),
+            frecuencia: normalizarTexto(despacho.frecuencia),
+            observaciones: despacho.observaciones ? normalizarTexto(despacho.observaciones) : ''
+        };
+        
+        return (
+            despachoNormalizado.despacho.includes(filtroNormalizado) ||
+            despachoNormalizado.dane.includes(filtroNormalizado) ||
+            despachoNormalizado.poblacion.includes(filtroNormalizado) ||
+            despachoNormalizado.frecuencia.includes(filtroNormalizado) ||
+            despachoNormalizado.observaciones.includes(filtroNormalizado)
+        );
+    });
     
     despachosFiltrados.forEach(despacho => {
         const row = document.createElement('tr');
@@ -1146,45 +1199,52 @@ function cargarDespachos(filtro = '') {
             <td>${despacho.dane}</td>
             <td>${despacho.poblacion}</td>
             <td>${despacho.frecuencia}</td>
+            <td>${despacho.observaciones || ''}</td>
         `;
         tbody.appendChild(row);
     });
-}
-
-// Función para validar el despacho según la ciudad ingresada
+}// Función para validar el despacho según la ciudad ingresada
 function validarDespacho() {
     const ciudadInput = document.getElementById('ciudadCliente').value.trim();
     if (!ciudadInput) return;
     
-    const ciudadLower = ciudadInput.toLowerCase();
-    const despachoEncontrado = despachos.find(despacho => 
-        despacho.poblacion.toLowerCase().includes(ciudadLower)
+    const ciudadNormalizada = normalizarTexto(ciudadInput);
+    const despachosEncontrados = despachos.filter(despacho => 
+        normalizarTexto(despacho.poblacion).includes(ciudadNormalizada)
     );
     
-    if (despachoEncontrado) {
-        mostrarPopupDespacho(despachoEncontrado);
+    if (despachosEncontrados.length > 0) {
+        mostrarPopupDespacho(despachosEncontrados);
     } else {
-        mostrarPopupDespacho({
+        mostrarPopupDespacho([{
             poblacion: ciudadInput,
-            despacho: "No se encontró un despacho específico",
+            despacho: "No se encontró despacho",
             dane: "N/A",
-            frecuencia: "Por favor verifique la ciudad o consulte la tabla de despachos"
-        });
+            frecuencia: "Verifique el nombre o consulte la tabla completa",
+            observaciones: ""
+        }]);
     }
 }
 
 // Función para mostrar el popup con la información del despacho
-function mostrarPopupDespacho(despacho) {
+function mostrarPopupDespacho(despachos) {
     const popup = document.getElementById('despachoPopup');
     const infoElement = document.getElementById('despachoInfo');
     
-    infoElement.innerHTML = `
-        <p><strong>Población:</strong> ${despacho.poblacion}</p>
-        <p><strong>Despacho:</strong> ${despacho.despacho}</p>
-        <p><strong>Código DANE:</strong> ${despacho.dane}</p>
-        <p><strong>Frecuencia de recolección:</strong> ${despacho.frecuencia}</p>
-    `;
+    let htmlContent = `<h3>${despachos.length} despacho(s) encontrado(s) para: ${despachos[0].poblacion}</h3>`;
     
+    despachos.forEach(despacho => {
+        htmlContent += `
+        <div style="margin-bottom: 15px; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+            <p><strong>Despacho:</strong> ${despacho.despacho}</p>
+            <p><strong>Código DANE:</strong> ${despacho.dane}</p>
+            <p><strong>Frecuencia:</strong> ${despacho.frecuencia}</p>
+            ${despacho.observaciones ? `<p><strong>Observaciones:</strong> ${despacho.observaciones}</p>` : ''}
+        </div>
+        `;
+    });
+    
+    infoElement.innerHTML = htmlContent;
     popup.style.display = 'flex';
 }
 
@@ -1227,6 +1287,17 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function generarPlantillas() {
+    // Validar que la ciudad del cliente no esté vacía
+    const ciudadCliente = document.getElementById('ciudadCliente').value.trim();
+    if (!ciudadCliente) {
+        alert('Por favor ingrese la Ciudad del Cliente');
+        document.getElementById('ciudadCliente').focus();
+        document.getElementById('ciudadCliente').style.border = '2px solid red';
+        return; // Detener la ejecución si no hay ciudad
+    } else {
+        document.getElementById('ciudadCliente').style.border = ''; // Quitar el borde rojo si estaba
+    }
+
     // Obtener valores del formulario
     const ean = document.getElementById('ean').value;
     const estadoproducto = document.getElementById('estadoproducto').value;
