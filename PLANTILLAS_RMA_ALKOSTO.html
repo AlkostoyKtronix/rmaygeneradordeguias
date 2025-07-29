@@ -1337,40 +1337,39 @@ async function validarDespacho() {
     const motivoRecoleccion = document.getElementById('abreviatura').value;
     const destino = document.getElementById('destino').value.trim();
     const unidadNegocio = document.getElementById('unidad').value.trim();
-    
-    if (!ciudadInput) return true;
 
-    // 1. Validación especial por motivo de recolección (solo para Destino)
+    // --- 1. Validación especial por motivo de recolección (solo para Destino) ---
     let destinoEsperadoPorMotivo = '';
     let mensajeErrorMotivo = '';
     let requiereValidacionEspecial = false;
 
-    switch(motivoRecoleccion) {
-        case 'falla':
-            destinoEsperadoPorMotivo = 'CENT1';
-            mensajeErrorMotivo = 'Recuerda que si el producto tiene falla debe ir a CENT1';
-            requiereValidacionEspecial = true;
-            break;
-            
-        case 'REC_DÑ_EX':
-	case 'REC_DÑ_IN':
-	case 'REC_INCOM':
-    		// Preguntar si es mueble para determinar el destino
-    		const esMueble = await customConfirm('¿El producto con daño es un mueble?');
-    		destinoEsperadoPorMotivo = esMueble ? 'CENT1' : 'AKCED';
-    		mensajeErrorMotivo = `Recuerda que para recoger por Deterioro o Incompleto, ` + 
-        	(esMueble ? 'si es mueble debe ir a CENT1' : 'si no es mueble debe ir a AKCED');
-    	requiereValidacionEspecial = true;
-    	break;
-            
-        case 'PANRT':
-            destinoEsperadoPorMotivo = 'CENT1';
-            mensajeErrorMotivo = 'Recuerda que si el producto tiene pantalla rota (PANRT) debe ir a CENT1';
-            requiereValidacionEspecial = true;
-            break;
+    // Solo preguntar si es mueble cuando el motivo es REC_DÑ_EX, REC_DÑ_IN o REC_INCOM
+    // y solo cuando se está modificando el campo de ciudad (no otros campos)
+    if (['REC_DÑ_EX', 'REC_DÑ_IN', 'REC_INCOM'].includes(motivoRecoleccion) && 
+        document.activeElement.id === 'ciudadCliente' && 
+        ciudadInput) {
+        const esMueble = await customConfirm('¿El producto con daño es un mueble?');
+        destinoEsperadoPorMotivo = esMueble ? 'CENT1' : 'AKCED';
+        mensajeErrorMotivo = `Recuerda que para recoger por Deterioro o Incompleto, ` + 
+            (esMueble ? 'si es mueble debe ir a CENT1' : 'si no es mueble debe ir a AKCED');
+        requiereValidacionEspecial = true;
+    } else {
+        switch(motivoRecoleccion) {
+            case 'falla':
+                destinoEsperadoPorMotivo = 'CENT1';
+                mensajeErrorMotivo = 'Recuerda que si el producto tiene falla debe ir a CENT1';
+                requiereValidacionEspecial = true;
+                break;
+                
+            case 'PANRT':
+                destinoEsperadoPorMotivo = 'CENT1';
+                mensajeErrorMotivo = 'Recuerda que si el producto tiene pantalla rota (PANRT) debe ir a CENT1';
+                requiereValidacionEspecial = true;
+                break;
+        }
     }
 
-    // Aplicar corrección automática si es necesario
+// Aplicar corrección automática si es necesario
     if (requiereValidacionEspecial && destinoEsperadoPorMotivo && 
         normalizarTexto(destino) !== normalizarTexto(destinoEsperadoPorMotivo)) {
         const confirmacion = confirm(`${mensajeErrorMotivo}\n\nActualmente has ingresado: ${destino}\n\n¿Deseas corregir el destino a ${destinoEsperadoPorMotivo}?`);
@@ -1494,6 +1493,7 @@ async function validarDespacho() {
     
     return true;
 }
+
 
 // Función para mostrar el popup con la información del despacho
 function mostrarPopupDespacho(despachos) {
