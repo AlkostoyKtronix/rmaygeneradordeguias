@@ -504,6 +504,53 @@
     padding: 5px;
 }
 
+/* Estilos para el diálogo personalizado */
+.custom-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.custom-dialog {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    width: 300px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.custom-dialog-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.custom-dialog-button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.custom-dialog-button.yes {
+    background-color: #000;
+    color: white;
+}
+
+.custom-dialog-button.no {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
 </style>
 </head>
 <body>
@@ -545,6 +592,16 @@
     <div class="form-section">
         <div class="container">
             <form id="mini-form">
+		<label for="abreviatura">Motivo Recoleccion:</label>
+                <select id="abreviatura" name="abreviatura" required>
+                    <option value="falla">FALLA</option>
+                    <option value="REC_NO_SA">REC_NO_SA</option>
+                    <option value="REC_DÑ_EX">REC_DÑ_EX</option>
+                    <option value="REC_DÑ_IN">REC_DÑ_IN</option>
+                    <option value="REC_INCOM">REC_INCOM</option>
+                    <option value="PANRT">PANRT</option>
+                </select><br>
+
                 <!-- Nuevo campo para ciudad del cliente -->
                 <label for="ciudadCliente">Ciudad del Cliente:</label>
 <input type="text" id="ciudadCliente" name="ciudadCliente" placeholder="Ingrese la ciudad para validar despacho" onchange="validarDespacho()" required><br>
@@ -567,15 +624,6 @@
                 <label for="tecnico">Tecnico:</label>
                 <input type="text" id="tecnico" name="tecnico" required><br>
 
-                <label for="abreviatura">Motivo Recoleccion:</label>
-                <select id="abreviatura" name="abreviatura" required>
-                    <option value="falla">falla</option>
-                    <option value="REC_NO_SA">REC_NO_SA</option>
-                    <option value="REC_DÑ_EX">REC_DÑ_EX</option>
-                    <option value="REC_DÑ_IN">REC_DÑ_IN</option>
-                    <option value="REC_INCOM">REC_INCOM</option>
-                    <option value="PANRT">PANRT</option>
-                </select><br>
             </form>
 
             <form id="main-form">
@@ -1232,27 +1280,219 @@ function cargarDespachos(filtro = '') {
         `;
         tbody.appendChild(row);
     });
-}// Función para validar el despacho según la ciudad ingresada
-function validarDespacho() {
+}
+
+function customConfirm(message) {
+    return new Promise((resolve) => {
+        const dialog = document.createElement('div');
+        dialog.className = 'custom-dialog-overlay';
+        dialog.style.display = 'flex';
+        
+        const content = document.createElement('div');
+        content.className = 'custom-dialog';
+        
+        const messageElement = document.createElement('p');
+        messageElement.id = 'customDialogMessage';
+        messageElement.textContent = message;
+        
+        const buttons = document.createElement('div');
+        buttons.className = 'custom-dialog-buttons';
+        
+        const noButton = document.createElement('button');
+        noButton.className = 'custom-dialog-button no';
+        noButton.textContent = 'No';
+        
+        const yesButton = document.createElement('button');
+        yesButton.className = 'custom-dialog-button yes';
+        yesButton.textContent = 'Sí';
+        
+        buttons.appendChild(noButton);
+        buttons.appendChild(yesButton);
+        content.appendChild(messageElement);
+        content.appendChild(buttons);
+        dialog.appendChild(content);
+        document.body.appendChild(dialog);
+        
+        const cleanup = () => {
+            document.body.removeChild(dialog);
+        };
+        
+        yesButton.addEventListener('click', () => {
+            cleanup();
+            resolve(true);
+        });
+        
+        noButton.addEventListener('click', () => {
+            cleanup();
+            resolve(false);
+        });
+    });
+}
+
+// ... resto de tus funciones (incluyendo validarDespacho)
+
+// Función para validar el despacho según la ciudad ingresada
+async function validarDespacho() {
     const ciudadInput = document.getElementById('ciudadCliente').value.trim();
-    if (!ciudadInput) return;
+    const motivoRecoleccion = document.getElementById('abreviatura').value;
+    const destino = document.getElementById('destino').value.trim();
+    const unidadNegocio = document.getElementById('unidad').value.trim();
     
+    if (!ciudadInput) return true;
+
+    // 1. Validación especial por motivo de recolección (solo para Destino)
+    let destinoEsperadoPorMotivo = '';
+    let mensajeErrorMotivo = '';
+    let requiereValidacionEspecial = false;
+
+    switch(motivoRecoleccion) {
+        case 'falla':
+            destinoEsperadoPorMotivo = 'CENT1';
+            mensajeErrorMotivo = 'Recuerda que si el producto tiene falla debe ir a CENT1';
+            requiereValidacionEspecial = true;
+            break;
+            
+        case 'REC_DÑ_EX':
+	case 'REC_DÑ_IN':
+	case 'REC_INCOM':
+    		// Preguntar si es mueble para determinar el destino
+    		const esMueble = await customConfirm('¿El producto con daño es un mueble?');
+    		destinoEsperadoPorMotivo = esMueble ? 'CENT1' : 'AKCED';
+    		mensajeErrorMotivo = `Recuerda que para recoger por Deterioro o Incompleto, ` + 
+        	(esMueble ? 'si es mueble debe ir a CENT1' : 'si no es mueble debe ir a AKCED');
+    	requiereValidacionEspecial = true;
+    	break;
+            
+        case 'PANRT':
+            destinoEsperadoPorMotivo = 'CENT1';
+            mensajeErrorMotivo = 'Recuerda que si el producto tiene pantalla rota (PANRT) debe ir a CENT1';
+            requiereValidacionEspecial = true;
+            break;
+    }
+
+    // Aplicar corrección automática si es necesario
+    if (requiereValidacionEspecial && destinoEsperadoPorMotivo && 
+        normalizarTexto(destino) !== normalizarTexto(destinoEsperadoPorMotivo)) {
+        const confirmacion = confirm(`${mensajeErrorMotivo}\n\nActualmente has ingresado: ${destino}\n\n¿Deseas corregir el destino a ${destinoEsperadoPorMotivo}?`);
+        
+        if (confirmacion) {
+            document.getElementById('destino').value = destinoEsperadoPorMotivo;
+            // Actualizamos la variable para la próxima validación
+            destino = destinoEsperadoPorMotivo;
+        } else {
+            document.getElementById('destino').focus();
+            return false;
+        }
+    }
+
+    // 2. Validación por ciudad (para ambos campos)
     const ciudadNormalizada = normalizarTexto(ciudadInput);
     const despachosEncontrados = despachos.filter(despacho => 
         normalizarTexto(despacho.poblacion).includes(ciudadNormalizada)
     );
+
+    if (despachosEncontrados.length === 0) return true;
+
+    const despachosCompuestos = {
+        'AKCE2 - AKCED': ['AKCE2', 'AKCED', 'AKCE2 - AKCED', 'AKCE2-AKCED'],
+        'AKCA2 - ALCE2': ['AKCA2', 'ALCE2', 'AKCA2 - ALCE2', 'AKCA2-ALCE2'],
+        'KTCED-- ALCED': ['KTCED', 'ALCED', 'KTCED-- ALCED', 'KTCED-ALCED']
+    };
     
-    if (despachosEncontrados.length > 0) {
-        mostrarPopupDespacho(despachosEncontrados);
-    } else {
-        mostrarPopupDespacho([{
-            poblacion: ciudadInput,
-            despacho: "No se encontró despacho",
-            dane: "N/A",
-            frecuencia: "Verifique el nombre o consulte la tabla completa",
-            observaciones: ""
-        }]);
+    let hayError = false;
+    const errores = [];
+    
+    const verificarCoincidencia = (valor, despachosEsperados) => {
+        const valorNormalizado = normalizarTexto(valor);
+        
+        for (const despacho of despachosEsperados) {
+            const despachoNormalizado = normalizarTexto(despacho);
+            
+            if (despachoNormalizado === valorNormalizado) {
+                return true;
+            }
+            
+            for (const [compuesto, variantes] of Object.entries(despachosCompuestos)) {
+                if (normalizarTexto(compuesto) === despachoNormalizado) {
+                    if (variantes.some(v => normalizarTexto(v) === valorNormalizado)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    };
+
+    // Validar Unidad de Negocio si tiene valor
+    if (unidadNegocio) {
+        const despachosEsperados = despachosEncontrados.map(d => d.despacho);
+        const coincide = verificarCoincidencia(unidadNegocio, despachosEsperados);
+        
+        if (!coincide) {
+            hayError = true;
+            errores.push({
+                campo: 'Unidad de Negocio',
+                valor: unidadNegocio,
+                recomendados: despachosEncontrados.map(d => {
+                    const compuesto = Object.keys(despachosCompuestos)
+                        .find(key => normalizarTexto(key) === normalizarTexto(d.despacho));
+                    return compuesto ? `${d.despacho} ` : d.despacho;
+                }).join(", ")
+            });
+        }
     }
+    
+    // Validar Destino si tiene valor
+    if (destino) {
+        const despachosEsperados = despachosEncontrados.map(d => d.despacho);
+        
+        // Solo validamos contra la ciudad si no es un caso especial con destino fijo
+        const esDestinoEspecial = ['CENT1', 'AKCED'].includes(destino.toUpperCase()) && 
+                                 ['falla', 'REC_DÑ_EX', 'REC_DÑ_IN', 'REC_INCOM', 'PANRT'].includes(motivoRecoleccion);
+        
+        if (!esDestinoEspecial) {
+            const coincide = verificarCoincidencia(destino, despachosEsperados);
+            
+            if (!coincide) {
+                hayError = true;
+                errores.push({
+                    campo: 'Destino',
+                    valor: destino,
+                    recomendados: despachosEncontrados.map(d => {
+                        const compuesto = Object.keys(despachosCompuestos)
+                            .find(key => normalizarTexto(key) === normalizarTexto(d.despacho));
+                        return compuesto ? `${d.despacho} ` : d.despacho;
+                    }).join(", ")
+                });
+            }
+        }
+    }
+    
+    if (hayError) {
+        let mensaje = `ADVERTENCIA: Posible inconsistencia detectada para ${ciudadInput}.\n\n`;
+        
+        errores.forEach(error => {
+            mensaje += `• Campo ${error.campo}: "${error.valor}"\n`;
+            mensaje += `  Despachos recomendados: ${error.recomendados}\n\n`;
+        });
+        
+        mensaje += `¿Deseas continuar con los despachos ingresados?`;
+        
+        const confirmacion = confirm(mensaje);
+        
+        if (!confirmacion) {
+            const primerError = errores[0];
+            if (primerError.campo === 'Unidad de Negocio') {
+                document.getElementById('unidad').focus();
+            } else {
+                document.getElementById('destino').focus();
+            }
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 // Función para mostrar el popup con la información del despacho
@@ -1286,9 +1526,6 @@ function cerrarPopup() {
 
 // Configuración inicial al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-    // ... el resto de tu código ...
-});
-document.addEventListener('DOMContentLoaded', function() {
     // Cargar todos los despachos al inicio
     cargarDespachos();
     
@@ -1296,6 +1533,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('searchDespachos').addEventListener('input', function() {
         cargarDespachos(this.value);
     });
+    
+    // Asignar eventos a los campos de despacho
+    document.getElementById('unidad').addEventListener('change', validarDespacho);
+    document.getElementById('destino').addEventListener('change', validarDespacho);
     
     // Configuración de los calendarios
     flatpickr("#fecha", {
@@ -1315,16 +1556,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-function generarPlantillas() {
+// Función corregida para generar plantillas
+async function generarPlantillas() {
+    // Primero validar el despacho
+    const validacionExitosa = await validarDespacho();
+    if (!validacionExitosa) {
+        return; // Detener si la validación falla
+    }
+
     // Validar que la ciudad del cliente no esté vacía
     const ciudadCliente = document.getElementById('ciudadCliente').value.trim();
     if (!ciudadCliente) {
         alert('Por favor ingrese la Ciudad del Cliente');
         document.getElementById('ciudadCliente').focus();
         document.getElementById('ciudadCliente').style.border = '2px solid red';
-        return; // Detener la ejecución si no hay ciudad
+        return;
     } else {
-        document.getElementById('ciudadCliente').style.border = ''; // Quitar el borde rojo si estaba
+        document.getElementById('ciudadCliente').style.border = '';
     }
 
     // Obtener valores del formulario
@@ -1491,5 +1739,16 @@ async function generarFormatoAveri() {
     await generarImagen('formato-averi-template', `Formato_Averi_${valores.caso}`);
 }
 </script>
+
+<div id="customDialogOverlay" class="custom-dialog-overlay" style="display: none;">
+    <div class="custom-dialog">
+        <p id="customDialogMessage"></p>
+        <div class="custom-dialog-buttons">
+            <button id="customDialogNo" class="custom-dialog-button no">No</button>
+            <button id="customDialogYes" class="custom-dialog-button yes">Sí</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
