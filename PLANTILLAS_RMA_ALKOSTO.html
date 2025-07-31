@@ -677,6 +677,7 @@
                 <button type="button" onclick="generarPlantillas()">Generar Plantillas</button>
                 <button type="button" onclick="generarFormatoP()">Generar Formato P</button>
                 <button type="button" onclick="generarFormatoAveri()">Generar Formato Averi</button>
+		<button type="button" onclick="generarFormatoPilo()">Generar Formato PILO</button>
             </form>
             
             <div class="text-container">       
@@ -850,6 +851,68 @@
             <!-- Líneas verticales principales -->
             <div style="position:absolute; width:0; height:25mm; border-left:1px solid #000; left:60mm; top:15mm;"></div>
             <div style="position:absolute; width:0; height:25mm; border-left:1px solid #000; left:120mm; top:15mm;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Plantilla para el Formato PILO -->
+<div id="formato-pilo-template" class="formato-template">
+    <div class="formato-p-container">
+        <div class="p-grid">
+            <!-- Celda PILO amarilla SIN BORDES INTERNOS -->
+            <div class="p-cell p-yellow" style="width:60mm; height:45mm; top:0; left:120mm;">
+                <span class="p-big-text">PILO</span>
+            </div>
+            
+            <!-- Líneas horizontales principales - MODIFICADAS PARA NO CRUZAR EL RECUADRO AMARILLO -->
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:15mm; left:0;"></div>
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:30mm; left:0;"></div>
+            <div style="position:absolute; width:120mm; height:0; border-top:1px solid #000; top:45mm; left:0;"></div>
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:60mm;"></div>
+            <div style="position:absolute; width:180mm; height:0; border-top:1px solid #000; top:75mm;"></div>
+            
+            <!-- Líneas verticales principales -->
+            <div style="position:absolute; width:0; height:60mm; border-left:1px solid #000; left:60mm; top:0;"></div>
+            <div style="position:absolute; width:0; height:45mm; border-left:1px solid #000; left:120mm; top:0;"></div>
+            
+            <!-- Línea vertical entre EAN y Accesorios -->
+            <div class="p-linea-vertical"></div>
+            
+            <!-- Contenido principal -->
+            <div class="p-cell p-center-text" style="width:60mm; height:15mm; top:0; left:0;">PV</div>
+            <div class="p-cell p-center-text" id="pilo-pv-value" style="width:60mm; height:15mm; top:15mm; left:0;"></div>
+            
+            <div class="p-cell p-center-text" style="width:60mm; height:15mm; top:0; left:60mm;">Fecha</div>
+            <div class="p-cell p-center-text" id="pilo-fecha-value" style="width:60mm; height:15mm; top:15mm; left:60mm;"></div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:30mm; left:0;">
+                <span>Serial: </span><span id="pilo-serial-value"></span>
+            </div>
+            <div class="p-cell" style="width:60mm; height:15mm; top:30mm; left:60mm;">
+                <span>OT: </span><span id="pilo-ot-value"></span>
+            </div>
+            
+            <!-- OBSERVACIONES en posición correcta -->
+            <div class="p-observaciones-container">
+                <span style="font-weight:bold;">OBSERVACIONES: </span>
+                <span id="pilo-observaciones-value" style="white-space: nowrap;"></span>
+            </div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:45mm; left:0;">
+                <span>Tecnico: </span><span id="pilo-tecnico-value"></span>
+            </div>
+            
+            <div class="p-cell" style="width:60mm; height:15mm; top:60mm; left:0;">
+                <span>EAN: </span><span id="pilo-ean-value"></span>
+            </div>
+            <div class="p-cell" style="width:60mm; height:15mm; top:60mm; left:60mm;">
+                <span>Accesorios: </span><span id="pilo-accesorios-value"></span>
+            </div>
+            
+            <!-- Campo FT con espacios corregidos -->
+            <div class="p-cell" style="width:180mm; height:15mm; top:75mm; left:0; border-top:1px solid #000;">
+                <span>FT: </span><span id="pilo-ft-value"></span>
+            </div>
         </div>
     </div>
 </div>
@@ -1738,6 +1801,41 @@ async function generarFormatoAveri() {
     // Generar imagen
     await generarImagen('formato-averi-template', `Formato_Averi_${valores.caso}`);
 }
+
+// FORMATO PILO (solo imagen JPG)
+async function generarFormatoPilo() {
+    // Obtener valores del formulario
+    const getValue = id => document.getElementById(id).value;
+    const valores = {
+        origen: getValue('origen'),
+        fecha: getValue('fecha'),
+        serial: getValue('serial'),
+        estadoproducto: getValue('estadoproducto'),
+        caso: getValue('caso'),
+        tecnico: getValue('tecnico'),
+        ean: getValue('ean'),
+        accesorios: getValue('accesorios'),
+        observaciones: getValue('observaciones')
+    };
+
+    // Actualizar plantilla con valores reales
+    document.getElementById('pilo-pv-value').textContent = valores.origen;
+    document.getElementById('pilo-fecha-value').textContent = valores.fecha;
+    document.getElementById('pilo-serial-value').textContent = valores.serial;
+    document.getElementById('pilo-ot-value').textContent = valores.caso;
+    document.getElementById('pilo-tecnico-value').textContent = valores.tecnico;
+    document.getElementById('pilo-ean-value').textContent = valores.ean;
+    document.getElementById('pilo-accesorios-value').textContent = valores.accesorios;
+    document.getElementById('pilo-observaciones-value').textContent = valores.estadoproducto;
+    
+    // Corregir espacios en el texto FT
+    const textoFT = valores.observaciones.replace(/([A-Z])([A-Z])/g, '$1 $2');
+    document.getElementById('pilo-ft-value').textContent = textoFT;
+
+    // Generar imagen
+    await generarImagen('formato-pilo-template', `Formato_PILO_${valores.caso}`);
+}
+
 </script>
 
 <div id="customDialogOverlay" class="custom-dialog-overlay" style="display: none;">
