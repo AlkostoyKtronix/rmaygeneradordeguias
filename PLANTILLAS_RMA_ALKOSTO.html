@@ -603,8 +603,8 @@
                 </select><br>
 
                 <!-- Nuevo campo para ciudad del cliente -->
-                <label for="ciudadCliente">Ciudad del Cliente:</label>
-<input type="text" id="ciudadCliente" name="ciudadCliente" placeholder="Ingrese la ciudad para validar despacho" onchange="validarDespacho()" required><br>
+		<label for="ciudadCliente">Ciudad del cliente:</label>
+		<input type="text" id="ciudadCliente" name="ciudadCliente" placeholder="Ingrese la ciudad para validar despacho" onchange="validarDespacho()" required><br>
 
                 <label for="caso">Caso/ODS:</label>
                 <input type="text" id="caso" name="caso" required><br>
@@ -1392,47 +1392,61 @@ function customConfirm(message) {
     });
 }
 
-// ... resto de tus funciones (incluyendo validarDespacho)
+// Variable para controlar si ya se mostró la pregunta
+// Variable para controlar si ya se mostró la pregunta
+let preguntaMuebleMostrada = false;
 
-// Función para validar el despacho según la ciudad ingresada
-async function validarDespacho() {
+async function validarDespacho(triggerField = null) {
     const ciudadInput = document.getElementById('ciudadCliente').value.trim();
     const motivoRecoleccion = document.getElementById('abreviatura').value;
-    const destino = document.getElementById('destino').value.trim();
+    let destino = document.getElementById('destino').value.trim();
     const unidadNegocio = document.getElementById('unidad').value.trim();
 
-    // --- 1. Validación especial por motivo de recolección (solo para Destino) ---
+    // 1. Validación especial para motivos que requieren confirmación de mueble
+    if ((triggerField === 'ciudad' || triggerField === null) && 
+        ['REC_DÑ_EX', 'REC_DÑ_IN', 'REC_INCOM'].includes(motivoRecoleccion) && 
+        ciudadInput && !preguntaMuebleMostrada) {
+        
+        preguntaMuebleMostrada = true;
+        const esMueble = await customConfirm('¿El producto con daño es un mueble?');
+        
+        const destinoEsperado = esMueble ? 'CENT1' : 'AKCED';
+        const mensajeConfirmacion = esMueble 
+            ? 'Recuerda que si el producto Deteriorado o Incompleto es un mueble este debe ir a CENT1' 
+            : 'Recuerda que si el producto Deteriorado o Incompleto NO es un mueble este debe ir a AKCED';
+        
+        if (normalizarTexto(destino) !== normalizarTexto(destinoEsperado)) {
+            const confirmarCambio = confirm(`${mensajeConfirmacion}\n\nActualmente has ingresado: ${destino}\n\n¿Deseas corregir automáticamente el destino a ${destinoEsperado}?`);
+            if (confirmarCambio) {
+                document.getElementById('destino').value = destinoEsperado;
+                destino = destinoEsperado;
+            }
+        } else {
+            // Mostrar mensaje informativo incluso si el destino ya es correcto
+            alert(mensajeConfirmacion);
+        }
+    }
+
+    // Resto de la función permanece igual...
     let destinoEsperadoPorMotivo = '';
     let mensajeErrorMotivo = '';
     let requiereValidacionEspecial = false;
 
-    // Solo preguntar si es mueble cuando el motivo es REC_DÑ_EX, REC_DÑ_IN o REC_INCOM
-    // y solo cuando se está modificando el campo de ciudad (no otros campos)
-    if (['REC_DÑ_EX', 'REC_DÑ_IN', 'REC_INCOM'].includes(motivoRecoleccion) && 
-        document.activeElement.id === 'ciudadCliente' && 
-        ciudadInput) {
-        const esMueble = await customConfirm('¿El producto con daño es un mueble?');
-        destinoEsperadoPorMotivo = esMueble ? 'CENT1' : 'AKCED';
-        mensajeErrorMotivo = `Recuerda que para recoger por Deterioro o Incompleto, ` + 
-            (esMueble ? 'si es mueble debe ir a CENT1' : 'si no es mueble debe ir a AKCED');
-        requiereValidacionEspecial = true;
-    } else {
-        switch(motivoRecoleccion) {
-            case 'falla':
-                destinoEsperadoPorMotivo = 'CENT1';
-                mensajeErrorMotivo = 'Recuerda que si el producto tiene falla debe ir a CENT1';
-                requiereValidacionEspecial = true;
-                break;
-                
-            case 'PANRT':
-                destinoEsperadoPorMotivo = 'CENT1';
-                mensajeErrorMotivo = 'Recuerda que si el producto tiene pantalla rota (PANRT) debe ir a CENT1';
-                requiereValidacionEspecial = true;
-                break;
-        }
+    switch(motivoRecoleccion) {
+        case 'falla':
+            destinoEsperadoPorMotivo = 'CENT1';
+            mensajeErrorMotivo = 'Recuerda que si el producto tiene falla debe ir a CENT1';
+            requiereValidacionEspecial = true;
+            break;
+            
+        case 'PANRT':
+            destinoEsperadoPorMotivo = 'CENT1';
+            mensajeErrorMotivo = 'Recuerda que si el producto tiene pantalla rota (PANRT) debe ir a CENT1';
+            requiereValidacionEspecial = true;
+            break;
     }
 
-// Aplicar corrección automática si es necesario
+    // Aplicar corrección automática si es necesario
     if (requiereValidacionEspecial && destinoEsperadoPorMotivo && 
         normalizarTexto(destino) !== normalizarTexto(destinoEsperadoPorMotivo)) {
         const confirmacion = confirm(`${mensajeErrorMotivo}\n\nActualmente has ingresado: ${destino}\n\n¿Deseas corregir el destino a ${destinoEsperadoPorMotivo}?`);
@@ -1557,7 +1571,6 @@ async function validarDespacho() {
     return true;
 }
 
-
 // Función para mostrar el popup con la información del despacho
 function mostrarPopupDespacho(despachos) {
     const popup = document.getElementById('despachoPopup');
@@ -1597,9 +1610,30 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarDespachos(this.value);
     });
     
+    // Inicializar atributo para controlar la pregunta
+    document.getElementById('ciudadCliente').dataset.preguntaMuebleMostrada = 'false';
+    
     // Asignar eventos a los campos de despacho
-    document.getElementById('unidad').addEventListener('change', validarDespacho);
-    document.getElementById('destino').addEventListener('change', validarDespacho);
+    document.getElementById('unidad').addEventListener('change', function() {
+        validarDespacho('unidad');
+    });
+    
+    document.getElementById('destino').addEventListener('change', function() {
+        validarDespacho('destino');
+    });
+    
+    // Configurar evento para ciudadCliente
+    document.getElementById('ciudadCliente').addEventListener('change', function() {
+        if (this.value.trim()) {
+            this.dataset.preguntaMuebleMostrada = 'false';
+            validarDespacho('ciudad');
+        }
+    });
+    
+    // Resetear bandera cuando cambia el motivo de recolección
+    document.getElementById('abreviatura').addEventListener('change', function() {
+        document.getElementById('ciudadCliente').dataset.preguntaMuebleMostrada = 'false';
+    });
     
     // Configuración de los calendarios
     flatpickr("#fecha", {
@@ -1608,7 +1642,6 @@ document.addEventListener('DOMContentLoaded', function() {
         allowInput: true
     });
     
-    // Fecha siguiente al día actual
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     
@@ -1624,7 +1657,7 @@ async function generarPlantillas() {
     // Primero validar el despacho
     const validacionExitosa = await validarDespacho();
     if (!validacionExitosa) {
-        return; // Detener si la validación falla
+        return;
     }
 
     // Validar que la ciudad del cliente no esté vacía
