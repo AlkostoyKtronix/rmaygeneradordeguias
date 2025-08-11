@@ -1402,6 +1402,11 @@ async function validarDespacho(triggerField = null) {
     let destino = document.getElementById('destino').value.trim();
     const unidadNegocio = document.getElementById('unidad').value.trim();
 
+    // Validación especial para REC_NO_SA
+    if (motivoRecoleccion === 'REC_NO_SA' && ciudadInput) {
+        alert("RECUERDA: Para INSATISFACCION debes revisar la factura en JASPER para validar si el producto está en kombo o Kasado.");
+    }
+
     // 1. Validación especial para motivos que requieren confirmación de mueble
     if ((triggerField === 'ciudad' || triggerField === null) && 
         ['REC_DÑ_EX', 'REC_DÑ_IN', 'REC_INCOM'].includes(motivoRecoleccion) && 
