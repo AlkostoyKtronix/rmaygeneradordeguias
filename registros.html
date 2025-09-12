@@ -468,12 +468,35 @@ function aplicarFiltros() {
     const filtroProceso = document.getElementById('filtro-proceso').value;
     
     registrosFiltrados = todosLosRegistros.filter(registro => {
-        // Filtro por fecha
+        // Filtro por fecha - MODIFICADO para comparar solo la fecha, no la hora
         if (filtroFecha) {
-            const registroFecha = new Date(registro.fecha).toISOString().split('T')[0];
+            // Convertir la fecha del registro a formato YYYY-MM-DD para comparar
+            let registroFecha;
+            try {
+                // Intentar convertir la fecha del registro
+                const fechaRegistro = new Date(registro.fecha);
+                if (isNaN(fechaRegistro.getTime())) {
+                    // Si no es una fecha válida, intentar parsear manualmente
+                    const partesFecha = registro.fecha.split(' ')[0].split('/');
+                    if (partesFecha.length === 3) {
+                        registroFecha = `${partesFecha[2]}-${partesFecha[1].padStart(2, '0')}-${partesFecha[0].padStart(2, '0')}`;
+                    } else {
+                        return false; // No se puede parsear la fecha
+                    }
+                } else {
+                    // Formatear a YYYY-MM-DD
+                    registroFecha = fechaRegistro.toISOString().split('T')[0];
+                }
+            } catch (e) {
+                console.error('Error procesando fecha:', registro.fecha, e);
+                return false;
+            }
+            
+            // Comparar solo la parte de la fecha (YYYY-MM-DD)
             if (registroFecha !== filtroFecha) return false;
         }
         
+        // Resto de filtros (sin cambios)
         // Filtro por gestor
         if (filtroGestor && registro.gestor !== filtroGestor) return false;
         
