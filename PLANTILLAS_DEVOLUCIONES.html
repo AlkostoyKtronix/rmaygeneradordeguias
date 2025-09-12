@@ -288,6 +288,9 @@
                 <option value="NO">NO</option>
             </select>
 
+ 	   <label>Valor del producto:</label>
+    	   <input type="number" id="valorProducto">
+
             <button class="boton-copiar" onclick="copiarInformacion()">Copiar Información</button>
             <button class="boton-guardar" onclick="guardarEnGoogleSheets()">Guardar en Google Sheets</button>
             <div id="mensajeGuardado" class="mensaje"></div>
@@ -425,6 +428,7 @@ function copiarInformacion() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
+    const valorProducto = document.getElementById('valorProducto').value; // NUEVO
     
     // Crear texto formateado
     const texto = `Gestor: ${gestor}
@@ -435,7 +439,8 @@ Valor del sostenimiento: ${valorSostenimiento}
 Corresponde a: ${correspondeA}
 Tiene Kazado: ${tieneKazado}
 Bajo: ${bajo}
-Solicito clave: ${solicitoClave}`;
+Solicito clave: ${solicitoClave}
+Valor del producto: ${valorProducto}`; // NUEVO
     
     // Copiar al portapapeles
     navigator.clipboard.writeText(texto)
@@ -460,6 +465,7 @@ function guardarEnGoogleSheets() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
+    const valorProducto = document.getElementById('valorProducto').value; // NUEVO
     
     // Obtener fecha y hora actual
     const fecha = new Date().toLocaleString();
@@ -482,7 +488,8 @@ function guardarEnGoogleSheets() {
         correspondeA: correspondeA,
         tieneKazado: tieneKazado,
         bajo: bajo,
-        solicitoClave: solicitoClave
+        solicitoClave: solicitoClave,
+        valorProducto: valorProducto // NUEVO
     };
     
     console.log('Enviando datos:', datos); // Para depuración
@@ -517,6 +524,7 @@ function guardarEnGoogleSheets() {
             document.getElementById('tieneKazado').value = '';
             document.getElementById('bajo').value = '';
             document.getElementById('solicitoClave').value = '';
+            document.getElementById('valorProducto').value = ''; // NUEVO
             
             mensaje.style.display = "none";
         }, 3000);

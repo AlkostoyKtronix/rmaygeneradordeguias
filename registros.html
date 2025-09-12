@@ -292,29 +292,30 @@
         
         <div class="tabla-contenedor">
             <table id="tabla-registros">
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Gestor</th>
-                        <th>N° Factura</th>
-                        <th>Caso</th>
-                        <th>Motivo</th>
-                        <th>Proceso</th>
-                        <th>Valor Sostenimiento</th>
-                        <th>Corresponde a</th>
-                        <th>Tiene Kazado</th>
-                        <th>Bajo</th>
-                        <th>Solicito Clave</th>
-                    </tr>
-                </thead>
-                <tbody id="cuerpo-tabla">
-                    <tr>
-                        <td colspan="11" class="cargando">
-                            <i class="fas fa-spinner fa-spin"></i> Cargando registros...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Gestor</th>
+            <th>N° Factura</th>
+            <th>Caso</th>
+            <th>Motivo</th>
+            <th>Proceso</th>
+            <th>Valor Sostenimiento</th>
+            <th>Corresponde a</th>
+            <th>Tiene Kazado</th>
+            <th>Bajo</th>
+            <th>Solicito Clave</th>
+            <th>Valor Producto</th> <!-- NUEVO -->
+        </tr>
+    </thead>
+    <tbody id="cuerpo-tabla">
+        <tr>
+            <td colspan="12" class="cargando"> <!-- Cambiado de 11 a 12 -->
+                <i class="fas fa-spinner fa-spin"></i> Cargando registros...
+            </td>
+        </tr>
+    </tbody>
+</table>
         </div>
         
         <div class="paginacion">
@@ -445,6 +446,7 @@ function reformatearDatosArray(datosArray) {
             else if (propName === 'Corresponde a') propName = 'correspondeA';
             else if (propName === 'Tiene Kazado') propName = 'tieneKazado';
             else if (propName === 'Solicito Clave') propName = 'solicitoClave';
+            else if (propName === 'Valor del Producto') propName = 'valorProducto'; // NUEVO
             else propName = propName.toLowerCase();
             
             registro[propName] = row[j];
@@ -506,7 +508,7 @@ function mostrarRegistrosPaginados() {
     if (registrosPagina.length === 0) {
         cuerpoTabla.innerHTML = `
             <tr>
-                <td colspan="11" class="sin-registros">
+                <td colspan="12" class="sin-registros"> <!-- Cambiado de 11 a 12 -->
                     No se encontraron registros que coincidan con los filtros aplicados.
                 </td>
             </tr>
@@ -527,6 +529,7 @@ function mostrarRegistrosPaginados() {
                 <td>${registro.tieneKazado || ''}</td>
                 <td>${registro.bajo || ''}</td>
                 <td>${registro.solicitoClave || ''}</td>
+                <td>${registro.valorProducto ? '$' + parseInt(registro.valorProducto).toLocaleString() : ''}</td> <!-- NUEVO -->
             `;
             cuerpoTabla.appendChild(fila);
         });
@@ -646,7 +649,8 @@ function exportarAExcel() {
         'Corresponde a': registro.correspondeA || '',
         'Tiene Kazado': registro.tieneKazado || '',
         'Bajo': registro.bajo || '',
-        'Solicito Clave': registro.solicitoClave || ''
+        'Solicito Clave': registro.solicitoClave || '',
+        'Valor Producto': registro.valorProducto || '' // NUEVO
     }));
     
     // Crear libro de trabajo y hoja
@@ -665,7 +669,8 @@ function exportarAExcel() {
         {wch: 15}, // Corresponde a
         {wch: 12}, // Tiene Kazado
         {wch: 10}, // Bajo
-        {wch: 15}  // Solicito Clave
+        {wch: 15}, // Solicito Clave
+        {wch: 15}  // Valor Producto (NUEVO)
     ];
     hoja['!cols'] = anchosColumnas;
     
@@ -676,6 +681,7 @@ function exportarAExcel() {
     const fechaExportacion = new Date().toISOString().split('T')[0];
     XLSX.writeFile(libro, `registros_confirm_${fechaExportacion}.xlsx`);
 }
+
 </script>
 </body>
 </html>
