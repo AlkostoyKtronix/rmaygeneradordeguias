@@ -367,26 +367,67 @@ async function cargarRegistros() {
             </tr>
         `;
         
+        console.log('Cargando datos desde:', GOOGLE_SCRIPT_GET_URL);
         const respuesta = await fetch(GOOGLE_SCRIPT_GET_URL);
+        
+        if (!respuesta.ok) {
+            throw new Error(`Error HTTP: ${respuesta.status}`);
+        }
+        
         const datos = await respuesta.json();
+        console.log('Datos recibidos:', datos);
         
         if (datos && datos.registros) {
             todosLosRegistros = datos.registros;
+            console.log(`Se cargaron ${todosLosRegistros.length} registros`);
+            aplicarFiltros();
+        } else if (Array.isArray(datos)) {
+            // Formato alternativo: el script podría estar devolviendo un array directamente
+            console.log('Datos recibidos como array, reformateando...');
+            todosLosRegistros = reformatearDatosArray(datos);
             aplicarFiltros();
         } else {
-            throw new Error('Formato de respuesta inesperado');
+            throw new Error('Formato de respuesta inesperado: ' + JSON.stringify(datos));
         }
     } catch (error) {
         console.error("Error al cargar registros:", error);
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
                 <td colspan="11" class="sin-registros">
-                    <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
-                    Por favor, intente nuevamente.
+                    <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros: ${error.message}
                 </td>
             </tr>
         `;
     }
+}
+
+// Función auxiliar para reformatear datos si vienen como array
+function reformatearDatosArray(datosArray) {
+    if (datosArray.length <= 1) return [];
+    
+    const headers = datosArray[0];
+    const registros = [];
+    
+    for (let i = 1; i < datosArray.length; i++) {
+        const row = datosArray[i];
+        const registro = {};
+        
+        for (let j = 0; j < headers.length; j++) {
+            let propName = headers[j];
+            if (propName === 'Número de Factura') propName = 'numFactura';
+            else if (propName === 'Valor del Sostenimiento') propName = 'valorSostenimiento';
+            else if (propName === 'Corresponde a') propName = 'correspondeA';
+            else if (propName === 'Tiene Kazado') propName = 'tieneKazado';
+            else if (propName === 'Solicito Clave') propName = 'solicitoClave';
+            else propName = propName.toLowerCase();
+            
+            registro[propName] = row[j];
+        }
+        
+        registros.push(registro);
+    }
+    
+    return registros;
 }
 
 // Función para aplicar filtros a los registros
