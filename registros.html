@@ -540,51 +540,70 @@ function mostrarRegistrosPaginados() {
         `Mostrando ${registrosFiltrados.length} registro(s)`;
 }
 
-// Función para formatear la fecha
+// Función para formatear la fecha (versión robusta)
 function formatearFecha(fechaStr) {
     if (!fechaStr) return '';
     
+    // Si ya está formateada correctamente, devolver tal cual
+    if (typeof fechaStr === 'string' && fechaStr.match(/\d{2}\/\d{2}\/\d{4}.*\d{2}:\d{2}/)) {
+        return fechaStr;
+    }
+    
     try {
-        // Intentar diferentes formatos de fecha
         let fecha;
         
-        // Si ya es un objeto Date válido
-        if (fechaStr instanceof Date && !isNaN(fechaStr)) {
-            fecha = fechaStr;
-        } 
-        // Si es un string con formato ISO o similar
-        else if (typeof fechaStr === 'string') {
-            // Intentar parsear directamente
-            fecha = new Date(fechaStr);
+        // Intentar diferentes patrones de fecha
+        if (typeof fechaStr === 'string') {
+            // Patrón 1: "dd/mm/yyyy hh:mm"
+            const patron1 = fechaStr.match(/(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{4})[^\d]*(\d{1,2})[^\d]*(\d{1,2})/);
+            if (patron1) {
+                fecha = new Date(patron1[3], patron1[2] - 1, patron1[1], patron1[4], patron1[5]);
+            }
             
-            // Si el parseo directo falla, intentar con formato personalizado
-            if (isNaN(fecha.getTime())) {
-                // Para fechas en formato "dd/mm/yyyy hh:mm" o similar
-                const partes = fechaStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[\s,]+(\d{1,2}):(\d{1,2})/);
-                if (partes) {
-                    fecha = new Date(partes[3], partes[2] - 1, partes[1], partes[4], partes[5]);
-                } else {
-                    // Intentar con otros formatos comunes
-                    fecha = new Date(fechaStr.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
+            // Patrón 2: "yyyy-mm-dd hh:mm:ss"
+            if ((!fecha || isNaN(fecha.getTime())) && fechaStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                fecha = new Date(fechaStr);
+            }
+            
+            // Patrón 3: Timestamp de Google Sheets (número de serie)
+            if ((!fecha || isNaN(fecha.getTime())) && !isNaN(fechaStr)) {
+                // Google Sheets usa el formato de fecha de Excel (días desde 1900-01-01)
+                const timestamp = parseInt(fechaStr);
+                if (timestamp > 2000) { // Es probablemente un timestamp Unix
+                    fecha = new Date(timestamp);
+                } else if (timestamp > 0) { // Es probablemente un día serial de Excel/Sheets
+                    // Los dates en Google Sheets son días desde 1900-01-01
+                    fecha = new Date((timestamp - 25569) * 86400 * 1000);
                 }
             }
+            
+            // Último intento: constructor Date nativo
+            if (!fecha || isNaN(fecha.getTime())) {
+                fecha = new Date(fechaStr);
+            }
+        } else if (typeof fechaStr === 'number') {
+            // Si es un timestamp numérico
+            fecha = new Date(fechaStr);
         }
         
-        // Verificar si la fecha es válida
+        // Si después de todos los intentos no tenemos una fecha válida
         if (!fecha || isNaN(fecha.getTime())) {
-            return fechaStr; // Devolver el valor original si no se puede parsear
+            return String(fechaStr); // Devolver como string
         }
         
+        // Formatear la fecha correctamente
         return fecha.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: false
         });
+        
     } catch (e) {
         console.error('Error formateando fecha:', fechaStr, e);
-        return fechaStr; // Devolver el valor original en caso de error
+        return String(fechaStr);
     }
 }
 
