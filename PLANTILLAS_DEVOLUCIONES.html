@@ -130,6 +130,38 @@
         .boton-copiar:hover {
             background-color: #45a049;
         }
+        .boton-guardar {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        .boton-guardar:hover {
+            background-color: #0b7dda;
+        }
+        .mensaje {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            text-align: center;
+            display: none;
+        }
+        .exito {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
         @media (max-width: 1200px) {
             .contenedor-principal {
                 flex-direction: column;
@@ -151,6 +183,7 @@
         <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
         <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
         <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
+        <button onclick="window.location.href='HISTORIAL_REGISTROS.html'">Historial de Registros</button>
     </div>
 
     <div class="contenedor-principal">
@@ -183,7 +216,7 @@
 
         <!-- Nuevo formulario a la derecha -->
         <div class="formulario">
-            <h2>INFORMACIÓN DE LA DEVOLUCION</h2>
+            <h2>INFORMACIÓN DEL CASO</h2>
             <label>Caso:</label>
             <input type="text" id="caso">
 
@@ -207,7 +240,7 @@
                 <option value="DEVOLUCION DE DINERO">DEVOLUCION DE DINERO</option>
             </select>
 
-            <label>Valor del sostenimiento (si aplica):</label>
+            <label>Valor del sostenimiento (si aplica): $</label>
             <input type="number" id="valorSostenimiento">
 
             <label>Corresponde a:</label>
@@ -239,12 +272,26 @@
             </select>
 
             <button class="boton-copiar" onclick="copiarInformacion()">Copiar Información</button>
+            <button class="boton-guardar" onclick="guardarEnGoogleSheets()">Guardar en Google Sheets</button>
+            <div id="mensajeGuardado" class="mensaje"></div>
+        </div>
+    </div>
+
+    <!-- Modal para mostrar registros -->
+    <div id="modalRegistros" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); z-index:1000;">
+        <div style="background-color:white; width:80%; max-width:800px; margin:50px auto; padding:20px; border-radius:8px; max-height:80vh; overflow-y:auto;">
+            <h2 style="text-align:center;">Historial de Registros</h2>
+            <div id="contenidoRegistros"></div>
+            <button onclick="document.getElementById('modalRegistros').style.display='none'" style="display:block; margin:20px auto; padding:10px 20px; background-color:#333; color:white; border:none; border-radius:5px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
 
 <script>
 let rmaImg = null;
 let facturaImg = null;
+
+// URL de tu Web App de Google Apps Script (debes reemplazarla con la tuya)
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec";
 
 function setupPasteDrop(divId, assignImgFn) {
     const drop = document.getElementById(divId);
@@ -363,7 +410,7 @@ function copiarInformacion() {
     const texto = `Caso: ${caso}
 Motivo: ${motivo}
 Proceso: ${proceso}
-Valor del sostenimiento: ${valorSostenimiento}
+Valor del sostenimiento: $${valorSostenimiento}
 Corresponde a: ${correspondeA}
 Tiene Kazado: ${tieneKazado}
 Bajo: ${bajo}
@@ -378,6 +425,104 @@ Solicito clave: ${solicitoClave}`;
             console.error('Error al copiar: ', err);
             alert('No se pudo copiar la información. Por favor, inténtalo de nuevo.');
         });
+}
+
+function guardarEnGoogleSheets() {
+    // Recopilar todos los valores del formulario
+    const numFactura = document.getElementById('numFactura').value;
+    const numCaso = document.getElementById('numCaso').value;
+    const numPak = document.getElementById('numPak').value;
+    const tipoProcedimiento = document.getElementById('tipoProcedimiento').value;
+    const caso = document.getElementById('caso').value;
+    const motivo = document.getElementById('motivo').value;
+    const proceso = document.getElementById('proceso').value;
+    const valorSostenimiento = document.getElementById('valorSostenimiento').value;
+    const correspondeA = document.getElementById('correspondeA').value;
+    const tieneKazado = document.getElementById('tieneKazado').value;
+    const bajo = document.getElementById('bajo').value;
+    const solicitoClave = document.getElementById('solicitoClave').value;
+    
+    // Obtener fecha y hora actual
+    const fecha = new Date().toLocaleString();
+    
+    // Crear objeto con los datos
+    const datos = {
+        fecha: fecha,
+        numFactura: numFactura,
+        numCaso: numCaso,
+        numPak: numPak,
+        tipoProcedimiento: tipoProcedimiento,
+        caso: caso,
+        motivo: motivo,
+        proceso: proceso,
+        valorSostenimiento: valorSostenimiento,
+        correspondeA: correspondeA,
+        tieneKazado: tieneKazado,
+        bajo: bajo,
+        solicitoClave: solicitoClave
+    };
+    
+    // Mostrar mensaje de carga
+    const mensaje = document.getElementById('mensajeGuardado');
+    mensaje.textContent = "Guardando datos...";
+    mensaje.className = "mensaje";
+    mensaje.style.display = "block";
+    
+    // Enviar datos a Google Sheets
+    fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(datos)
+    })
+    .then(() => {
+        mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
+        mensaje.className = "mensaje exito";
+        
+        // Limpiar formulario después de guardar
+        setTimeout(() => {
+            document.getElementById('caso').value = '';
+            document.getElementById('motivo').value = '';
+            document.getElementById('proceso').value = '';
+            document.getElementById('valorSostenimiento').value = '';
+            document.getElementById('correspondeA').value = '';
+            document.getElementById('tieneKazado').value = '';
+            document.getElementById('bajo').value = '';
+            document.getElementById('solicitoClave').value = '';
+            
+            mensaje.style.display = "none";
+        }, 3000);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        mensaje.textContent = "Error al guardar los datos. Por favor, inténtalo de nuevo.";
+        mensaje.className = "mensaje error";
+    });
+}
+
+// Función para obtener registros (solo para demostración)
+function obtenerRegistros() {
+    // En una implementación real, esto haría una solicitud a tu Google Script
+    // Para este ejemplo, simulamos datos
+    const registros = [
+        {fecha: '2023-10-15 10:30', caso: 'C001', motivo: 'FALLA', proceso: 'BONO DEVOLUCION'},
+        {fecha: '2023-10-14 14:22', caso: 'C002', motivo: 'PANTALLA ROTA', proceso: 'DEVOLUCION DE DINERO'},
+        {fecha: '2023-10-13 09:15', caso: 'C003', motivo: 'DETERIORADO', proceso: 'REFACTURACION'}
+    ];
+    
+    let contenido = '<table style="width:100%; border-collapse:collapse; margin-top:20px;">';
+    contenido += '<tr style="background-color:#f2f2f2;"><th style="padding:10px; border:1px solid #ddd;">Fecha</th><th style="padding:10px; border:1px solid #ddd;">Caso</th><th style="padding:10px; border:1px solid #ddd;">Motivo</th><th style="padding:10px; border:1px solid #ddd;">Proceso</th></tr>';
+    
+    registros.forEach(registro => {
+        contenido += `<tr><td style="padding:10px; border:1px solid #ddd;">${registro.fecha}</td><td style="padding:10px; border:1px solid #ddd;">${registro.caso}</td><td style="padding:10px; border:1px solid #ddd;">${registro.motivo}</td><td style="padding:10px; border:1px solid #ddd;">${registro.proceso}</td></tr>`;
+    });
+    
+    contenido += '</table>';
+    
+    document.getElementById('contenidoRegistros').innerHTML = contenido;
+    document.getElementById('modalRegistros').style.display = 'block';
 }
 </script>
 </body>
