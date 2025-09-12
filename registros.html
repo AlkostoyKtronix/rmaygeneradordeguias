@@ -545,7 +545,36 @@ function formatearFecha(fechaStr) {
     if (!fechaStr) return '';
     
     try {
-        const fecha = new Date(fechaStr);
+        // Intentar diferentes formatos de fecha
+        let fecha;
+        
+        // Si ya es un objeto Date válido
+        if (fechaStr instanceof Date && !isNaN(fechaStr)) {
+            fecha = fechaStr;
+        } 
+        // Si es un string con formato ISO o similar
+        else if (typeof fechaStr === 'string') {
+            // Intentar parsear directamente
+            fecha = new Date(fechaStr);
+            
+            // Si el parseo directo falla, intentar con formato personalizado
+            if (isNaN(fecha.getTime())) {
+                // Para fechas en formato "dd/mm/yyyy hh:mm" o similar
+                const partes = fechaStr.match(/(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})[\s,]+(\d{1,2}):(\d{1,2})/);
+                if (partes) {
+                    fecha = new Date(partes[3], partes[2] - 1, partes[1], partes[4], partes[5]);
+                } else {
+                    // Intentar con otros formatos comunes
+                    fecha = new Date(fechaStr.replace(/(\d{2})\/(\d{2})\/(\d{4})/, '$2/$1/$3'));
+                }
+            }
+        }
+        
+        // Verificar si la fecha es válida
+        if (!fecha || isNaN(fecha.getTime())) {
+            return fechaStr; // Devolver el valor original si no se puede parsear
+        }
+        
         return fecha.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: '2-digit',
@@ -554,7 +583,8 @@ function formatearFecha(fechaStr) {
             minute: '2-digit'
         });
     } catch (e) {
-        return fechaStr;
+        console.error('Error formateando fecha:', fechaStr, e);
+        return fechaStr; // Devolver el valor original en caso de error
     }
 }
 
