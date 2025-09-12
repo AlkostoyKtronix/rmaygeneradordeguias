@@ -162,6 +162,14 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            margin: 20px;
+            padding: 15px;
+            border-radius: 5px;
+        }
         @media (max-width: 1200px) {
             .contenedor-principal {
                 flex-direction: column;
@@ -179,11 +187,16 @@
         <h1>Generador de PDF Devoluciones</h1>
     </div>
 
+    <div class="info">
+        <strong>⚠️ IMPORTANTE: Configuración de Google Apps Script requerida</strong><br>
+        Para que el guardado en Google Sheets funcione, debes configurar el script de Google Apps Script con el código proporcionado.
+    </div>
+
     <div class="botones-container">
-        <button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
-        <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
-        <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
-        <button onclick="window.location.href='HISTORIAL_REGISTROS.html'">Historial de Registros</button>
+        <button onclick="alert('Plantilla RMA (simulado)')">Plantilla RMA</button>
+        <button onclick="alert('Generador de Guias (simulado)')">Generador de Guias</button>
+        <button onclick="alert('Generador PDF Devoluciones (simulado)')">Generador PDF Devoluciones</button>
+        <button onclick="mostrarRegistros()">Historial de Registros</button>
     </div>
 
     <div class="contenedor-principal">
@@ -281,7 +294,9 @@
     <div id="modalRegistros" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(0,0,0,0.7); z-index:1000;">
         <div style="background-color:white; width:80%; max-width:800px; margin:50px auto; padding:20px; border-radius:8px; max-height:80vh; overflow-y:auto;">
             <h2 style="text-align:center;">Historial de Registros</h2>
-            <div id="contenidoRegistros"></div>
+            <div id="contenidoRegistros">
+                <p style="text-align:center;">Los registros se cargarán desde Google Sheets una vez configurado.</p>
+            </div>
             <button onclick="document.getElementById('modalRegistros').style.display='none'" style="display:block; margin:20px auto; padding:10px 20px; background-color:#333; color:white; border:none; border-radius:5px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
@@ -428,11 +443,8 @@ Solicito clave: ${solicitoClave}`;
 }
 
 function guardarEnGoogleSheets() {
-    // Recopilar todos los valores del formulario
+    // Recopilar solo los campos específicos que necesitas
     const numFactura = document.getElementById('numFactura').value;
-    const numCaso = document.getElementById('numCaso').value;
-    const numPak = document.getElementById('numPak').value;
-    const tipoProcedimiento = document.getElementById('tipoProcedimiento').value;
     const caso = document.getElementById('caso').value;
     const motivo = document.getElementById('motivo').value;
     const proceso = document.getElementById('proceso').value;
@@ -445,13 +457,10 @@ function guardarEnGoogleSheets() {
     // Obtener fecha y hora actual
     const fecha = new Date().toLocaleString();
     
-    // Crear objeto con los datos
+    // Crear objeto con SOLO los datos que quieres enviar
     const datos = {
         fecha: fecha,
         numFactura: numFactura,
-        numCaso: numCaso,
-        numPak: numPak,
-        tipoProcedimiento: tipoProcedimiento,
         caso: caso,
         motivo: motivo,
         proceso: proceso,
@@ -502,27 +511,10 @@ function guardarEnGoogleSheets() {
     });
 }
 
-// Función para obtener registros (solo para demostración)
-function obtenerRegistros() {
-    // En una implementación real, esto haría una solicitud a tu Google Script
-    // Para este ejemplo, simulamos datos
-    const registros = [
-        {fecha: '2023-10-15 10:30', caso: 'C001', motivo: 'FALLA', proceso: 'BONO DEVOLUCION'},
-        {fecha: '2023-10-14 14:22', caso: 'C002', motivo: 'PANTALLA ROTA', proceso: 'DEVOLUCION DE DINERO'},
-        {fecha: '2023-10-13 09:15', caso: 'C003', motivo: 'DETERIORADO', proceso: 'REFACTURACION'}
-    ];
-    
-    let contenido = '<table style="width:100%; border-collapse:collapse; margin-top:20px;">';
-    contenido += '<tr style="background-color:#f2f2f2;"><th style="padding:10px; border:1px solid #ddd;">Fecha</th><th style="padding:10px; border:1px solid #ddd;">Caso</th><th style="padding:10px; border:1px solid #ddd;">Motivo</th><th style="padding:10px; border:1px solid #ddd;">Proceso</th></tr>';
-    
-    registros.forEach(registro => {
-        contenido += `<tr><td style="padding:10px; border:1px solid #ddd;">${registro.fecha}</td><td style="padding:10px; border:1px solid #ddd;">${registro.caso}</td><td style="padding:10px; border:1px solid #ddd;">${registro.motivo}</td><td style="padding:10px; border:1px solid #ddd;">${registro.proceso}</td></tr>`;
-    });
-    
-    contenido += '</table>';
-    
-    document.getElementById('contenidoRegistros').innerHTML = contenido;
+// Función para mostrar registros
+function mostrarRegistros() {
     document.getElementById('modalRegistros').style.display = 'block';
+    document.getElementById('contenidoRegistros').innerHTML = '<p style="text-align:center;">Los registros se cargarán desde Google Sheets una vez configurado.</p>';
 }
 </script>
 </body>
