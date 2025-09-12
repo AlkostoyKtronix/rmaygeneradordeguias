@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Historial de Registros - CONFIRN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            min-width: 100vw;
+            overflow-x: hidden;
+        }
+        .titulo {
+            width: 100%;
+            background-color: #000000;
+            text-align: center;
+            color: white;
+            margin-bottom: 0px;
+            padding: 15px 0;
+        }
+        .botones-container {
+            background-color: #000000;
+            margin-top: 0px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border: 40px solid #000000;
+            box-sizing: border-box;
+        }
+        .botones-container button {
+            background-color: #000000;
+            color: white;
+            padding: 12px 20px;
+            border: 2px solid white;
+            border-radius: 5px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .botones-container button:hover {
+            background-color: #333;
+        }
+        
+        /* Estilos para la página de registros */
+        .contenedor-registros {
+            width: 95%;
+            margin: 20px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .filtros-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .filtro-grupo {
+            display: flex;
+            flex-direction: column;
+            min-width: 180px;
+        }
+        
+        .filtro-grupo label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .filtro-grupo input, .filtro-grupo select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        .botones-accion {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .boton-exportar {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .boton-exportar:hover {
+            background-color: #218838;
+        }
+        
+        .boton-refrescar {
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .boton-refrescar:hover {
+            background-color: #138496;
+        }
+        
+        .tabla-contenedor {
+            overflow-x: auto;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #000;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .paginacion {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .paginacion button {
+            padding: 8px 15px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .paginacion button:hover {
+            background-color: #333;
+        }
+        
+        .paginacion button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .contador-registros {
+            margin-top: 15px;
+            text-align: right;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .cargando {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+        }
+        
+        .sin-registros {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media (max-width: 768px) {
+            .filtros-container {
+                flex-direction: column;
+            }
+            
+            .filtro-grupo {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="titulo">
+        <h1>Historial de Registros - CONFIRN</h1>
+    </div>
+    <div class="botones-container">
+        <button onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver al Formulario</button>
+        <button onclick="window.location.href='#'"><i class="fas fa-file-pdf"></i> Generador PDF</button>
+    </div>
+
+    <div class="contenedor-registros">
+        <h2>Registros Guardados</h2>
+        
+        <div class="filtros-container">
+            <div class="filtro-grupo">
+                <label for="filtro-fecha">Fecha</label>
+                <input type="date" id="filtro-fecha">
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-gestor">Gestor</label>
+                <select id="filtro-gestor">
+                    <option value="">Todos los gestores</option>
+                    <option value="LUIS FERNANDO GUTIERREZ TORRES">LUIS FERNANDO GUTIERREZ TORRES</option>
+                    <option value="JOSE EXNEYDER HOYOS VARGAS">JOSE EXNEYDER HOYOS VARGAS</option>
+                    <option value="CARLOS EDUARDO CASAS">CARLOS EDUARDO CASAS</option>
+                    <option value="JUAN MANUEL PUENTES POLANIA">JUAN MANUEL PUENTES POLANIA</option>
+                    <option value="JOHAN SEBASTIAN OVALLE">JOHAN SEBASTIAN OVALLE</option>
+                    <option value="CARLOS CAÑAS">CARLOS CAÑAS</option>
+                    <option value="ERIK HERNANDEZ">ERIK HERNANDEZ</option>
+                    <option value="KARELLY QUITIAN URREA">KARELLY QUITIAN URREA</option>
+                    <option value="DANIELA DUCUARA QUESADA">DANIELA DUCUARA QUESADA</option>
+                    <option value="BENJAMIN PRIETO">BENJAMIN PRIETO</option>
+                    <option value="CRISTIAN FERNANDO BERNAL OVIEDO">CRISTIAN FERNANDO BERNAL OVIEDO</option>
+                    <option value="ANA LILIANA MARQUEZ">ANA LILIANA MARQUEZ</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-factura">N° Factura</label>
+                <input type="text" id="filtro-factura" placeholder="Buscar por factura">
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-caso">Caso</label>
+                <input type="text" id="filtro-caso" placeholder="Buscar por caso">
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-motivo">Motivo</label>
+                <select id="filtro-motivo">
+                    <option value="">Todos los motivos</option>
+                    <option value="FALLA">FALLA</option>
+                    <option value="INSATISFACCION">INSATISFACCION</option>
+                    <option value="INCOMPLETO">INCOMPLETO</option>
+                    <option value="DETERIORADO">DETERIORADO</option>
+                    <option value="PANTALLA ROTA">PANTALLA ROTA</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-proceso">Proceso</label>
+                <select id="filtro-proceso">
+                    <option value="">Todos los procesos</option>
+                    <option value="BONO DEVOLUCION">BONO DEVOLUCION</option>
+                    <option value="BONO SERVICIO">BONO SERVICIO</option>
+                    <option value="REFACTURACION">REFACTURACION</option>
+                    <option value="SOSTENIMIENTO">SOSTENIMIENTO</option>
+                    <option value="DEVOLUCION DE DINERO">DEVOLUCION DE DINERO</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="botones-accion">
+            <button class="boton-refrescar" onclick="cargarRegistros()">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <button class="boton-exportar" onclick="exportarAExcel()">
+                <i class="fas fa-file-excel"></i> Exportar a Excel
+            </button>
+        </div>
+        
+        <div class="tabla-contenedor">
+            <table id="tabla-registros">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Gestor</th>
+                        <th>N° Factura</th>
+                        <th>Caso</th>
+                        <th>Motivo</th>
+                        <th>Proceso</th>
+                        <th>Valor Sostenimiento</th>
+                        <th>Corresponde a</th>
+                        <th>Tiene Kazado</th>
+                        <th>Bajo</th>
+                        <th>Solicito Clave</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla">
+                    <tr>
+                        <td colspan="11" class="cargando">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando registros...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="paginacion">
+            <button id="btn-anterior" onclick="cambiarPagina(-1)" disabled>
+                <i class="fas fa-chevron-left"></i> Anterior
+            </button>
+            <span id="info-pagina">Página 1 de 1</span>
+            <button id="btn-siguiente" onclick="cambiarPagina(1)" disabled>
+                Siguiente <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        
+        <div class="contador-registros" id="contador-registros">
+            Mostrando 0 registros
+        </div>
+    </div>
+
+<script>
+// URL de tu Web App de Google Apps Script para obtener datos
+const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbxeVVEueyJJj0gFPFxvGXyk_o4PJOw_vik1InyUpv_YJDI7Dw6Ae9DM8nuOOKUFQ_eS/exec?action=getRecords";
+
+// Variables globales
+let todosLosRegistros = [];
+let registrosFiltrados = [];
+let paginaActual = 1;
+const registrosPorPagina = 20;
+
+// Cargar registros cuando la página se carga
+document.addEventListener('DOMContentLoaded', function() {
+    cargarRegistros();
+    
+    // Configurar event listeners para los filtros
+    document.getElementById('filtro-fecha').addEventListener('change', aplicarFiltros);
+    document.getElementById('filtro-gestor').addEventListener('change', aplicarFiltros);
+    document.getElementById('filtro-factura').addEventListener('input', aplicarFiltros);
+    document.getElementById('filtro-caso').addEventListener('input', aplicarFiltros);
+    document.getElementById('filtro-motivo').addEventListener('change', aplicarFiltros);
+    document.getElementById('filtro-proceso').addEventListener('change', aplicarFiltros);
+});
+
+// Función para cargar registros desde Google Sheets
+async function cargarRegistros() {
+    try {
+        document.getElementById('cuerpo-tabla').innerHTML = `
+            <tr>
+                <td colspan="11" class="cargando">
+                    <i class="fas fa-spinner fa-spin"></i> Cargando registros...
+                </td>
+            </tr>
+        `;
+        
+        const respuesta = await fetch(GOOGLE_SCRIPT_GET_URL);
+        const datos = await respuesta.json();
+        
+        if (datos && datos.registros) {
+            todosLosRegistros = datos.registros;
+            aplicarFiltros();
+        } else {
+            throw new Error('Formato de respuesta inesperado');
+        }
+    } catch (error) {
+        console.error("Error al cargar registros:", error);
+        document.getElementById('cuerpo-tabla').innerHTML = `
+            <tr>
+                <td colspan="11" class="sin-registros">
+                    <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
+                    Por favor, intente nuevamente.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+// Función para aplicar filtros a los registros
+function aplicarFiltros() {
+    const filtroFecha = document.getElementById('filtro-fecha').value;
+    const filtroGestor = document.getElementById('filtro-gestor').value;
+    const filtroFactura = document.getElementById('filtro-factura').value.toLowerCase();
+    const filtroCaso = document.getElementById('filtro-caso').value.toLowerCase();
+    const filtroMotivo = document.getElementById('filtro-motivo').value;
+    const filtroProceso = document.getElementById('filtro-proceso').value;
+    
+    registrosFiltrados = todosLosRegistros.filter(registro => {
+        // Filtro por fecha
+        if (filtroFecha) {
+            const registroFecha = new Date(registro.fecha).toISOString().split('T')[0];
+            if (registroFecha !== filtroFecha) return false;
+        }
+        
+        // Filtro por gestor
+        if (filtroGestor && registro.gestor !== filtroGestor) return false;
+        
+        // Filtro por factura
+        if (filtroFactura && !registro.numFactura.toLowerCase().includes(filtroFactura)) return false;
+        
+        // Filtro por caso
+        if (filtroCaso && !registro.caso.toLowerCase().includes(filtroCaso)) return false;
+        
+        // Filtro por motivo
+        if (filtroMotivo && registro.motivo !== filtroMotivo) return false;
+        
+        // Filtro por proceso
+        if (filtroProceso && registro.proceso !== filtroProceso) return false;
+        
+        return true;
+    });
+    
+    // Reiniciar a la primera página después de filtrar
+    paginaActual = 1;
+    mostrarRegistrosPaginados();
+}
+
+// Función para mostrar registros paginados
+function mostrarRegistrosPaginados() {
+    const inicio = (paginaActual - 1) * registrosPorPagina;
+    const fin = inicio + registrosPorPagina;
+    const registrosPagina = registrosFiltrados.slice(inicio, fin);
+    
+    const cuerpoTabla = document.getElementById('cuerpo-tabla');
+    
+    if (registrosPagina.length === 0) {
+        cuerpoTabla.innerHTML = `
+            <tr>
+                <td colspan="11" class="sin-registros">
+                    No se encontraron registros que coincidan con los filtros aplicados.
+                </td>
+            </tr>
+        `;
+    } else {
+        cuerpoTabla.innerHTML = '';
+        registrosPagina.forEach(registro => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${formatearFecha(registro.fecha)}</td>
+                <td>${registro.gestor || ''}</td>
+                <td>${registro.numFactura || ''}</td>
+                <td>${registro.caso || ''}</td>
+                <td>${registro.motivo || ''}</td>
+                <td>${registro.proceso || ''}</td>
+                <td>${registro.valorSostenimiento ? '$' + parseInt(registro.valorSostenimiento).toLocaleString() : ''}</td>
+                <td>${registro.correspondeA || ''}</td>
+                <td>${registro.tieneKazado || ''}</td>
+                <td>${registro.bajo || ''}</td>
+                <td>${registro.solicitoClave || ''}</td>
+            `;
+            cuerpoTabla.appendChild(fila);
+        });
+    }
+    
+    // Actualizar controles de paginación
+    actualizarControlesPaginacion();
+    
+    // Actualizar contador de registros
+    document.getElementById('contador-registros').textContent = 
+        `Mostrando ${registrosFiltrados.length} registro(s)`;
+}
+
+// Función para formatear la fecha
+function formatearFecha(fechaStr) {
+    if (!fechaStr) return '';
+    
+    try {
+        const fecha = new Date(fechaStr);
+        return fecha.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (e) {
+        return fechaStr;
+    }
+}
+
+// Función para actualizar controles de paginación
+function actualizarControlesPaginacion() {
+    const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
+    
+    document.getElementById('btn-anterior').disabled = paginaActual <= 1;
+    document.getElementById('btn-siguiente').disabled = paginaActual >= totalPaginas;
+    document.getElementById('info-pagina').textContent = `Página ${paginaActual} de ${totalPaginas}`;
+}
+
+// Función para cambiar de página
+function cambiarPagina(direccion) {
+    const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
+    paginaActual += direccion;
+    
+    if (paginaActual < 1) paginaActual = 1;
+    if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+    
+    mostrarRegistrosPaginados();
+}
+
+// Función para exportar a Excel
+function exportarAExcel() {
+    if (registrosFiltrados.length === 0) {
+        alert('No hay registros para exportar.');
+        return;
+    }
+    
+    // Preparar datos para exportación
+    const datosExportar = registrosFiltrados.map(registro => ({
+        'Fecha': formatearFecha(registro.fecha),
+        'Gestor': registro.gestor || '',
+        'Número de Factura': registro.numFactura || '',
+        'Caso': registro.caso || '',
+        'Motivo': registro.motivo || '',
+        'Proceso': registro.proceso || '',
+        'Valor Sostenimiento': registro.valorSostenimiento || '',
+        'Corresponde a': registro.correspondeA || '',
+        'Tiene Kazado': registro.tieneKazado || '',
+        'Bajo': registro.bajo || '',
+        'Solicito Clave': registro.solicitoClave || ''
+    }));
+    
+    // Crear libro de trabajo y hoja
+    const libro = XLSX.utils.book_new();
+    const hoja = XLSX.utils.json_to_sheet(datosExportar);
+    
+    // Ajustar el ancho de las columnas
+    const anchosColumnas = [
+        {wch: 20}, // Fecha
+        {wch: 25}, // Gestor
+        {wch: 18}, // Número de Factura
+        {wch: 15}, // Caso
+        {wch: 15}, // Motivo
+        {wch: 18}, // Proceso
+        {wch: 20}, // Valor Sostenimiento
+        {wch: 15}, // Corresponde a
+        {wch: 12}, // Tiene Kazado
+        {wch: 10}, // Bajo
+        {wch: 15}  // Solicito Clave
+    ];
+    hoja['!cols'] = anchosColumnas;
+    
+    // Añadir hoja al libro
+    XLSX.utils.book_append_sheet(libro, hoja, 'Registros CONFIRN');
+    
+    // Generar archivo y descargar
+    const fechaExportacion = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(libro, `registros_confirm_${fechaExportacion}.xlsx`);
+}
+</script>
+</body>
+</html>

@@ -162,14 +162,6 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        .info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
-            margin: 20px;
-            padding: 15px;
-            border-radius: 5px;
-        }
         @media (max-width: 1200px) {
             .contenedor-principal {
                 flex-direction: column;
@@ -187,10 +179,10 @@
         <h1>Generador de PDF Devoluciones</h1>
     </div>
     <div class="botones-container">
-        <button onclick="alert('Plantilla RMA (simulado)')">Plantilla RMA</button>
-        <button onclick="alert('Generador de Guias (simulado)')">Generador de Guias</button>
-        <button onclick="alert('Generador PDF Devoluciones (simulado)')">Generador PDF Devoluciones</button>
-        <button onclick="mostrarRegistros()">Historial de Registros</button>
+	<button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
+    	<button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
+    	<button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF 	Devoluciones</button>
+	<button onclick="window.location.href='registros.html'">Historial de Registros</button>
     </div>
 
     <div class="contenedor-principal">
@@ -224,6 +216,24 @@
         <!-- Nuevo formulario a la derecha -->
         <div class="formulario">
             <h2>INFORMACIÓN DEL CASO</h2>
+            
+            <label>Gestor:</label>
+            <input type="text" id="gestor" list="gestores" placeholder="Escribe o selecciona un gestor">
+            <datalist id="gestores">
+                <option value="LUIS FERNANDO GUTIERREZ TORRES">
+                <option value="JOSE EXNEYDER HOYOS VARGAS">
+                <option value="CARLOS EDUARDO CASAS">
+                <option value="JUAN MANUEL PUENTES POLANIA">
+                <option value="JOHAN SEBASTIAN OVALLE">
+                <option value="CARLOS CAÑAS">
+                <option value="ERIK HERNANDEZ">
+                <option value="KARELLY QUITIAN URREA">
+                <option value="DANIELA DUCUARA QUESADA">
+                <option value="BENJAMIN PRIETO">
+                <option value="CRISTIAN FERNANDO BERNAL OVIEDO">
+                <option value="ANA LILIANA MARQUEZ">
+            </datalist>
+
             <label>Caso:</label>
             <input type="text" id="caso">
 
@@ -247,7 +257,7 @@
                 <option value="DEVOLUCION DE DINERO">DEVOLUCION DE DINERO</option>
             </select>
 
-            <label>Valor del sostenimiento (si aplica): $</label>
+            <label>Valor del sostenimiento (si aplica): </label>
             <input type="number" id="valorSostenimiento">
 
             <label>Corresponde a:</label>
@@ -406,6 +416,7 @@ async function generarPDF() {
 
 function copiarInformacion() {
     // Recopilar todos los valores del formulario
+    const gestor = document.getElementById('gestor').value;
     const caso = document.getElementById('caso').value;
     const motivo = document.getElementById('motivo').value;
     const proceso = document.getElementById('proceso').value;
@@ -416,10 +427,11 @@ function copiarInformacion() {
     const solicitoClave = document.getElementById('solicitoClave').value;
     
     // Crear texto formateado
-    const texto = `Caso: ${caso}
+    const texto = `Gestor: ${gestor}
+Caso: ${caso}
 Motivo: ${motivo}
 Proceso: ${proceso}
-Valor del sostenimiento: $${valorSostenimiento}
+Valor del sostenimiento: ${valorSostenimiento}
 Corresponde a: ${correspondeA}
 Tiene Kazado: ${tieneKazado}
 Bajo: ${bajo}
@@ -438,6 +450,7 @@ Solicito clave: ${solicitoClave}`;
 
 function guardarEnGoogleSheets() {
     // Recopilar solo los campos específicos que necesitas
+    const gestor = document.getElementById('gestor').value;
     const numFactura = document.getElementById('numFactura').value;
     const caso = document.getElementById('caso').value;
     const motivo = document.getElementById('motivo').value;
@@ -454,6 +467,7 @@ function guardarEnGoogleSheets() {
     // Crear objeto con SOLO los datos que quieres enviar
     const datos = {
         fecha: fecha,
+        gestor: gestor,
         numFactura: numFactura,
         caso: caso,
         motivo: motivo,
@@ -486,6 +500,7 @@ function guardarEnGoogleSheets() {
         
         // Limpiar formulario después de guardar
         setTimeout(() => {
+            document.getElementById('gestor').value = '';
             document.getElementById('caso').value = '';
             document.getElementById('motivo').value = '';
             document.getElementById('proceso').value = '';
