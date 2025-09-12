@@ -59,47 +59,28 @@
             padding: 0 10px;
             box-sizing: border-box;
         }
-        .info-box {
+        .formulario {
             background-color: white;
             border-radius: 8px;
             padding: 20px;
-            width: calc(33% - 20px);
-            min-width: 300px;
+            width: calc(50% - 20px);
+            min-width: 400px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow-y: auto;
-            max-height: 700px;
             margin: 0 10px;
         }
-        .info-box h2 {
+        .formulario h2 {
             text-align: center;
             margin-top: 0;
             color: #000000;
             border-bottom: 2px solid #000;
             padding-bottom: 10px;
         }
-        .info-box ol {
-            padding-left: 25px;
-        }
-        .info-box li {
-            margin-bottom: 8px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .formulario {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            width: calc(34% - 20px);
-            min-width: 400px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            margin: 0 10px;
-        }
         .formulario label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
         }
-        .formulario input, .formulario textarea {
+        .formulario input, .formulario textarea, .formulario select {
             width: 100%;
             padding: 8px;
             margin: 5px 0 15px 0;
@@ -119,7 +100,7 @@
         .dropzone.dragover {
             background-color: #e0e0e0;
         }
-        button[onclick="generarPDF()"] {
+        .boton-generar {
             background-color: #000;
             color: white;
             border: none;
@@ -129,16 +110,32 @@
             font-size: 16px;
             width: 100%;
             box-sizing: border-box;
+            margin-top: 10px;
         }
-        button[onclick="generarPDF()"]:hover {
+        .boton-generar:hover {
             background-color: #333;
+        }
+        .boton-copiar {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+        .boton-copiar:hover {
+            background-color: #45a049;
         }
         @media (max-width: 1200px) {
             .contenedor-principal {
                 flex-direction: column;
                 align-items: center;
             }
-            .info-box, .formulario {
+            .formulario {
                 width: 90%;
                 margin-bottom: 20px;
             }
@@ -157,30 +154,9 @@
     </div>
 
     <div class="contenedor-principal">
-        <!-- Cuadro de información PAK (izquierda) -->
-        <div class="info-box">
-            <h2>DEVOLUCION CON PAK</h2>
-            <ol>
-                <li>Validar que tenga PAK creado y los datos estén correctos</li>
-                <li>Validar que la persona que se comunica es el cliente autorizado en el PAK</li>
-                <li>Consultar la factura (Unidad venta, producto vs. caso, comentarios, casado y precio)</li>
-                <li>Validar si la factura y el producto tiene devolución (Jasper con búsqueda desde la fecha de recogida)</li>
-                <li>Validar si el precio de la factura vs. Precio internet es igual</li>
-                <li>Si todo esta ok, antes de ofrecer re facturación, validar inventario en ATP para ofrecer o no el proceso de re facturación.</li>
-                <li>Consultar con el cliente que proceso desea (envío bono, re facturación o devolución de dinero), confirmando siempre correo, dirección y siempre solicitar cedula (imagen o foto). (Indicar generaremos el proceso y quedaremos por whatsapp comunicados para confirmar cuando finalicemos)</li>
-                <li>Verificar que la caja no este en uso por otro compañero e ingresar a la caja con usuario y contraseña asignado</li>
-                <li>Generar proceso en caja (DEVOLUCION O REFACTURACION SEGÚN APLIQUE)</li>
-                <li>Si es reversión Cupo (Adjuntar bono en Eskucha y cambiar manualmente a cola de caja general) / ESTADO en proceso (devolución dinero / cupo)</li>
-                <li>Adjuntar soportes en link (Adjuntar soporte devolución e imagen de cedula)</li>
-                <li>Legalizar por medio de PAK filtro en voz cliente (Adjuntar soporte devolución e imagen de cedula)</li>
-                <li>Dejar registro en archivo (Registro devoluciones A2)</li>
-                <li>Confirmar con el cliente proceso efectivo (Whatsapp o llamada)</li>
-                <li>Cerrar caso con la gestión realizada (Hacer uso de las plantillas definidas)</li>
-            </ol>
-        </div>
-
-        <!-- Formulario central -->
+        <!-- Formulario para generar PDF (izquierda) -->
         <div class="formulario">
+            <h2>GENERAR PDF</h2>
             <label>Número de Factura (obligatorio)</label>
             <input type="text" id="numFactura" required>
 
@@ -202,28 +178,67 @@
             <label>Devolución Jasper</label>
             <input type="file" id="pdfDevolucion" accept="application/pdf">
 
-            <button onclick="generarPDF()">Generar Documento PDF</button>
+            <button class="boton-generar" onclick="generarPDF()">Generar Documento PDF</button>
         </div>
 
-        <!-- Cuadro de información RMA (derecha) -->
-        <div class="info-box">
-            <h2>DEVOLUCION CON RMA</h2>
-            <ol>
-                <li>Validar el estado de la RMA (Cerrado), si no esta cerrada el cliente debe contar con el soporte de recolección o debe registrar recogido en Voz cliente</li>
-                <li>Validar que la persona que se comunica es cliente envió o cliente factura para el proceso de devolución.</li>
-                <li>Consultar la factura (Unidad venta, producto vs. caso, comentarios, casado y precio)</li>
-                <li>Validar si la factura y el producto tiene devolución (Jasper con búsqueda desde la fecha de recogida)</li>
-                <li>Validar si el precio de la factura vs. Precio internet es igual</li>
-                <li>Si todo esta ok, antes de ofrecer re facturación, validar inventario en ATP para ofrecer o no el proceso de re facturación.</li>
-                <li>Consultar con el cliente que proceso desea (envío bono, re facturación o devolución de dinero), confirmando siempre correo y dirección. (Indicar generaremos el proceso y quedaremos por whatsapp comunicados para confirmar cuando finalicemos)</li>
-                <li>Verificar que la caja no este en uso por otro compañero e ingresar a la caja con usuario y contraseña asignado</li>
-                <li>Generar proceso en caja (DEVOLUCION O REFACTURACION SEGÚN APLIQUE)</li>
-                <li>Si es reversión Cupo (Adjuntar bono en Eskucha y cambiar manualmente a cola de caja general) / ESTADO en proceso (devolución dinero / cupo)</li>
-                <li>Adjuntar soportes en link (RMA/Soporte devolución/ Si aplica cedula)</li>
-                <li>Dejar registro en archivo (Registro devoluciones A2)</li>
-                <li>Confirmar con el cliente proceso efectivo (Whatsapp o llamada)</li>
-                <li>Cerrar caso con la gestión realizada (Hacer uso de las plantillas definidas)</li>
-            </ol>
+        <!-- Nuevo formulario a la derecha -->
+        <div class="formulario">
+            <h2>INFORMACIÓN DE LA DEVOLUCION</h2>
+            <label>Caso:</label>
+            <input type="text" id="caso">
+
+            <label>Motivo:</label>
+            <select id="motivo">
+                <option value="">Seleccione...</option>
+                <option value="FALLA">FALLA</option>
+                <option value="INSATISFACCION">INSATISFACCION</option>
+                <option value="INCOMPLETO">INCOMPLETO</option>
+                <option value="DETERIORADO">DETERIORADO</option>
+                <option value="PANTALLA ROTA">PANTALLA ROTA</option>
+            </select>
+
+            <label>Proceso:</label>
+            <select id="proceso">
+                <option value="">Seleccione...</option>
+                <option value="BONO DEVOLUCION">BONO DEVOLUCION</option>
+                <option value="BONO SERVICIO">BONO SERVICIO</option>
+                <option value="REFACTURACION">REFACTURACION</option>
+                <option value="SOSTENIMIENTO">SOSTENIMIENTO</option>
+                <option value="DEVOLUCION DE DINERO">DEVOLUCION DE DINERO</option>
+            </select>
+
+            <label>Valor del sostenimiento (si aplica):</label>
+            <input type="number" id="valorSostenimiento">
+
+            <label>Corresponde a:</label>
+            <select id="correspondeA">
+                <option value="">Seleccione...</option>
+                <option value="POLITICA">POLITICA</option>
+                <option value="GARANTIA">GARANTIA</option>
+            </select>
+
+            <label>Tiene Kazado:</label>
+            <select id="tieneKazado">
+                <option value="">Seleccione...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+            </select>
+
+            <label>Bajo:</label>
+            <select id="bajo">
+                <option value="">Seleccione...</option>
+                <option value="PAK">PAK</option>
+                <option value="RMA">RMA</option>
+            </select>
+
+            <label>Solicito clave:</label>
+            <select id="solicitoClave">
+                <option value="">Seleccione...</option>
+                <option value="SI">SI</option>
+                <option value="NO">NO</option>
+            </select>
+
+            <button class="boton-copiar" onclick="copiarInformacion()">Copiar Información</button>
         </div>
     </div>
 
@@ -331,6 +346,38 @@ async function generarPDF() {
     link.href = URL.createObjectURL(blob);
     link.download = `${factura} CONFIRN.pdf`;
     link.click();
+}
+
+function copiarInformacion() {
+    // Recopilar todos los valores del formulario
+    const caso = document.getElementById('caso').value;
+    const motivo = document.getElementById('motivo').value;
+    const proceso = document.getElementById('proceso').value;
+    const valorSostenimiento = document.getElementById('valorSostenimiento').value;
+    const correspondeA = document.getElementById('correspondeA').value;
+    const tieneKazado = document.getElementById('tieneKazado').value;
+    const bajo = document.getElementById('bajo').value;
+    const solicitoClave = document.getElementById('solicitoClave').value;
+    
+    // Crear texto formateado
+    const texto = `Caso: ${caso}
+Motivo: ${motivo}
+Proceso: ${proceso}
+Valor del sostenimiento: ${valorSostenimiento}
+Corresponde a: ${correspondeA}
+Tiene Kazado: ${tieneKazado}
+Bajo: ${bajo}
+Solicito clave: ${solicitoClave}`;
+    
+    // Copiar al portapapeles
+    navigator.clipboard.writeText(texto)
+        .then(() => {
+            alert('Información copiada al portapapeles!');
+        })
+        .catch(err => {
+            console.error('Error al copiar: ', err);
+            alert('No se pudo copiar la información. Por favor, inténtalo de nuevo.');
+        });
 }
 </script>
 </body>
