@@ -464,6 +464,12 @@ function guardarEnGoogleSheets() {
     // Obtener fecha y hora actual
     const fecha = new Date().toLocaleString();
     
+    // Validar campos obligatorios
+    if (!gestor) {
+        alert('Por favor, ingresa el nombre del gestor');
+        return;
+    }
+    
     // Crear objeto con SOLO los datos que quieres enviar
     const datos = {
         fecha: fecha,
@@ -478,6 +484,8 @@ function guardarEnGoogleSheets() {
         bajo: bajo,
         solicitoClave: solicitoClave
     };
+    
+    console.log('Enviando datos:', datos); // Para depuración
     
     // Mostrar mensaje de carga
     const mensaje = document.getElementById('mensajeGuardado');
@@ -498,7 +506,7 @@ function guardarEnGoogleSheets() {
         mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
         mensaje.className = "mensaje exito";
         
-        // Limpiar formulario después de guardar
+        // Limpiar formulario después de guardar (excepto número de factura)
         setTimeout(() => {
             document.getElementById('gestor').value = '';
             document.getElementById('caso').value = '';
