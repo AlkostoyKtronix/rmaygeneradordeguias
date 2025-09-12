@@ -8,6 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <style>
+        /* Tus estilos CSS existentes */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -428,7 +429,7 @@ function copiarInformacion() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
-    const valorProducto = document.getElementById('valorProducto').value; // NUEVO
+    const valorProducto = document.getElementById('valorProducto').value;
     
     // Crear texto formateado
     const texto = `Gestor: ${gestor}
@@ -440,7 +441,7 @@ Corresponde a: ${correspondeA}
 Tiene Kazado: ${tieneKazado}
 Bajo: ${bajo}
 Solicito clave: ${solicitoClave}
-Valor del producto: ${valorProducto}`; // NUEVO
+Valor del producto: ${valorProducto}`;
     
     // Copiar al portapapeles
     navigator.clipboard.writeText(texto)
@@ -465,7 +466,7 @@ function guardarEnGoogleSheets() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
-    const valorProducto = document.getElementById('valorProducto').value; // NUEVO
+    const valorProducto = document.getElementById('valorProducto').value;
     
     // Obtener fecha y hora actual
     const fecha = new Date().toLocaleString();
@@ -489,7 +490,7 @@ function guardarEnGoogleSheets() {
         tieneKazado: tieneKazado,
         bajo: bajo,
         solicitoClave: solicitoClave,
-        valorProducto: valorProducto // NUEVO - asegúrate de que el nombre coincida con Google Apps Script
+        valorProducto: valorProducto // Asegúrate de que este nombre coincida con Google Apps Script
     };
     
     console.log('Enviando datos:', datos); // Para depuración
@@ -524,7 +525,7 @@ function guardarEnGoogleSheets() {
             document.getElementById('tieneKazado').value = '';
             document.getElementById('bajo').value = '';
             document.getElementById('solicitoClave').value = '';
-            document.getElementById('valorProducto').value = ''; // NUEVO
+            document.getElementById('valorProducto').value = '';
             
             mensaje.style.display = "none";
         }, 3000);
