@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Registros - CONFIRN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>    <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -335,7 +334,7 @@
 
 <script>
 // URL de tu Web App de Google Apps Script para obtener datos
-const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzrsHhifZUhRZhBNyBjxPwXcsNuzKDEplEdxjtXaeRrU1v0uFmn_2wSWYISkbSdOSzJmQ/exec?action=getRecords";
+const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzrsHhifZUhRZhBNyBjxPwXcsNuzKDEplEdxjtXaeRrU1v0uFmn_2wSWYISkbSdOSzJmQ/exec";
 
 // Variables globales
 let todosLosRegistros = [];
@@ -367,49 +366,59 @@ async function cargarRegistros() {
             </tr>
         `;
         
-        console.log('Cargando datos desde:', GOOGLE_SCRIPT_GET_URL);
+        // Usar un proxy para evitar problemas CORS
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+        const targetUrl = GOOGLE_SCRIPT_GET_URL + '?action=getRecords';
         
-        // Usar modo 'cors' para manejar mejor las respuestas
-        const respuesta = await fetch(GOOGLE_SCRIPT_GET_URL, {
-            mode: 'cors'
+        const respuesta = await fetch(proxyUrl + targetUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         });
         
         if (!respuesta.ok) {
-            throw new Error(`Error HTTP: ${respuesta.status} ${respuesta.statusText}`);
+            throw new Error(`Error HTTP: ${respuesta.status}`);
         }
         
-        const textoRespuesta = await respuesta.text();
-        console.log('Respuesta recibida:', textoRespuesta);
+        const datos = await respuesta.json();
         
-        let datos;
-        try {
-            datos = JSON.parse(textoRespuesta);
-        } catch (e) {
-            throw new Error('La respuesta no es JSON válido: ' + textoRespuesta.substring(0, 100));
-        }
-        
-        console.log('Datos parseados:', datos);
-        
+        // Verificar diferentes formatos de respuesta
         if (datos && datos.registros) {
             todosLosRegistros = datos.registros;
-            console.log(`Se cargaron ${todosLosRegistros.length} registros`);
-            aplicarFiltros();
         } else if (Array.isArray(datos)) {
-            // Formato alternativo: el script podría estar devolviendo un array directamente
-            console.log('Datos recibidos como array, reformateando...');
+            // Si la respuesta es un array directamente
             todosLosRegistros = reformatearDatosArray(datos);
-            aplicarFiltros();
         } else {
-            throw new Error('Formato de respuesta inesperado: ' + JSON.stringify(datos));
+            throw new Error('Formato de respuesta inesperado');
         }
+        
+        aplicarFiltros();
+        
     } catch (error) {
         console.error("Error al cargar registros:", error);
+        
+        // Intentar sin proxy si falla
+        try {
+            const respuestaDirecta = await fetch(GOOGLE_SCRIPT_GET_URL + '?action=getRecords');
+            if (respuestaDirecta.ok) {
+                const datosDirectos = await respuestaDirecta.json();
+                if (datosDirectos && datosDirectos.registros) {
+                    todosLosRegistros = datosDirectos.registros;
+                    aplicarFiltros();
+                    return;
+                }
+            }
+        } catch (errorDirecto) {
+            console.error("Error en intento directo:", errorDirecto);
+        }
+        
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
                 <td colspan="11" class="sin-registros">
-                    <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros: ${error.message}
+                    <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
+                    <br>Por favor, intente nuevamente.
                     <br><br>
-                    <button onclick="cargarRegistros()" style="padding: 5px 10px; margin-top: 10px;">
+                    <button onclick="cargarRegistros()" style="padding: 8px 15px; background-color: #000; color: white; border: none; border-radius: 5px; cursor: pointer;">
                         Reintentar
                     </button>
                 </td>
