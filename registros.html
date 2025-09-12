@@ -368,14 +368,27 @@ async function cargarRegistros() {
         `;
         
         console.log('Cargando datos desde:', GOOGLE_SCRIPT_GET_URL);
-        const respuesta = await fetch(GOOGLE_SCRIPT_GET_URL);
+        
+        // Usar modo 'cors' para manejar mejor las respuestas
+        const respuesta = await fetch(GOOGLE_SCRIPT_GET_URL, {
+            mode: 'cors'
+        });
         
         if (!respuesta.ok) {
-            throw new Error(`Error HTTP: ${respuesta.status}`);
+            throw new Error(`Error HTTP: ${respuesta.status} ${respuesta.statusText}`);
         }
         
-        const datos = await respuesta.json();
-        console.log('Datos recibidos:', datos);
+        const textoRespuesta = await respuesta.text();
+        console.log('Respuesta recibida:', textoRespuesta);
+        
+        let datos;
+        try {
+            datos = JSON.parse(textoRespuesta);
+        } catch (e) {
+            throw new Error('La respuesta no es JSON válido: ' + textoRespuesta.substring(0, 100));
+        }
+        
+        console.log('Datos parseados:', datos);
         
         if (datos && datos.registros) {
             todosLosRegistros = datos.registros;
@@ -395,6 +408,10 @@ async function cargarRegistros() {
             <tr>
                 <td colspan="11" class="sin-registros">
                     <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros: ${error.message}
+                    <br><br>
+                    <button onclick="cargarRegistros()" style="padding: 5px 10px; margin-top: 10px;">
+                        Reintentar
+                    </button>
                 </td>
             </tr>
         `;
