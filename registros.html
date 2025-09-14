@@ -877,7 +877,7 @@ function exportarAExcel() {
     
     // Generar archivo y descargar
     const fechaExportacion = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(libro, `registros_confirm_${fechaExportacion}.xlsx`);
+    XLSX.writeFile(libro, `registros_caja_${fechaExportacion}.xlsx`);
 }
 </script>
 </body>
