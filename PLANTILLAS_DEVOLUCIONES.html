@@ -173,6 +173,81 @@
                 margin-bottom: 20px;
             }
         }
+        
+        /* Estilos para el modal de contraseña */
+        .modal-contrasena {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .contenido-modal {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .contenido-modal h2 {
+            text-align: center;
+            margin-top: 0;
+            color: #000;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .contenido-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .botones-modal {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .botones-modal button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .boton-confirmar {
+            background-color: #000;
+            color: white;
+        }
+        .boton-confirmar:hover {
+            background-color: #333;
+        }
+        .boton-cancelar {
+            background-color: #ccc;
+            color: #333;
+        }
+        .boton-cancelar:hover {
+            background-color: #bbb;
+        }
+        
+        /* Estilo para el mensaje de alerta */
+        .alerta-jasper {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -182,16 +257,22 @@
     <div class="botones-container">
 	<button onclick="window.location.href='PLANTILLAS_RMA_ALKOSTO.html'">Plantilla RMA</button>
     	<button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
-    	<button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF 	Devoluciones</button>
-	<button onclick="window.location.href='registros.html'">Historial de Registros</button>
+    	<button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
+	<button onclick="solicitarAccesoRegistros()">Historial de Registros</button>
     </div>
 
     <div class="contenedor-principal">
         <!-- Formulario para generar PDF (izquierda) -->
         <div class="formulario">
             <h2>GENERAR PDF</h2>
+            
+            <!-- Mensaje de alerta para validación de factura -->
+            <div id="alertaJasper" class="alerta-jasper">
+                Recuerda validar la factura en Jasper. Si esta registra en observaciones como "CARTERA ESPECIAL" NO le puedes enviar un BONO CAMBIO. Debe realizarse el proceso de DEVOLUCION DE DINERO.
+            </div>
+            
             <label>Número de Factura (obligatorio)</label>
-            <input type="text" id="numFactura" required>
+            <input type="text" id="numFactura" required onblur="mostrarAlertaJasper()">
 
             <label>Número de Caso</label>
             <input type="text" id="numCaso">
@@ -309,6 +390,18 @@
         </div>
     </div>
 
+    <!-- Modal para contraseña -->
+    <div id="modalContrasena" class="modal-contrasena">
+        <div class="contenido-modal">
+            <h2>Ingresar Contraseña</h2>
+            <input type="password" id="inputContrasena" placeholder="Ingresa la contraseña">
+            <div class="botones-modal">
+                <button class="boton-cancelar" onclick="cerrarModalContrasena()">Cancelar</button>
+                <button class="boton-confirmar" onclick="verificarContrasena()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
 <script>
 let rmaImg = null;
 let facturaImg = null;
@@ -316,6 +409,59 @@ let facturaImg = null;
 // URL de tu Web App de Google Apps Script (debes reemplazarla con la tuya)
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-kbDBR25SWqlTg_5D80VrxWK1YOWUXQoAdJBHf9OuwNWsq7l_wv7_2pCMiTl05J62XQ/exec";
 
+// Contraseña predefinida
+const CONTRASENA_CORRECTA = "Alkosto2025*";
+
+// Función para mostrar alerta de validación en Jasper
+function mostrarAlertaJasper() {
+    const factura = document.getElementById("numFactura").value.trim();
+    const alertaDiv = document.getElementById("alertaJasper");
+    
+    if (factura) {
+        alertaDiv.style.display = "block";
+    } else {
+        alertaDiv.style.display = "none";
+    }
+}
+
+// Función para solicitar acceso a registros (con contraseña)
+function solicitarAccesoRegistros() {
+    // Mostrar el modal de contraseña
+    document.getElementById('modalContrasena').style.display = 'flex';
+    document.getElementById('inputContrasena').focus();
+}
+
+// Función para verificar la contraseña
+function verificarContrasena() {
+    const input = document.getElementById('inputContrasena');
+    const contrasenaIngresada = input.value;
+    
+    if (contrasenaIngresada === CONTRASENA_CORRECTA) {
+        // Contraseña correcta, redirigir a la página de registros
+        cerrarModalContrasena();
+        window.location.href = 'registros.html';
+    } else {
+        // Contraseña incorrecta
+        alert('Contraseña incorrecta. Intenta nuevamente.');
+        input.value = '';
+        input.focus();
+    }
+}
+
+// Función para cerrar el modal de contraseña
+function cerrarModalContrasena() {
+    document.getElementById('modalContrasena').style.display = 'none';
+    document.getElementById('inputContrasena').value = '';
+}
+
+// Permitir presionar Enter para confirmar
+document.getElementById('inputContrasena').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        verificarContrasena();
+    }
+});
+
+// Resto del código existente...
 function setupPasteDrop(divId, assignImgFn) {
     const drop = document.getElementById(divId);
     drop.addEventListener('paste', (e) => {

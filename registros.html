@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial de Registros</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>    <style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        /* Estilos anteriores (sin cambios) */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -198,6 +200,21 @@
             font-style: italic;
         }
         
+        .filtro-rango {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .filtro-rango button {
+            padding: 8px 12px;
+            background-color: #000;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
         @media (max-width: 768px) {
             .filtros-container {
                 flex-direction: column;
@@ -205,6 +222,11 @@
             
             .filtro-grupo {
                 width: 100%;
+            }
+            
+            .filtro-rango {
+                flex-direction: column;
+                align-items: stretch;
             }
         }
     </style>
@@ -215,7 +237,7 @@
     </div>
     <div class="botones-container">
         <button onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver al Formulario</button>
-        <button onclick="window.location.href='#'"><i class="fas fa-file-pdf"></i> Generador PDF</button>
+        <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'"><i class="fas fa-file-pdf"></i> Generador PDF</button>
     </div>
 
     <div class="contenedor-registros">
@@ -223,8 +245,49 @@
         
         <div class="filtros-container">
             <div class="filtro-grupo">
-                <label for="filtro-fecha">Fecha</label>
+                <label for="filtro-fecha">Fecha específica</label>
                 <input type="date" id="filtro-fecha">
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-mes">Filtrar por mes</label>
+                <select id="filtro-mes">
+                    <option value="">Seleccionar mes</option>
+                    <option value="1">Enero</option>
+                    <option value="2">Febrero</option>
+                    <option value="3">Marzo</option>
+                    <option value="4">Abril</option>
+                    <option value="5">Mayo</option>
+                    <option value="6">Junio</option>
+                    <option value="7">Julio</option>
+                    <option value="8">Agosto</option>
+                    <option value="9">Septiembre</option>
+                    <option value="10">Octubre</option>
+                    <option value="11">Noviembre</option>
+                    <option value="12">Diciembre</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label for="filtro-anio">Año</label>
+                <select id="filtro-anio">
+                    <option value="">Seleccionar año</option>
+                </select>
+            </div>
+            
+            <div class="filtro-grupo">
+                <label>Rango de fechas</label>
+                <div class="filtro-rango">
+                    <div>
+                        <label for="filtro-fecha-inicio" style="font-size: 12px;">Desde</label>
+                        <input type="date" id="filtro-fecha-inicio">
+                    </div>
+                    <div>
+                        <label for="filtro-fecha-fin" style="font-size: 12px;">Hasta</label>
+                        <input type="date" id="filtro-fecha-fin">
+                    </div>
+                    <button onclick="aplicarRangoFechas()"><i class="fas fa-filter"></i></button>
+                </div>
             </div>
             
             <div class="filtro-grupo">
@@ -292,30 +355,30 @@
         
         <div class="tabla-contenedor">
             <table id="tabla-registros">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>Gestor</th>
-            <th>N° Factura</th>
-            <th>Caso</th>
-            <th>Motivo</th>
-            <th>Proceso</th>
-            <th>Valor Sostenimiento</th>
-            <th>Corresponde a</th>
-            <th>Tiene Kazado</th>
-            <th>Bajo</th>
-            <th>Solicito Clave</th>
-            <th>Valor Producto</th> <!-- NUEVO -->
-        </tr>
-    </thead>
-    <tbody id="cuerpo-tabla">
-        <tr>
-            <td colspan="12" class="cargando"> <!-- Cambiado de 11 a 12 -->
-                <i class="fas fa-spinner fa-spin"></i> Cargando registros...
-            </td>
-        </tr>
-    </tbody>
-</table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Gestor</th>
+                        <th>N° Factura</th>
+                        <th>Caso</th>
+                        <th>Motivo</th>
+                        <th>Proceso</th>
+                        <th>Valor Sostenimiento</th>
+                        <th>Corresponde a</th>
+                        <th>Tiene Kazado</th>
+                        <th>Bajo</th>
+                        <th>Solicito Clave</th>
+                        <th>Valor Producto</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-tabla">
+                    <tr>
+                        <td colspan="12" class="cargando">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando registros...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
         
         <div class="paginacion">
@@ -346,22 +409,47 @@ const registrosPorPagina = 20;
 // Cargar registros cuando la página se carga
 document.addEventListener('DOMContentLoaded', function() {
     cargarRegistros();
+    cargarSelectorAnios();
     
     // Configurar event listeners para los filtros
     document.getElementById('filtro-fecha').addEventListener('change', aplicarFiltros);
+    document.getElementById('filtro-mes').addEventListener('change', filtrarPorMes);
+    document.getElementById('filtro-anio').addEventListener('change', filtrarPorMes);
     document.getElementById('filtro-gestor').addEventListener('change', aplicarFiltros);
     document.getElementById('filtro-factura').addEventListener('input', aplicarFiltros);
     document.getElementById('filtro-caso').addEventListener('input', aplicarFiltros);
     document.getElementById('filtro-motivo').addEventListener('change', aplicarFiltros);
     document.getElementById('filtro-proceso').addEventListener('change', aplicarFiltros);
+    
+    // Event listeners para el rango de fechas
+    document.getElementById('filtro-fecha-inicio').addEventListener('change', aplicarFiltros);
+    document.getElementById('filtro-fecha-fin').addEventListener('change', aplicarFiltros);
 });
+
+// Función para cargar el selector de años
+function cargarSelectorAnios() {
+    const selectorAnio = document.getElementById('filtro-anio');
+    const anioActual = new Date().getFullYear();
+    
+    // Limpiar opciones existentes excepto la primera
+    while (selectorAnio.options.length > 1) {
+        selectorAnio.remove(1);
+    }
+    
+    for (let i = anioActual; i >= 2020; i--) {
+        const opcion = document.createElement('option');
+        opcion.value = i;
+        opcion.textContent = i;
+        selectorAnio.appendChild(opcion);
+    }
+}
 
 // Función para cargar registros desde Google Sheets
 async function cargarRegistros() {
     try {
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
-                <td colspan="11" class="cargando">
+                <td colspan="12" class="cargando">
                     <i class="fas fa-spinner fa-spin"></i> Cargando registros...
                 </td>
             </tr>
@@ -415,7 +503,7 @@ async function cargarRegistros() {
         
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
-                <td colspan="11" class="sin-registros">
+                <td colspan="12" class="sin-registros">
                     <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
                     <br>Por favor, intente nuevamente.
                     <br><br>
@@ -446,7 +534,7 @@ function reformatearDatosArray(datosArray) {
             else if (propName === 'Corresponde a') propName = 'correspondeA';
             else if (propName === 'Tiene Kazado') propName = 'tieneKazado';
             else if (propName === 'Solicito Clave') propName = 'solicitoClave';
-            else if (propName === 'Valor del Producto') propName = 'valorProducto'; // NUEVO
+            else if (propName === 'Valor del Producto') propName = 'valorProducto';
             else propName = propName.toLowerCase();
             
             registro[propName] = row[j];
@@ -466,50 +554,39 @@ function aplicarFiltros() {
     const filtroCaso = document.getElementById('filtro-caso').value.toLowerCase();
     const filtroMotivo = document.getElementById('filtro-motivo').value;
     const filtroProceso = document.getElementById('filtro-proceso').value;
+    const filtroFechaInicio = document.getElementById('filtro-fecha-inicio').value;
+    const filtroFechaFin = document.getElementById('filtro-fecha-fin').value;
+    
+    console.log('Aplicando filtros - Rango:', filtroFechaInicio, 'a', filtroFechaFin);
     
     registrosFiltrados = todosLosRegistros.filter(registro => {
-        // Filtro por fecha - MODIFICADO para comparar solo la fecha, no la hora
+        // Filtro por fecha específica
         if (filtroFecha) {
-            // Convertir la fecha del registro a formato YYYY-MM-DD para comparar
-            let registroFecha;
-            try {
-                // Intentar convertir la fecha del registro
-                const fechaRegistro = new Date(registro.fecha);
-                if (isNaN(fechaRegistro.getTime())) {
-                    // Si no es una fecha válida, intentar parsear manualmente
-                    const partesFecha = registro.fecha.split(' ')[0].split('/');
-                    if (partesFecha.length === 3) {
-                        registroFecha = `${partesFecha[2]}-${partesFecha[1].padStart(2, '0')}-${partesFecha[0].padStart(2, '0')}`;
-                    } else {
-                        return false; // No se puede parsear la fecha
-                    }
-                } else {
-                    // Formatear a YYYY-MM-DD
-                    registroFecha = fechaRegistro.toISOString().split('T')[0];
-                }
-            } catch (e) {
-                console.error('Error procesando fecha:', registro.fecha, e);
+            const fechaRegistro = convertirFechaFormato(registro.fecha);
+            if (!fechaRegistro || fechaRegistro !== filtroFecha) {
+                return false;
+            }
+        }
+        
+        // Filtro por rango de fechas (SOLO si hay valores)
+        if (filtroFechaInicio || filtroFechaFin) {
+            const fechaRegistro = convertirFechaFormato(registro.fecha);
+            if (!fechaRegistro) return false;
+            
+            if (filtroFechaInicio && fechaRegistro < filtroFechaInicio) {
                 return false;
             }
             
-            // Comparar solo la parte de la fecha (YYYY-MM-DD)
-            if (registroFecha !== filtroFecha) return false;
+            if (filtroFechaFin && fechaRegistro > filtroFechaFin) {
+                return false;
+            }
         }
         
-        // Resto de filtros (sin cambios)
-        // Filtro por gestor
+        // Resto de filtros
         if (filtroGestor && registro.gestor !== filtroGestor) return false;
-        
-        // Filtro por factura
-        if (filtroFactura && !registro.numFactura.toLowerCase().includes(filtroFactura)) return false;
-        
-        // Filtro por caso
-        if (filtroCaso && !registro.caso.toLowerCase().includes(filtroCaso)) return false;
-        
-        // Filtro por motivo
+        if (filtroFactura && registro.numFactura && !registro.numFactura.toLowerCase().includes(filtroFactura)) return false;
+        if (filtroCaso && registro.caso && !registro.caso.toLowerCase().includes(filtroCaso)) return false;
         if (filtroMotivo && registro.motivo !== filtroMotivo) return false;
-        
-        // Filtro por proceso
         if (filtroProceso && registro.proceso !== filtroProceso) return false;
         
         return true;
@@ -518,6 +595,104 @@ function aplicarFiltros() {
     // Reiniciar a la primera página después de filtrar
     paginaActual = 1;
     mostrarRegistrosPaginados();
+}
+
+// Función para filtrar por mes y año (VERSIÓN CORREGIDA)
+function filtrarPorMes() {
+    const mes = document.getElementById('filtro-mes').value;
+    const anio = document.getElementById('filtro-anio').value;
+
+    if (mes && anio) {
+        // Calcular primer y último día del mes
+        const fechaInicio = new Date(anio, mes - 1, 1);
+        const fechaFin = new Date(anio, mes, 0);
+
+        const fechaInicioFormato = fechaInicio.toISOString().split('T')[0];
+        const fechaFinFormato = fechaFin.toISOString().split('T')[0];
+
+        // Cargar directamente en el rango
+        document.getElementById('filtro-fecha-inicio').value = fechaInicioFormato;
+        document.getElementById('filtro-fecha-fin').value = fechaFinFormato;
+
+        // Limpiar "fecha específica" para evitar conflicto
+        document.getElementById('filtro-fecha').value = '';
+
+        // 🔑 Aplicar los filtros al instante
+        aplicarFiltros();
+    }
+}
+
+// Función auxiliar para formatear fecha a YYYY-MM-DD
+function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
+// Función para aplicar rango de fechas manualmente
+function aplicarRangoFechas() {
+    // Limpiar filtro de mes y año
+    document.getElementById('filtro-mes').value = '';
+    document.getElementById('filtro-anio').value = '';
+    
+    // Limpiar filtro de fecha específica
+    document.getElementById('filtro-fecha').value = '';
+    document.getElementById('filtro-mes').value = '';
+    document.getElementById('filtro-anio').value = '';
+    document.getElementById('filtro-fecha-inicio').value = '';
+    document.getElementById('filtro-fecha-fin').value = '';
+    document.getElementById('filtro-gestor').value = '';
+    document.getElementById('filtro-factura').value = '';
+    document.getElementById('filtro-caso').value = '';
+    document.getElementById('filtro-motivo').value = '';
+    document.getElementById('filtro-proceso').value = '';
+    
+    aplicarFiltros();
+}
+
+// Función para convertir fecha al formato YYYY-MM-DD (MEJORADA)
+function convertirFechaFormato(fechaStr) {
+    if (!fechaStr) return null;
+    
+    try {
+        // Si ya está en formato YYYY-MM-DD
+        if (typeof fechaStr === 'string' && fechaStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return fechaStr;
+        }
+        
+        // Para formato "12/9/2025, 2:53:50 p. m." o "12/09/2025, 02:53"
+        if (typeof fechaStr === 'string' && fechaStr.match(/\d{1,2}\/\d{1,2}\/\d{4}/)) {
+            // Extraer solo la parte de la fecha (antes de la coma)
+            const parteFecha = fechaStr.split(',')[0].trim();
+            const partes = parteFecha.split('/');
+            
+            // Asegurar formato de dos dígitos para día y mes
+            const dia = partes[0].padStart(2, '0');
+            const mes = partes[1].padStart(2, '0');
+            const anio = partes[2];
+            
+            return `${anio}-${mes}-${dia}`;
+        }
+        
+        // Para timestamp de Google Sheets (formato de fecha serial)
+        if (!isNaN(fechaStr) && fechaStr > 40000) {
+            // Convertir fecha serial de Excel/Sheets a fecha JavaScript
+            const fecha = new Date((fechaStr - 25569) * 86400 * 1000);
+            return fecha.toISOString().split('T')[0];
+        }
+        
+        // Para otros formatos, intentar con el constructor Date
+        const fecha = new Date(fechaStr);
+        if (!isNaN(fecha.getTime())) {
+            return fecha.toISOString().split('T')[0];
+        }
+        
+        return null;
+    } catch (e) {
+        console.error('Error convirtiendo fecha:', fechaStr, e);
+        return null;
+    }
 }
 
 // Función para mostrar registros paginados
@@ -531,7 +706,7 @@ function mostrarRegistrosPaginados() {
     if (registrosPagina.length === 0) {
         cuerpoTabla.innerHTML = `
             <tr>
-                <td colspan="12" class="sin-registros"> <!-- Cambiado de 11 a 12 -->
+                <td colspan="12" class="sin-registros">
                     No se encontraron registros que coincidan con los filtros aplicados.
                 </td>
             </tr>
@@ -552,7 +727,7 @@ function mostrarRegistrosPaginados() {
                 <td>${registro.tieneKazado || ''}</td>
                 <td>${registro.bajo || ''}</td>
                 <td>${registro.solicitoClave || ''}</td>
-                <td>${registro.valorProducto ? '$' + parseInt(registro.valorProducto).toLocaleString() : ''}</td> <!-- NUEVO -->
+                <td>${registro.valorProducto ? '$' + parseInt(registro.valorProducto).toLocaleString() : ''}</td>
             `;
             cuerpoTabla.appendChild(fila);
         });
@@ -673,7 +848,7 @@ function exportarAExcel() {
         'Tiene Kazado': registro.tieneKazado || '',
         'Bajo': registro.bajo || '',
         'Solicito Clave': registro.solicitoClave || '',
-        'Valor Producto': registro.valorProducto || '' // NUEVO
+        'Valor Producto': registro.valorProducto || ''
     }));
     
     // Crear libro de trabajo y hoja
@@ -693,7 +868,7 @@ function exportarAExcel() {
         {wch: 12}, // Tiene Kazado
         {wch: 10}, // Bajo
         {wch: 15}, // Solicito Clave
-        {wch: 15}  // Valor Producto (NUEVO)
+        {wch: 15}  // Valor Producto
     ];
     hoja['!cols'] = anchosColumnas;
     
@@ -704,7 +879,6 @@ function exportarAExcel() {
     const fechaExportacion = new Date().toISOString().split('T')[0];
     XLSX.writeFile(libro, `registros_confirm_${fechaExportacion}.xlsx`);
 }
-
 </script>
 </body>
 </html>
