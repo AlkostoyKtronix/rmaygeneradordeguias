@@ -372,7 +372,7 @@
             </select>
 
  	   <label>Valor del producto:</label>
-    	   <input type="number" id="valorProducto">
+<input type="text" id="valorProducto" oninput="formatearValor(this)">
 
             <button class="boton-copiar" onclick="copiarInformacion()">Copiar Información</button>
             <button class="boton-guardar" onclick="guardarEnGoogleSheets()">Guardar en Google Sheets</button>
