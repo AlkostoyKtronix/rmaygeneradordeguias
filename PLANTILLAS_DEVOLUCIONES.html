@@ -425,6 +425,22 @@ function mostrarAlertaJasper() {
     }
 }
 
+function formatearValor(input) {
+    // Remover todos los puntos existentes y caracteres no numéricos
+    let valor = input.value.replace(/\./g, '').replace(/[^\d]/g, '');
+    
+    // Formatear con puntos cada 3 dígitos
+    if (valor.length > 3) {
+        valor = valor.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    
+    // Actualizar el valor del input
+    input.value = valor;
+    
+    // Guardar el valor numérico sin formato en un atributo data
+    input.setAttribute('data-valor-numerico', valor.replace(/\./g, ''));
+}
+
 // Función para solicitar acceso a registros (con contraseña)
 function solicitarAccesoRegistros() {
     // Mostrar el modal de contraseña
@@ -576,7 +592,7 @@ function copiarInformacion() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
-    const valorProducto = document.getElementById('valorProducto').value;
+    const valorProducto = document.getElementById('valorProducto').getAttribute('data-valor-numerico') || '0';
     
     // Crear texto formateado
     const texto = `Gestor: ${gestor}
@@ -613,7 +629,7 @@ function guardarEnGoogleSheets() {
     const tieneKazado = document.getElementById('tieneKazado').value;
     const bajo = document.getElementById('bajo').value;
     const solicitoClave = document.getElementById('solicitoClave').value;
-    const valorProducto = document.getElementById('valorProducto').value;
+    const valorProducto = document.getElementById('valorProducto').getAttribute('data-valor-numerico') || '0';
     
     // Obtener fecha y hora actual
     const fecha = new Date().toLocaleString();
