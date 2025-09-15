@@ -339,7 +339,7 @@
                 <option value="DEVOLUCION DE DINERO">DEVOLUCION DE DINERO</option>
             </select>
 
-            <label>Valor del sostenimiento (si aplica): </label>
+            <label>Valor del sostenimiento o Bono Servicio (si aplica): </label>
             <input type="number" id="valorSostenimiento">
 
             <label>Corresponde a:</label>
@@ -359,6 +359,7 @@
             <label>Bajo:</label>
             <select id="bajo">
                 <option value="">Seleccione...</option>
+		<option value="CAJA90">CAJA 90</option>
                 <option value="PAK">PAK</option>
                 <option value="RMA">RMA</option>
             </select>
@@ -582,7 +583,7 @@ function copiarInformacion() {
 Caso: ${caso}
 Motivo: ${motivo}
 Proceso: ${proceso}
-Valor del sostenimiento: ${valorSostenimiento}
+Valor del sostenimiento o Bono: ${valorSostenimiento}
 Corresponde a: ${correspondeA}
 Tiene Kazado: ${tieneKazado}
 Bajo: ${bajo}
