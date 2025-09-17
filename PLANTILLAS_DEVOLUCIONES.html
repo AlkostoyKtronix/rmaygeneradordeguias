@@ -618,7 +618,7 @@ Valor del producto: ${valorProducto}`;
 }
 
 function guardarEnGoogleSheets() {
-    // Recopilar solo los campos específicos que necesitas
+    // Recopilar datos
     const gestor = document.getElementById('gestor').value;
     const numFactura = document.getElementById('numFactura').value;
     const caso = document.getElementById('caso').value;
@@ -631,18 +631,20 @@ function guardarEnGoogleSheets() {
     const solicitoClave = document.getElementById('solicitoClave').value;
     const valorProducto = document.getElementById('valorProducto').getAttribute('data-valor-numerico') || '0';
     
-    // Obtener fecha y hora actual
-    const fecha = new Date().toLocaleString();
-    
     // Validar campos obligatorios
-    if (!gestor) {
-        alert('Por favor, ingresa el nombre del gestor');
+    if (!gestor || !numFactura) {
+        alert('Por favor, ingresa el nombre del gestor y número de factura');
         return;
     }
     
-    // Crear objeto con SOLO los datos que quieres enviar
+    // Mostrar mensaje de carga
+    const mensaje = document.getElementById('mensajeGuardado');
+    mensaje.textContent = "Guardando datos...";
+    mensaje.className = "mensaje";
+    mensaje.style.display = "block";
+    
+    // Crear objeto con los datos
     const datos = {
-        fecha: fecha,
         gestor: gestor,
         numFactura: numFactura,
         caso: caso,
@@ -653,50 +655,83 @@ function guardarEnGoogleSheets() {
         tieneKazado: tieneKazado,
         bajo: bajo,
         solicitoClave: solicitoClave,
-        valorProducto: valorProducto // Asegúrate de que este nombre coincida con Google Apps Script
+        valorProducto: valorProducto
     };
     
-    console.log('Enviando datos:', datos); // Para depuración
-    
-    // Mostrar mensaje de carga
-    const mensaje = document.getElementById('mensajeGuardado');
-    mensaje.textContent = "Guardando datos...";
-    mensaje.className = "mensaje";
-    mensaje.style.display = "block";
+    console.log('Enviando datos:', datos);
+    console.log('URL del script:', GOOGLE_SCRIPT_URL);
     
     // Enviar datos a Google Sheets
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
+        mode: 'no-cors', // Importante para evitar problemas CORS
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(datos)
     })
-    .then(() => {
-        mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
-        mensaje.className = "mensaje exito";
-        
-        // Limpiar formulario después de guardar (excepto número de factura)
-        setTimeout(() => {
-            document.getElementById('gestor').value = '';
-            document.getElementById('caso').value = '';
-            document.getElementById('motivo').value = '';
-            document.getElementById('proceso').value = '';
-            document.getElementById('valorSostenimiento').value = '';
-            document.getElementById('correspondeA').value = '';
-            document.getElementById('tieneKazado').value = '';
-            document.getElementById('bajo').value = '';
-            document.getElementById('solicitoClave').value = '';
-            document.getElementById('valorProducto').value = '';
+    .then(response => {
+        console.log('Respuesta recibida:', response);
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Datos guardados:', data);
+        if (data.result === 'success') {
+            mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
+            mensaje.className = "mensaje exito";
             
-            mensaje.style.display = "none";
-        }, 3000);
+            // Limpiar formulario después de guardar
+            setTimeout(() => {
+		document.getElementById('gestor').value = '';
+                document.getElementById('caso').value = '';
+                document.getElementById('motivo').value = '';
+                document.getElementById('proceso').value = '';
+                document.getElementById('valorSostenimiento').value = '';
+                document.getElementById('correspondeA').value = '';
+                document.getElementById('tieneKazado').value = '';
+                document.getElementById('bajo').value = '';
+                document.getElementById('solicitoClave').value = '';
+                document.getElementById('valorProducto').value = '';
+                
+                mensaje.style.display = "none";
+            }, 3000);
+        } else {
+            throw new Error(data.error || 'Error desconocido');
+        }
     })
     .catch(error => {
         console.error("Error:", error);
-        mensaje.textContent = "Error al guardar los datos. Por favor, inténtalo de nuevo.";
+        mensaje.textContent = "Error al guardar: " + error.message;
         mensaje.className = "mensaje error";
+        
+        // Intentar una solución alternativa para ver si al menos los datos llegan
+        console.log('Intentando solución alternativa...');
+        mensaje.textContent += ". Intentando método alternativo...";
+        
+        // Método alternativo usando Google Forms style
+        const formData = new URLSearchParams();
+        formData.append('gestor', gestor);
+        formData.append('numFactura', numFactura);
+        formData.append('caso', caso);
+        formData.append('motivo', motivo);
+        formData.append('proceso', proceso);
+        formData.append('valorSostenimiento', valorSostenimiento);
+        formData.append('correspondeA', correspondeA);
+        formData.append('tieneKazado', tieneKazado);
+        formData.append('bajo', bajo);
+        formData.append('solicitoClave', solicitoClave);
+        formData.append('valorProducto', valorProducto);
+        
+        fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: formData
+        }).then(response => console.log('Respuesta alternativa:', response));
     });
 }
 
