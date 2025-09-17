@@ -408,7 +408,7 @@ let rmaImg = null;
 let facturaImg = null;
 
 // URL de tu Web App de Google Apps Script (debes reemplazarla con la tuya)
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzW-JsO1IoLW4c37bpbzm1yxWPOlceCU6e_IUZPeiLv-jRrFOaY3WPdSYUzqPQmdolf4w/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
 
 // Contraseña predefinida
 const CONTRASENA_CORRECTA = "Alkosto2025*";
@@ -659,33 +659,33 @@ function guardarEnGoogleSheets() {
     };
     
     console.log('Enviando datos:', datos);
-    console.log('URL del script:', GOOGLE_SCRIPT_URL);
     
-    // Enviar datos a Google Sheets
+    // ENVÍO PRINCIPAL - Usando JSON
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
-        mode: 'no-cors', // Importante para evitar problemas CORS
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(datos)
     })
     .then(response => {
-        console.log('Respuesta recibida:', response);
+        console.log('Status:', response.status);
+        console.log('Headers:', response.headers);
+        
         if (!response.ok) {
-            throw new Error('Error en la respuesta del servidor');
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         return response.json();
     })
     .then(data => {
-        console.log('Datos guardados:', data);
+        console.log('Respuesta del servidor:', data);
+        
         if (data.result === 'success') {
-            mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
+            mensaje.textContent = "✅ Datos guardados correctamente en Google Sheets!";
             mensaje.className = "mensaje exito";
             
-            // Limpiar formulario después de guardar
+            // Limpiar formulario
             setTimeout(() => {
-		document.getElementById('gestor').value = '';
                 document.getElementById('caso').value = '';
                 document.getElementById('motivo').value = '';
                 document.getElementById('proceso').value = '';
@@ -699,31 +699,19 @@ function guardarEnGoogleSheets() {
                 mensaje.style.display = "none";
             }, 3000);
         } else {
-            throw new Error(data.error || 'Error desconocido');
+            throw new Error(data.error || 'Error desconocido del servidor');
         }
     })
     .catch(error => {
-        console.error("Error:", error);
-        mensaje.textContent = "Error al guardar: " + error.message;
-        mensaje.className = "mensaje error";
+        console.error("Error en fetch principal:", error);
         
-        // Intentar una solución alternativa para ver si al menos los datos llegan
-        console.log('Intentando solución alternativa...');
-        mensaje.textContent += ". Intentando método alternativo...";
+        // INTENTO ALTERNATIVO - Usando FormData
+        console.log('Intentando método alternativo con FormData...');
         
-        // Método alternativo usando Google Forms style
         const formData = new URLSearchParams();
-        formData.append('gestor', gestor);
-        formData.append('numFactura', numFactura);
-        formData.append('caso', caso);
-        formData.append('motivo', motivo);
-        formData.append('proceso', proceso);
-        formData.append('valorSostenimiento', valorSostenimiento);
-        formData.append('correspondeA', correspondeA);
-        formData.append('tieneKazado', tieneKazado);
-        formData.append('bajo', bajo);
-        formData.append('solicitoClave', solicitoClave);
-        formData.append('valorProducto', valorProducto);
+        for (const key in datos) {
+            formData.append(key, datos[key]);
+        }
         
         fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
@@ -731,7 +719,21 @@ function guardarEnGoogleSheets() {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
             body: formData
-        }).then(response => console.log('Respuesta alternativa:', response));
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result === 'success') {
+                mensaje.textContent = "✅ Datos guardados (método alternativo)!";
+                mensaje.className = "mensaje exito";
+            } else {
+                throw new Error('Error en método alternativo');
+            }
+        })
+        .catch(altError => {
+            console.error("Error en método alternativo:", altError);
+            mensaje.textContent = "❌ Error al guardar. Verifica la consola para más detalles.";
+            mensaje.className = "mensaje error";
+        });
     });
 }
 
