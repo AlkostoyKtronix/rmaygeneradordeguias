@@ -398,7 +398,7 @@
 
 <script>
 // URL de tu Web App de Google Apps Script para obtener datos
-const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbx-kbDBR25SWqlTg_5D80VrxWK1YOWUXQoAdJBHf9OuwNWsq7l_wv7_2pCMiTl05J62XQ/exec";
+const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbx9QCsyTZ7xwLmsegpHUcJiB4NGqyRG7RpjNyD3jxtU6kBdXqgP7-YYheus-hkV09rtCQ/exec";
 
 // Variables globales
 let todosLosRegistros = [];
@@ -546,12 +546,18 @@ function reformatearDatosArray(datosArray) {
     return registros;
 }
 
+// Función para normalizar texto para búsquedas
+function normalizarTexto(texto) {
+    if (!texto) return '';
+    return String(texto).toLowerCase().trim();
+}
+
 // Función para aplicar filtros a los registros
 function aplicarFiltros() {
     const filtroFecha = document.getElementById('filtro-fecha').value;
     const filtroGestor = document.getElementById('filtro-gestor').value;
-    const filtroFactura = document.getElementById('filtro-factura').value.toLowerCase();
-    const filtroCaso = document.getElementById('filtro-caso').value.toLowerCase();
+    const filtroFactura = normalizarTexto(document.getElementById('filtro-factura').value);
+    const filtroCaso = normalizarTexto(document.getElementById('filtro-caso').value);
     const filtroMotivo = document.getElementById('filtro-motivo').value;
     const filtroProceso = document.getElementById('filtro-proceso').value;
     const filtroFechaInicio = document.getElementById('filtro-fecha-inicio').value;
@@ -584,8 +590,17 @@ function aplicarFiltros() {
         
         // Resto de filtros
         if (filtroGestor && registro.gestor !== filtroGestor) return false;
-        if (filtroFactura && registro.numFactura && !registro.numFactura.toLowerCase().includes(filtroFactura)) return false;
-        if (filtroCaso && registro.caso && !registro.caso.toLowerCase().includes(filtroCaso)) return false;
+        if (filtroFactura && registro.numFactura && !normalizarTexto(registro.numFactura).includes(filtroFactura)) return false;
+        
+        // FILTRO POR CASO - CORREGIDO
+        if (filtroCaso) {
+            // Verificar si existe la propiedad caso y si contiene el texto buscado
+            const casoRegistro = registro.caso || registro.Caso || '';
+            if (!normalizarTexto(casoRegistro).includes(filtroCaso)) {
+                return false;
+            }
+        }
+        
         if (filtroMotivo && registro.motivo !== filtroMotivo) return false;
         if (filtroProceso && registro.proceso !== filtroProceso) return false;
         
@@ -638,15 +653,6 @@ function aplicarRangoFechas() {
     
     // Limpiar filtro de fecha específica
     document.getElementById('filtro-fecha').value = '';
-    document.getElementById('filtro-mes').value = '';
-    document.getElementById('filtro-anio').value = '';
-    document.getElementById('filtro-fecha-inicio').value = '';
-    document.getElementById('filtro-fecha-fin').value = '';
-    document.getElementById('filtro-gestor').value = '';
-    document.getElementById('filtro-factura').value = '';
-    document.getElementById('filtro-caso').value = '';
-    document.getElementById('filtro-motivo').value = '';
-    document.getElementById('filtro-proceso').value = '';
     
     aplicarFiltros();
 }
@@ -715,11 +721,15 @@ function mostrarRegistrosPaginados() {
         cuerpoTabla.innerHTML = '';
         registrosPagina.forEach(registro => {
             const fila = document.createElement('tr');
+            
+            // Obtener el valor del caso (manejar diferentes nombres de propiedad)
+            const valorCaso = registro.caso || registro.Caso || '';
+            
             fila.innerHTML = `
                 <td>${formatearFecha(registro.fecha)}</td>
                 <td>${registro.gestor || ''}</td>
                 <td>${registro.numFactura || ''}</td>
-                <td>${registro.caso || ''}</td>
+                <td>${valorCaso}</td>
                 <td>${registro.motivo || ''}</td>
                 <td>${registro.proceso || ''}</td>
                 <td>${registro.valorSostenimiento ? '$' + parseInt(registro.valorSostenimiento).toLocaleString() : ''}</td>
@@ -836,20 +846,25 @@ function exportarAExcel() {
     }
     
     // Preparar datos para exportación
-    const datosExportar = registrosFiltrados.map(registro => ({
-        'Fecha': formatearFecha(registro.fecha),
-        'Gestor': registro.gestor || '',
-        'Número de Factura': registro.numFactura || '',
-        'Caso': registro.caso || '',
-        'Motivo': registro.motivo || '',
-        'Proceso': registro.proceso || '',
-        'Valor Sostenimiento': registro.valorSostenimiento || '',
-        'Corresponde a': registro.correspondeA || '',
-        'Tiene Kazado': registro.tieneKazado || '',
-        'Bajo': registro.bajo || '',
-        'Solicito Clave': registro.solicitoClave || '',
-        'Valor Producto': registro.valorProducto || ''
-    }));
+    const datosExportar = registrosFiltrados.map(registro => {
+        // Obtener el valor del caso (manejar diferentes nombres de propiedad)
+        const valorCaso = registro.caso || registro.Caso || '';
+        
+        return {
+            'Fecha': formatearFecha(registro.fecha),
+            'Gestor': registro.gestor || '',
+            'Número de Factura': registro.numFactura || '',
+            'Caso': valorCaso,
+            'Motivo': registro.motivo || '',
+            'Proceso': registro.proceso || '',
+            'Valor Sostenimiento': registro.valorSostenimiento || '',
+            'Corresponde a': registro.correspondeA || '',
+            'Tiene Kazado': registro.tieneKazado || '',
+            'Bajo': registro.bajo || '',
+            'Solicito Clave': registro.solicitoClave || '',
+            'Valor Producto': registro.valorProducto || ''
+        };
+    });
     
     // Crear libro de trabajo y hoja
     const libro = XLSX.utils.book_new();
