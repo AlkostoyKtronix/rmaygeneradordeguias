@@ -8,20 +8,26 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
             min-width: 100vw;
             overflow-x: hidden;
+            color: #333;
         }
         .titulo {
             width: 100%;
-            background-color: #000000;
+            background: linear-gradient(135deg, #000000 0%, #2c3e50 100%);
             text-align: center;
             color: white;
             margin-bottom: 0px;
-            padding: 15px 0;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .titulo h1 {
+            margin: 0;
+            font-size: 2.2rem;
         }
         .botones-container {
             background-color: #000000;
@@ -37,98 +43,126 @@
             box-sizing: border-box;
         }
         .botones-container button {
-            background-color: #000000;
+            background-color: #3498db;
             color: white;
-            padding: 12px 20px;
-            border: 2px solid white;
-            border-radius: 5px;
-            margin: 2px;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 30px;
+            margin: 8px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .botones-container button:hover {
-            background-color: #333;
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        .botones-container button i {
+            margin-right: 8px;
         }
         
         .contenedor-registros {
             width: 95%;
+            max-width: 1600px;
             margin: 20px auto;
             background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .contenedor-registros h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-top: 0;
         }
         
         .filtros-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
         }
         
         .filtro-grupo {
             display: flex;
             flex-direction: column;
-            min-width: 180px;
+            min-width: 200px;
+            flex: 1;
         }
         
         .filtro-grupo label {
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            color: #2c3e50;
         }
         
         .filtro-grupo input, .filtro-grupo select {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #ced4da;
+            font-size: 15px;
+            background-color: white;
         }
         
         .botones-accion {
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 15px;
+            margin-bottom: 25px;
         }
         
         .boton-exportar {
-            background-color: #28a745;
+            background-color: #27ae60;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         
         .boton-exportar:hover {
-            background-color: #218838;
+            background-color: #219653;
         }
         
         .boton-refrescar {
-            background-color: #17a2b8;
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            padding: 12px 20px;
+            border-radius: 6px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         
         .boton-refrescar:hover {
-            background-color: #138496;
+            background-color: #2980b9;
         }
         
         .tabla-contenedor {
             overflow-x: auto;
             max-height: 70vh;
             overflow-y: auto;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
         
         table {
@@ -137,44 +171,48 @@
         }
         
         th, td {
-            padding: 12px 15px;
+            padding: 14px 16px;
             text-align: left;
-            border-bottom: 1px solid #ddd;
+            border-bottom: 1px solid #e9ecef;
         }
         
         th {
-            background-color: #000;
+            background-color: #2c3e50;
             color: white;
             position: sticky;
             top: 0;
+            font-weight: 600;
         }
         
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
         }
         
         .paginacion {
             display: flex;
             justify-content: center;
+            align-items: center;
             margin-top: 20px;
-            gap: 10px;
+            gap: 15px;
         }
         
         .paginacion button {
-            padding: 8px 15px;
-            background-color: #000;
+            padding: 10px 18px;
+            background-color: #2c3e50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         
         .paginacion button:hover {
-            background-color: #333;
+            background-color: #1a2530;
         }
         
         .paginacion button:disabled {
-            background-color: #ccc;
+            background-color: #bdc3c7;
             cursor: not-allowed;
         }
         
@@ -182,90 +220,79 @@
             margin-top: 15px;
             text-align: right;
             font-style: italic;
-            color: #666;
+            color: #7f8c8d;
         }
         
         .cargando {
             text-align: center;
-            padding: 20px;
+            padding: 30px;
             font-size: 18px;
+            color: #7f8c8d;
         }
         
         .sin-registros {
             text-align: center;
-            padding: 30px;
-            color: #666;
+            padding: 40px;
+            color: #7f8c8d;
             font-style: italic;
         }
         
         .filtro-rango {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: flex-end;
         }
         
         .filtro-rango button {
-            padding: 8px 12px;
-            background-color: #000;
+            padding: 10px 15px;
+            background-color: #2c3e50;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
-        .config-panel {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #f0f8ff;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
+        .filtro-rango button:hover {
+            background-color: #1a2530;
         }
         
-        .config-panel h3 {
+        .error-panel {
+            background-color: #ffeaea;
+            border-left: 5px solid #e74c3c;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+        
+        .error-panel h3 {
+            color: #e74c3c;
             margin-top: 0;
-            color: #007bff;
         }
         
-        .url-input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        .error-panel ul {
+            margin-bottom: 0;
+            padding-left: 20px;
         }
         
-        .test-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
+        .error-panel li {
+            margin-bottom: 8px;
         }
         
-        .test-button:hover {
-            background-color: #0069d9;
+        .solucion-pasos {
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
         }
         
-        .status-message {
-            margin-top: 10px;
-            padding: 8px;
-            border-radius: 4px;
+        .solucion-pasos h3 {
+            color: #3498db;
+            margin-top: 0;
         }
         
-        .status-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .status-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .filtros-container {
                 flex-direction: column;
             }
@@ -273,17 +300,47 @@
             .filtro-grupo {
                 width: 100%;
             }
+        }
+        
+        @media (max-width: 768px) {
+            .botones-accion {
+                flex-direction: column;
+            }
             
             .filtro-rango {
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            .titulo h1 {
+                font-size: 1.8rem;
+            }
+            
+            .contenedor-registros {
+                padding: 15px;
+            }
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background-color: #27ae60;
+        }
+        
+        .status-offline {
+            background-color: #e74c3c;
         }
     </style>
 </head>
 <body>
     <div class="titulo">
-        <h1>Historial de Registros - CONFIRN</h1>
+        <h1><i class="fas fa-history"></i> Historial de Registros - CONFIRN</h1>
     </div>
     <div class="botones-container">
         <button onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver al Formulario</button>
@@ -291,34 +348,40 @@
     </div>
 
     <div class="contenedor-registros">
-        <h2>Registros Guardados</h2>
+        <h2><i class="fas fa-table"></i> Registros Guardados</h2>
         
-        <!-- Panel de configuración para la URL -->
-        <div class="config-panel">
-            <h3><i class="fas fa-cog"></i> Configuración de Conexión</h3>
-            <p>Si experimentas problemas de conexión, verifica que la URL de tu script de Google Apps sea correcta:</p>
-            <input type="text" id="script-url" class="url-input" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec">
-            <button class="test-button" onclick="testConnection()">Probar Conexión</button>
-            <div id="connection-status" class="status-message"></div>
-            
-            <div style="margin-top: 15px;">
-                <p><strong>Nota:</strong> Asegúrate de que tu script de Google Apps esté:</p>
-                <ol>
-                    <li>Desplegado como una aplicación web</li>
-                    <li>Configurado para ejecutarse como "Yo" (tu usuario)</li>
-                    <li>Configurado para que tenga acceso "Cualquier persona, incluso anónimos"</li>
-                </ol>
-            </div>
+        <div class="error-panel">
+            <h3><i class="fas fa-exclamation-triangle"></i> Error de Conexión</h3>
+            <p>Se ha producido un error al intentar conectar con Google Sheets. Aunque los datos se guardan correctamente, la visualización no funciona debido a restricciones de seguridad del navegador.</p>
+            <p><strong>Solución:</strong> Sigue estos pasos para resolver el problema:</p>
+            <ol>
+                <li>Abre tu script de Google Apps Script</li>
+                <li>Haz clic en "Desplegar" > "Configuración de despliegue"</li>
+                <li>En "Quién tiene acceso", selecciona "Cualquier persona"</li>
+                <li>Guarda la configuración y vuelve a desplegar la aplicación</li>
+                <li>Actualiza esta página y prueba de nuevo</li>
+            </ol>
+        </div>
+        
+        <div class="solucion-pasos">
+            <h3><i class="fas fa-lightbulb"></i> Solución Alternativa</h3>
+            <p>Si el problema persiste, intenta estas soluciones alternativas:</p>
+            <ul>
+                <li>Abre la consola de desarrollador (F12) y revisa si hay errores CORS</li>
+                <li>Prueba a acceder desde otro navegador</li>
+                <li>Verifica que la URL de tu script de Google Apps sea correcta</li>
+                <li>Espera unos minutos y vuelve a intentarlo (a veces hay demoras en la propagación)</li>
+            </ul>
         </div>
         
         <div class="filtros-container">
             <div class="filtro-grupo">
-                <label for="filtro-fecha">Fecha específica</label>
+                <label for="filtro-fecha"><i class="fas fa-calendar-day"></i> Fecha específica</label>
                 <input type="date" id="filtro-fecha">
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-mes">Filtrar por mes</label>
+                <label for="filtro-mes"><i class="fas fa-calendar-alt"></i> Filtrar por mes</label>
                 <select id="filtro-mes">
                     <option value="">Seleccionar mes</option>
                     <option value="1">Enero</option>
@@ -337,14 +400,14 @@
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-anio">Año</label>
+                <label for="filtro-anio"><i class="fas fa-calendar"></i> Año</label>
                 <select id="filtro-anio">
                     <option value="">Seleccionar año</option>
                 </select>
             </div>
             
             <div class="filtro-grupo">
-                <label>Rango de fechas</label>
+                <label><i class="fas fa-calendar-week"></i> Rango de fechas</label>
                 <div class="filtro-rango">
                     <div>
                         <label for="filtro-fecha-inicio" style="font-size: 12px;">Desde</label>
@@ -354,12 +417,12 @@
                         <label for="filtro-fecha-fin" style="font-size: 12px;">Hasta</label>
                         <input type="date" id="filtro-fecha-fin">
                     </div>
-                    <button onclick="aplicarRangoFechas()"><i class="fas fa-filter"></i></button>
+                    <button onclick="aplicarRangoFechas()"><i class="fas fa-filter"></i> Filtrar</button>
                 </div>
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-gestor">Gestor</label>
+                <label for="filtro-gestor"><i class="fas fa-user"></i> Gestor</label>
                 <select id="filtro-gestor">
                     <option value="">Todos los gestores</option>
                     <option value="LUIS FERNANDO GUTIERREZ TORRES">LUIS FERNANDO GUTIERREZ TORRES</option>
@@ -378,17 +441,17 @@
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-factura">N° Factura</label>
+                <label for="filtro-factura"><i class="fas fa-file-invoice-dollar"></i> N° Factura</label>
                 <input type="text" id="filtro-factura" placeholder="Buscar por factura">
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-caso">Caso</label>
+                <label for="filtro-caso"><i class="fas fa-folder-open"></i> Caso</label>
                 <input type="text" id="filtro-caso" placeholder="Buscar por caso">
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-motivo">Motivo</label>
+                <label for="filtro-motivo"><i class="fas fa-exclamation-circle"></i> Motivo</label>
                 <select id="filtro-motivo">
                     <option value="">Todos los motivos</option>
                     <option value="FALLA">FALLA</option>
@@ -400,7 +463,7 @@
             </div>
             
             <div class="filtro-grupo">
-                <label for="filtro-proceso">Proceso</label>
+                <label for="filtro-proceso"><i class="fas fa-cogs"></i> Proceso</label>
                 <select id="filtro-proceso">
                     <option value="">Todos los procesos</option>
                     <option value="BONO DEVOLUCION">BONO DEVOLUCION</option>
@@ -460,13 +523,13 @@
         </div>
         
         <div class="contador-registros" id="contador-registros">
-            Mostrando 0 registros
+            <span class="status-indicator status-offline"></span>Conectando a Google Sheets...
         </div>
     </div>
 
 <script>
-// Variable global para la URL del script
-let GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
+// URL de tu Web App de Google Apps Script para obtener datos
+const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbxwe8VEBfLUJOzqamSzW7FUWSc5CipweOKb5-g_zJM4SAKAh6ovz9ZkzEM13eNmd1kKiw/exec";
 
 // Variables globales
 let todosLosRegistros = [];
@@ -476,13 +539,6 @@ const registrosPorPagina = 20;
 
 // Cargar registros cuando la página se carga
 document.addEventListener('DOMContentLoaded', function() {
-    // Cargar URL guardada si existe
-    const savedUrl = localStorage.getItem('googleScriptUrl');
-    if (savedUrl) {
-        document.getElementById('script-url').value = savedUrl;
-        GOOGLE_SCRIPT_GET_URL = savedUrl;
-    }
-    
     cargarRegistros();
     cargarSelectorAnios();
     
@@ -499,43 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners para el rango de fechas
     document.getElementById('filtro-fecha-inicio').addEventListener('change', aplicarFiltros);
     document.getElementById('filtro-fecha-fin').addEventListener('change', aplicarFiltros);
-    
-    // Event listener para cambios en la URL
-    document.getElementById('script-url').addEventListener('change', function() {
-        GOOGLE_SCRIPT_GET_URL = this.value;
-        localStorage.setItem('googleScriptUrl', this.value);
-    });
 });
-
-// Función para probar la conexión
-async function testConnection() {
-    const statusDiv = document.getElementById('connection-status');
-    const url = document.getElementById('script-url').value;
-    
-    statusDiv.className = 'status-message';
-    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando conexión...';
-    
-    try {
-        const response = await fetch(url + '?action=test&timestamp=' + new Date().getTime());
-        
-        if (response.ok) {
-            statusDiv.className = 'status-message status-success';
-            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Conexión exitosa. El script está respondiendo correctamente.';
-            
-            // Guardar la URL que funciona
-            GOOGLE_SCRIPT_GET_URL = url;
-            localStorage.setItem('googleScriptUrl', url);
-            
-            // Recargar los datos
-            setTimeout(cargarRegistros, 1000);
-        } else {
-            throw new Error(`Error HTTP: ${response.status}`);
-        }
-    } catch (error) {
-        statusDiv.className = 'status-message status-error';
-        statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error de conexión: ${error.message}. Verifica que la URL sea correcta y que el script esté desplegado correctamente.`;
-    }
-}
 
 // Función para cargar el selector de años
 function cargarSelectorAnios() {
@@ -566,10 +586,12 @@ async function cargarRegistros() {
             </tr>
         `;
         
-        // Usar fetch directamente
-        const targetUrl = GOOGLE_SCRIPT_GET_URL + '?action=getRecords&timestamp=' + new Date().getTime();
+        // Actualizar estado de conexión
+        document.getElementById('contador-registros').innerHTML = 
+            '<span class="status-indicator status-offline"></span>Conectando a Google Sheets...';
         
-        console.log('Cargando datos desde:', targetUrl);
+        // Usar fetch directamente sin proxy (Google Apps Script maneja CORS)
+        const targetUrl = GOOGLE_SCRIPT_GET_URL + '?action=getRecords&timestamp=' + new Date().getTime();
         
         const respuesta = await fetch(targetUrl);
         
@@ -578,46 +600,44 @@ async function cargarRegistros() {
         }
         
         const datos = await respuesta.json();
-        console.log('Datos recibidos:', datos);
         
         // Verificar diferentes formatos de respuesta
         if (datos && datos.registros) {
             todosLosRegistros = datos.registros;
-            console.log(`Se cargaron ${todosLosRegistros.length} registros`);
         } else if (Array.isArray(datos)) {
             // Si la respuesta es un array directamente
             todosLosRegistros = reformatearDatosArray(datos);
-            console.log(`Se cargaron ${todosLosRegistros.length} registros (formato array)`);
         } else {
-            throw new Error('Formato de respuesta inesperado: ' + JSON.stringify(datos));
+            throw new Error('Formato de respuesta inesperado');
         }
+        
+        // Actualizar estado de conexión
+        document.getElementById('contador-registros').innerHTML = 
+            `<span class="status-indicator status-online"></span>Conectado - ${todosLosRegistros.length} registros cargados`;
         
         aplicarFiltros();
         
     } catch (error) {
         console.error("Error al cargar registros:", error);
         
+        // Actualizar estado de conexión
+        document.getElementById('contador-registros').innerHTML = 
+            '<span class="status-indicator status-offline"></span>Error de conexión';
+        
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
                 <td colspan="12" class="sin-registros">
                     <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
                     <br>Detalles: ${error.message || 'Error desconocido'}
-                    <br>URL utilizada: ${GOOGLE_SCRIPT_GET_URL}
                     <br><br>
-                    <button onclick="cargarRegistros()" style="padding: 8px 15px; background-color: #000; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
-                        Reintentar
-                    </button>
-                    <button onclick="testConnection()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                        Probar Conexión
+                    <button onclick="cargarRegistros()" style="padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; margin: 5px;">
+                        <i class="fas fa-sync-alt"></i> Reintentar
                     </button>
                 </td>
             </tr>
         `;
     }
 }
-
-// El resto del código JavaScript permanece igual que en la versión anterior
-// [Todas las demás funciones: reformatearDatosArray, normalizarTexto, aplicarFiltros, etc.]
 
 // Función auxiliar para reformatear datos si vienen como array
 function reformatearDatosArray(datosArray) {
@@ -854,8 +874,8 @@ function mostrarRegistrosPaginados() {
     actualizarControlesPaginacion();
     
     // Actualizar contador de registros
-    document.getElementById('contador-registros').textContent = 
-        `Mostrando ${registrosFiltrados.length} registro(s)`;
+    document.getElementById('contador-registros').innerHTML = 
+        `<span class="status-indicator status-online"></span>Mostrando ${registrosFiltrados.length} registro(s)`;
 }
 
 // Función para formatear la fecha (versión robusta)
