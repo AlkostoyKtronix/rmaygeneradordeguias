@@ -618,7 +618,7 @@ Valor del producto: ${valorProducto}`;
 }
 
 function guardarEnGoogleSheets() {
-    // Recopilar datos
+    // Recopilar solo los campos específicos que necesitas
     const gestor = document.getElementById('gestor').value;
     const numFactura = document.getElementById('numFactura').value;
     const caso = document.getElementById('caso').value;
@@ -631,20 +631,18 @@ function guardarEnGoogleSheets() {
     const solicitoClave = document.getElementById('solicitoClave').value;
     const valorProducto = document.getElementById('valorProducto').getAttribute('data-valor-numerico') || '0';
     
+    // Obtener fecha y hora actual
+    const fecha = new Date().toLocaleString();
+    
     // Validar campos obligatorios
-    if (!gestor || !numFactura) {
-        alert('Por favor, ingresa el nombre del gestor y número de factura');
+    if (!gestor) {
+        alert('Por favor, ingresa el nombre del gestor');
         return;
     }
     
-    // Mostrar mensaje de carga
-    const mensaje = document.getElementById('mensajeGuardado');
-    mensaje.textContent = "Guardando datos...";
-    mensaje.className = "mensaje";
-    mensaje.style.display = "block";
-    
-    // Crear objeto con los datos
+    // Crear objeto con SOLO los datos que quieres enviar
     const datos = {
+        fecha: fecha,
         gestor: gestor,
         numFactura: numFactura,
         caso: caso,
@@ -655,70 +653,33 @@ function guardarEnGoogleSheets() {
         tieneKazado: tieneKazado,
         bajo: bajo,
         solicitoClave: solicitoClave,
-        valorProducto: valorProducto
+        valorProducto: valorProducto // Asegúrate de que este nombre coincida con Google Apps Script
     };
     
-    console.log('Enviando datos:', datos);
+    console.log('Enviando datos:', datos); // Para depuración
     
-    // ENVÍO PRINCIPAL - Método más confiable para Google Apps Script
+    // Mostrar mensaje de carga
+    const mensaje = document.getElementById('mensajeGuardado');
+    mensaje.textContent = "Guardando datos...";
+    mensaje.className = "mensaje";
+    mensaje.style.display = "block";
+    
+    // Enviar datos a Google Sheets
     fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
+            "Content-Type": "application/json",
         },
-        body: new URLSearchParams(datos).toString()
+        body: JSON.stringify(datos)
     })
-    .then(response => {
-        console.log('Status de respuesta:', response.status);
-        
-        // Google Apps Script puede redirigir (302), eso es normal
-        if (response.status === 0 || response.status === 302) {
-            // Esto es normal para GAS, asumimos éxito
-            return { result: 'success' };
-        }
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Resultado:', data);
-        
-        // Siempre mostrar éxito si llegamos aquí (porque GAS está guardando)
-        mensaje.textContent = "✅ Datos guardados correctamente en Google Sheets!";
+    .then(() => {
+        mensaje.textContent = "Datos guardados correctamente en Google Sheets!";
         mensaje.className = "mensaje exito";
         
-        // Limpiar formulario después de 3 segundos
+        // Limpiar formulario después de guardar (excepto número de factura)
         setTimeout(() => {
-	    document.getElementById('gestor').value = '';
-            document.getElementById('caso').value = '';
-            document.getElementById('motivo').value = '';
-            document.getElementById('proceso').value = '';
-            document.getElementById('valorSostenimiento').value = '';
-            document.getElementById('correspondeA').value = '';
-            document.getElementById('tieneKazado').value = '';
-            document.getElementById('bajo').value = '';
-            document.getElementById('solicitoClave').value = '';
-            document.getElementById('valorProducto').value = '';
-            
-            // Ocultar mensaje después de limpiar
-            setTimeout(() => {
-                mensaje.style.display = "none";
-            }, 1000);
-        }, 3000);
-    })
-    .catch(error => {
-        console.error("Error en la solicitud:", error);
-        
-        // Aunque haya error en la solicitud, si sabemos que GAS está guardando,
-        // mostramos éxito de todos modos
-        mensaje.textContent = "✅ Datos enviados para guardar (puede tomar unos segundos)";
-        mensaje.className = "mensaje exito";
-        
-        // Limpiar formulario igualmente
-        setTimeout(() => {
-	    document.getElementById('gestor').value = '';
+            document.getElementById('gestor').value = '';
             document.getElementById('caso').value = '';
             document.getElementById('motivo').value = '';
             document.getElementById('proceso').value = '';
@@ -731,6 +692,11 @@ function guardarEnGoogleSheets() {
             
             mensaje.style.display = "none";
         }, 3000);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        mensaje.textContent = "Error al guardar los datos. Por favor, inténtalo de nuevo.";
+        mensaje.className = "mensaje error";
     });
 }
 
