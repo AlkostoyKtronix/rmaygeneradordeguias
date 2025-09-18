@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Registros</title>
+    <title>Historial de Registros - CONFIRN</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        /* Estilos anteriores (sin cambios) */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -51,7 +50,6 @@
             background-color: #333;
         }
         
-        /* Estilos para la página de registros */
         .contenedor-registros {
             width: 95%;
             margin: 20px auto;
@@ -215,6 +213,58 @@
             cursor: pointer;
         }
         
+        .config-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .config-panel h3 {
+            margin-top: 0;
+            color: #007bff;
+        }
+        
+        .url-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .test-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .test-button:hover {
+            background-color: #0069d9;
+        }
+        
+        .status-message {
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
         @media (max-width: 768px) {
             .filtros-container {
                 flex-direction: column;
@@ -242,6 +292,24 @@
 
     <div class="contenedor-registros">
         <h2>Registros Guardados</h2>
+        
+        <!-- Panel de configuración para la URL -->
+        <div class="config-panel">
+            <h3><i class="fas fa-cog"></i> Configuración de Conexión</h3>
+            <p>Si experimentas problemas de conexión, verifica que la URL de tu script de Google Apps sea correcta:</p>
+            <input type="text" id="script-url" class="url-input" placeholder="https://script.google.com/macros/s/..." value="https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec">
+            <button class="test-button" onclick="testConnection()">Probar Conexión</button>
+            <div id="connection-status" class="status-message"></div>
+            
+            <div style="margin-top: 15px;">
+                <p><strong>Nota:</strong> Asegúrate de que tu script de Google Apps esté:</p>
+                <ol>
+                    <li>Desplegado como una aplicación web</li>
+                    <li>Configurado para ejecutarse como "Yo" (tu usuario)</li>
+                    <li>Configurado para que tenga acceso "Cualquier persona, incluso anónimos"</li>
+                </ol>
+            </div>
+        </div>
         
         <div class="filtros-container">
             <div class="filtro-grupo">
@@ -397,8 +465,8 @@
     </div>
 
 <script>
-// URL de tu Web App de Google Apps Script para obtener datos
-const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
+// Variable global para la URL del script
+let GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
 
 // Variables globales
 let todosLosRegistros = [];
@@ -408,6 +476,13 @@ const registrosPorPagina = 20;
 
 // Cargar registros cuando la página se carga
 document.addEventListener('DOMContentLoaded', function() {
+    // Cargar URL guardada si existe
+    const savedUrl = localStorage.getItem('googleScriptUrl');
+    if (savedUrl) {
+        document.getElementById('script-url').value = savedUrl;
+        GOOGLE_SCRIPT_GET_URL = savedUrl;
+    }
+    
     cargarRegistros();
     cargarSelectorAnios();
     
@@ -424,7 +499,43 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event listeners para el rango de fechas
     document.getElementById('filtro-fecha-inicio').addEventListener('change', aplicarFiltros);
     document.getElementById('filtro-fecha-fin').addEventListener('change', aplicarFiltros);
+    
+    // Event listener para cambios en la URL
+    document.getElementById('script-url').addEventListener('change', function() {
+        GOOGLE_SCRIPT_GET_URL = this.value;
+        localStorage.setItem('googleScriptUrl', this.value);
+    });
 });
+
+// Función para probar la conexión
+async function testConnection() {
+    const statusDiv = document.getElementById('connection-status');
+    const url = document.getElementById('script-url').value;
+    
+    statusDiv.className = 'status-message';
+    statusDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Probando conexión...';
+    
+    try {
+        const response = await fetch(url + '?action=test&timestamp=' + new Date().getTime());
+        
+        if (response.ok) {
+            statusDiv.className = 'status-message status-success';
+            statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Conexión exitosa. El script está respondiendo correctamente.';
+            
+            // Guardar la URL que funciona
+            GOOGLE_SCRIPT_GET_URL = url;
+            localStorage.setItem('googleScriptUrl', url);
+            
+            // Recargar los datos
+            setTimeout(cargarRegistros, 1000);
+        } else {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+    } catch (error) {
+        statusDiv.className = 'status-message status-error';
+        statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Error de conexión: ${error.message}. Verifica que la URL sea correcta y que el script esté desplegado correctamente.`;
+    }
+}
 
 // Función para cargar el selector de años
 function cargarSelectorAnios() {
@@ -455,30 +566,30 @@ async function cargarRegistros() {
             </tr>
         `;
         
-        // Usar un proxy para evitar problemas CORS
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-        const targetUrl = GOOGLE_SCRIPT_GET_URL + '?action=getRecords';
+        // Usar fetch directamente
+        const targetUrl = GOOGLE_SCRIPT_GET_URL + '?action=getRecords&timestamp=' + new Date().getTime();
         
-        const respuesta = await fetch(proxyUrl + targetUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        });
+        console.log('Cargando datos desde:', targetUrl);
+        
+        const respuesta = await fetch(targetUrl);
         
         if (!respuesta.ok) {
-            throw new Error(`Error HTTP: ${respuesta.status}`);
+            throw new Error(`Error HTTP: ${respuesta.status} - ${respuesta.statusText}`);
         }
         
         const datos = await respuesta.json();
+        console.log('Datos recibidos:', datos);
         
         // Verificar diferentes formatos de respuesta
         if (datos && datos.registros) {
             todosLosRegistros = datos.registros;
+            console.log(`Se cargaron ${todosLosRegistros.length} registros`);
         } else if (Array.isArray(datos)) {
             // Si la respuesta es un array directamente
             todosLosRegistros = reformatearDatosArray(datos);
+            console.log(`Se cargaron ${todosLosRegistros.length} registros (formato array)`);
         } else {
-            throw new Error('Formato de respuesta inesperado');
+            throw new Error('Formato de respuesta inesperado: ' + JSON.stringify(datos));
         }
         
         aplicarFiltros();
@@ -486,35 +597,27 @@ async function cargarRegistros() {
     } catch (error) {
         console.error("Error al cargar registros:", error);
         
-        // Intentar sin proxy si falla
-        try {
-            const respuestaDirecta = await fetch(GOOGLE_SCRIPT_GET_URL + '?action=getRecords');
-            if (respuestaDirecta.ok) {
-                const datosDirectos = await respuestaDirecta.json();
-                if (datosDirectos && datosDirectos.registros) {
-                    todosLosRegistros = datosDirectos.registros;
-                    aplicarFiltros();
-                    return;
-                }
-            }
-        } catch (errorDirecto) {
-            console.error("Error en intento directo:", errorDirecto);
-        }
-        
         document.getElementById('cuerpo-tabla').innerHTML = `
             <tr>
                 <td colspan="12" class="sin-registros">
                     <i class="fas fa-exclamation-triangle"></i> Error al cargar los registros. 
-                    <br>Por favor, intente nuevamente.
+                    <br>Detalles: ${error.message || 'Error desconocido'}
+                    <br>URL utilizada: ${GOOGLE_SCRIPT_GET_URL}
                     <br><br>
-                    <button onclick="cargarRegistros()" style="padding: 8px 15px; background-color: #000; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <button onclick="cargarRegistros()" style="padding: 8px 15px; background-color: #000; color: white; border: none; border-radius: 5px; cursor: pointer; margin-right: 10px;">
                         Reintentar
+                    </button>
+                    <button onclick="testConnection()" style="padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        Probar Conexión
                     </button>
                 </td>
             </tr>
         `;
     }
 }
+
+// El resto del código JavaScript permanece igual que en la versión anterior
+// [Todas las demás funciones: reformatearDatosArray, normalizarTexto, aplicarFiltros, etc.]
 
 // Función auxiliar para reformatear datos si vienen como array
 function reformatearDatosArray(datosArray) {
@@ -535,7 +638,13 @@ function reformatearDatosArray(datosArray) {
             else if (propName === 'Tiene Kazado') propName = 'tieneKazado';
             else if (propName === 'Solicito Clave') propName = 'solicitoClave';
             else if (propName === 'Valor del Producto') propName = 'valorProducto';
-            else propName = propName.toLowerCase();
+            else if (propName === 'Fecha') propName = 'fecha';
+            else if (propName === 'Gestor') propName = 'gestor';
+            else if (propName === 'Caso') propName = 'caso';
+            else if (propName === 'Motivo') propName = 'motivo';
+            else if (propName === 'Proceso') propName = 'proceso';
+            else if (propName === 'Bajo') propName = 'bajo';
+            else propName = propName.toLowerCase().replace(/\s+/g, '_');
             
             registro[propName] = row[j];
         }
@@ -562,8 +671,6 @@ function aplicarFiltros() {
     const filtroProceso = document.getElementById('filtro-proceso').value;
     const filtroFechaInicio = document.getElementById('filtro-fecha-inicio').value;
     const filtroFechaFin = document.getElementById('filtro-fecha-fin').value;
-    
-    console.log('Aplicando filtros - Rango:', filtroFechaInicio, 'a', filtroFechaFin);
     
     registrosFiltrados = todosLosRegistros.filter(registro => {
         // Filtro por fecha específica
@@ -732,12 +839,12 @@ function mostrarRegistrosPaginados() {
                 <td>${valorCaso}</td>
                 <td>${registro.motivo || ''}</td>
                 <td>${registro.proceso || ''}</td>
-                <td>${registro.valorSostenimiento ? '$' + parseInt(registro.valorSostenimiento).toLocaleString() : ''}</td>
+                <td>${registro.valorSostenimiento ? '$' + formatoMoneda(registro.valorSostenimiento) : ''}</td>
                 <td>${registro.correspondeA || ''}</td>
                 <td>${registro.tieneKazado || ''}</td>
                 <td>${registro.bajo || ''}</td>
                 <td>${registro.solicitoClave || ''}</td>
-                <td>${registro.valorProducto ? '$' + parseInt(registro.valorProducto).toLocaleString() : ''}</td>
+                <td>${registro.valorProducto ? '$' + formatoMoneda(registro.valorProducto) : ''}</td>
             `;
             cuerpoTabla.appendChild(fila);
         });
@@ -816,6 +923,12 @@ function formatearFecha(fechaStr) {
         console.error('Error formateando fecha:', fechaStr, e);
         return String(fechaStr);
     }
+}
+
+// Función para formatear montos de dinero
+function formatoMoneda(valor) {
+    const num = parseInt(valor);
+    return isNaN(num) ? '0' : num.toLocaleString();
 }
 
 // Función para actualizar controles de paginación
