@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" href="https://i.ibb.co/KjKRG5j7/Captura-de-pantalla-2025-09-19-110757.png" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historial de Registros - CONFIRN</title>
+    <title>Historial de Registros</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        /* Estilos anteriores (sin cambios) */
+         <style>
+        :root {
+            --alkosto-blue: #0054A6;
+            --alkosto-orange: #FF6600;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -16,39 +21,60 @@
             min-width: 100vw;
             overflow-x: hidden;
         }
+
+        /* Banner azul con línea naranja en la parte inferior */
         .titulo {
             width: 100%;
-            background-color: #000000;
+            background-color: var(--alkosto-blue);
             text-align: center;
             color: white;
             margin-bottom: 0px;
-            padding: 15px 0;
+            position: relative;
+            overflow: hidden;
+            padding: 15px 0 0 0;
         }
+
         .botones-container {
-            background-color: #000000;
+            background-color: var(--alkosto-blue);
             margin-top: 0px;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
-            padding: 20px 0;
-            border: 40px solid #000000;
+            margin-bottom: 0px;
+            padding: 10px 0;
+            position: relative;
             box-sizing: border-box;
         }
+
+        /* Línea naranja debajo de los botones */
+        .botones-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: var(--alkosto-orange);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Botones naranja */
         .botones-container button {
-            background-color: #000000;
+            background-color: var(--alkosto-orange);
             color: white;
             padding: 12px 20px;
-            border: 2px solid white;
+            border: none;
             border-radius: 5px;
             margin: 2px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
+
         .botones-container button:hover {
-            background-color: #333;
+            background-color: #e65c00;
         }
         
         /* Estilos para la página de registros */
@@ -69,6 +95,7 @@
             padding: 15px;
             background-color: #f9f9f9;
             border-radius: 5px;
+            border: 1px solid #ddd;
         }
         
         .filtro-grupo {
@@ -80,12 +107,15 @@
         .filtro-grupo label {
             font-weight: bold;
             margin-bottom: 5px;
+            color: #333;
         }
         
         .filtro-grupo input, .filtro-grupo select {
-            padding: 8px;
+            padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
         }
         
         .botones-accion {
@@ -105,6 +135,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: background-color 0.3s ease;
         }
         
         .boton-exportar:hover {
@@ -112,7 +143,7 @@
         }
         
         .boton-refrescar {
-            background-color: #17a2b8;
+            background-color: var(--alkosto-blue);
             color: white;
             border: none;
             padding: 10px 15px;
@@ -121,16 +152,19 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            transition: background-color 0.3s ease;
         }
         
         .boton-refrescar:hover {
-            background-color: #138496;
+            background-color: #004080;
         }
         
         .tabla-contenedor {
             overflow-x: auto;
             max-height: 70vh;
             overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
         
         table {
@@ -145,14 +179,15 @@
         }
         
         th {
-            background-color: #000;
+            background-color: var(--alkosto-blue);
             color: white;
             position: sticky;
             top: 0;
+            font-weight: bold;
         }
         
         tr:hover {
-            background-color: #f5f5f5;
+            background-color: #f0f8ff;
         }
         
         .paginacion {
@@ -164,15 +199,16 @@
         
         .paginacion button {
             padding: 8px 15px;
-            background-color: #000;
+            background-color: var(--alkosto-orange);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         
         .paginacion button:hover {
-            background-color: #333;
+            background-color: #e65c00;
         }
         
         .paginacion button:disabled {
@@ -191,6 +227,7 @@
             text-align: center;
             padding: 20px;
             font-size: 18px;
+            color: var(--alkosto-blue);
         }
         
         .sin-registros {
@@ -207,12 +244,32 @@
         }
         
         .filtro-rango button {
-            padding: 8px 12px;
-            background-color: #000;
+            padding: 10px 15px;
+            background-color: var(--alkosto-orange);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .filtro-rango button:hover {
+            background-color: #e65c00;
+        }
+
+        /* Botón adicional para acciones */
+        .boton-accion {
+            background-color: var(--alkosto-orange);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .boton-accion:hover {
+            background-color: #e65c00;
         }
         
         @media (max-width: 768px) {
@@ -228,12 +285,22 @@
                 flex-direction: column;
                 align-items: stretch;
             }
+            
+            .botones-accion {
+                flex-direction: column;
+            }
+            
+            .contenedor-registros {
+                width: 100%;
+                padding: 10px;
+                border-radius: 0;
+            }
         }
     </style>
 </head>
 <body>
     <div class="titulo">
-        <h1>Historial de Registros procesos en caja</h1>
+        <h1>Historial de Registros - CONFIRN</h1>
     </div>
     <div class="botones-container">
         <button onclick="window.location.href='index.html'"><i class="fas fa-arrow-left"></i> Volver al Formulario</button>
@@ -398,7 +465,7 @@
 
 <script>
 // URL de tu Web App de Google Apps Script para obtener datos
-const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzjDJhn-M9boPUiRws7OJRi-1fJPV_H6xG1JN9bROj-aFMt3Kc3gqKqsnvP9hHDaNOSSw/exec";
+const GOOGLE_SCRIPT_GET_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
 
 // Variables globales
 let todosLosRegistros = [];
@@ -657,7 +724,7 @@ function aplicarRangoFechas() {
     aplicarFiltros();
 }
 
-// Función para convertir fecha al formato YYYY-MM-DD (SOLUCIÓN DEFINITIVA)
+// Función para convertir fecha al formato YYYY-MM-DD (MEJORADA)
 function convertirFechaFormato(fechaStr) {
     if (!fechaStr) return null;
     
@@ -681,12 +748,6 @@ function convertirFechaFormato(fechaStr) {
             return `${anio}-${mes}-${dia}`;
         }
         
-        // Para formato AAAA-MM-DD 00:00:00 (formato de Google Sheets)
-        if (typeof fechaStr === 'string' && fechaStr.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
-            // Extraer solo la parte de la fecha
-            return fechaStr.split(' ')[0];
-        }
-        
         // Para timestamp de Google Sheets (formato de fecha serial)
         if (!isNaN(fechaStr) && fechaStr > 40000) {
             // Convertir fecha serial de Excel/Sheets a fecha JavaScript
@@ -697,7 +758,6 @@ function convertirFechaFormato(fechaStr) {
         // Para otros formatos, intentar con el constructor Date
         const fecha = new Date(fechaStr);
         if (!isNaN(fecha.getTime())) {
-            // NO ajustar por zona horaria - mantener la fecha original
             return fecha.toISOString().split('T')[0];
         }
         
@@ -809,7 +869,7 @@ function formatearFecha(fechaStr) {
             return String(fechaStr); // Devolver como string
         }
         
-        // Formatear la fecha correctamente SIN ajustar zona horaria
+        // Formatear la fecha correctamente
         return fecha.toLocaleDateString('es-ES', {
             day: '2-digit',
             month: '2-digit',
