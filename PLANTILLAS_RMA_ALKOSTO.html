@@ -701,6 +701,15 @@
   }
 </script>
 
+<div id="bienvenida" style="text-align:right;padding:10px 20px;font-weight:bold;color:#0054A6;">
+  Bienvenido, <span id="nombreUsuario"></span>
+</div>
+
+<script>
+  document.getElementById("nombreUsuario").textContent = localStorage.getItem("userName") || "";
+</script>
+
+
 <script>
   function cerrarSesion() {
     localStorage.removeItem("userCedula");
