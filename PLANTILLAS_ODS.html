@@ -304,6 +304,20 @@
 </head>
 <body>
 
+<script>
+  // Verifica si hay sesión activa
+  if (!localStorage.getItem("userCedula")) {
+    window.location.href = "login.html";
+  }
+</script>
+
+<script>
+  function cerrarSesion() {
+    localStorage.removeItem("userCedula");
+    window.location.href = "login.html";
+  }
+</script>
+
 <div class="titulo">
     <h1>FORMULARIO DE ENVÍOS</h1>
 </div>
@@ -313,6 +327,12 @@
     <button onclick="window.location.href='PLANTILLAS_ODS.html'">Generador de Guias</button>
     <button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
     <button onclick="solicitarAccesoRegistros()">Historial de Registros</button>
+</div>
+
+    <!-- 🔒 Nuevo botón de cierre de sesión -->
+    <button onclick="cerrarSesion()" style="background-color:#333;color:white;border:none;padding:12px 20px;border-radius:5px;cursor:pointer;">
+        Cerrar Sesión
+    </button>
 </div>
 
 <div class="container">

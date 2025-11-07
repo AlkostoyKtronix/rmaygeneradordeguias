@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso - Portal Alkosto</title>
+  <link rel="icon" href="https://i.ibb.co/KjKRG5j7/Captura-de-pantalla-2025-09-19-110757.png" type="image/x-icon">
+  <style>
+    :root {
+      --alkosto-blue: #0054A6;
+      --alkosto-orange: #FF6600;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--alkosto-blue);
+      border-bottom: 2px solid var(--alkosto-orange);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: var(--alkosto-orange);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e65c00;
+    }
+
+    p {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--alkosto-blue);
+    }
+
+    .crear-cuenta {
+      background-color: var(--alkosto-blue);
+    }
+
+    .crear-cuenta:hover {
+      background-color: #004080;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Ingreso al Portal</h2>
+    <input type="text" id="cedula" placeholder="Número de Cédula">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="login()">Ingresar</button>
+    <button class="crear-cuenta" onclick="crearCuenta()">Crear / Restablecer Contraseña</button>
+    <p id="mensaje"></p>
+    <div class="footer">© Alkosto - Portal de Formularios</div>
+  </div>
+
+  <script>
+    // 🔗 Reemplaza este enlace con tu URL del Apps Script publicado
+    const apiURL = "https://script.google.com/macros/s/AKfycbwLnJbW512luw7eyQ3J9dfrop6gNkU73qXjSmn1DfWREC4PX7TsZkhwAhmrTH2lobdw/exec"; 
+
+    async function login() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !pass) {
+        msg.textContent = "Por favor ingresa ambos campos.";
+        msg.style.color = "red";
+        return;
+      }
+
+      const res = await fetch(`${apiURL}?action=check&cedula=${cedula}&pass=${pass}`);
+      const text = await res.text();
+
+      if (text === "ok") {
+        msg.textContent = "✅ Acceso correcto, redirigiendo...";
+        msg.style.color = "green";
+        localStorage.setItem("userCedula", cedula);
+        setTimeout(() => window.location.href = "index.html", 1000);
+      } else if (text === "no_pass") {
+        msg.textContent = "⚠️ Debes crear una contraseña primero.";
+        msg.style.color = "orange";
+      } else if (text === "wrong") {
+        msg.textContent = "❌ Contraseña incorrecta.";
+        msg.style.color = "red";
+      } else if (text === "not_found") {
+        msg.textContent = "⚠️ Cédula no registrada en el sistema.";
+        msg.style.color = "red";
+      } else {
+        msg.textContent = "Error de conexión.";
+        msg.style.color = "red";
+      }
+    }
+
+    async function crearCuenta() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !pass) {
+        msg.textContent = "Ingresa tu cédula y la nueva contraseña.";
+        msg.style.color = "orange";
+        return;
+      }
+
+      const res = await fetch(`${apiURL}?action=set&cedula=${cedula}&pass=${pass}`);
+      const text = await res.text();
+
+      if (text === "saved") {
+        msg.textContent = "✅ Contraseña creada o actualizada correctamente.";
+        msg.style.color = "green";
+      } else if (text === "not_found") {
+        msg.textContent = "⚠️ Cédula no registrada.";
+        msg.style.color = "red";
+      } else {
+        msg.textContent = "❌ Error al guardar contraseña.";
+        msg.style.color = "red";
+      }
+    }
+  </script>
+
+</body>
+</html>

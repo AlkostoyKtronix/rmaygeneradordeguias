@@ -1,65 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" href="https://i.ibb.co/KjKRG5j7/Captura-de-pantalla-2025-09-19-110757.png" type="image/x-icon">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario CONFIRN</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <style>
-        /* Tus estilos CSS existentes */
+   <style>
+        :root {
+            --alkosto-blue: #0054A6;
+            --alkosto-orange: #FF6600;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             background-color: #f5f5f5;
             min-width: 100vw;
             overflow-x: hidden;
         }
+
+        /* Banner azul con línea naranja en la parte inferior */
         .titulo {
             width: 100%;
-            background-color: #000000;
+            background-color: var(--alkosto-blue);
             text-align: center;
             color: white;
             margin-bottom: 0px;
-            padding: 15px 0;
+            position: relative;
+            overflow: hidden;
+            padding: 15px 0 0 0; /* Más padding arriba, nada abajo */
         }
+
         .botones-container {
-            background-color: #000000;
+            background-color: var(--alkosto-blue);
             margin-top: 0px;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 30px;
-            padding: 20px 0;
-            border: 40px solid #000000;
+            margin-bottom: 0px; /* Sin margen inferior */
+            padding: 10px 0;
+            position: relative;
             box-sizing: border-box;
         }
+
+        /* Línea naranja debajo de los botones */
+        .botones-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: var(--alkosto-orange);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Botones naranja */
         .botones-container button {
-            background-color: #000000;
+            background-color: var(--alkosto-orange);
             color: white;
             padding: 12px 20px;
-            border: 2px solid white;
+            border: none;
             border-radius: 5px;
             margin: 2px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
+
         .botones-container button:hover {
-            background-color: #333;
+            background-color: #e65c00;
         }
+
         .contenedor-principal {
             display: flex;
             width: 100%;
             max-width: 100%;
             gap: 20px;
             justify-content: space-between;
-            padding: 0 10px;
+            padding: 20px;
             box-sizing: border-box;
         }
+
         .formulario {
             background-color: white;
             border-radius: 8px;
@@ -68,27 +100,35 @@
             min-width: 400px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             margin: 0 10px;
+            border: 1px solid #ccc;
         }
+
         .formulario h2 {
             text-align: center;
             margin-top: 0;
-            color: #000000;
-            border-bottom: 2px solid #000;
+            color: var(--alkosto-blue);
+            border-bottom: 2px solid var(--alkosto-orange);
             padding-bottom: 10px;
         }
+
         .formulario label {
             font-weight: bold;
             display: block;
             margin-top: 10px;
+            color: #333;
         }
+
         .formulario input, .formulario textarea, .formulario select {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             margin: 5px 0 15px 0;
             border-radius: 5px;
             border: 1px solid #ccc;
             box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
         }
+
         .dropzone {
             border: 2px dashed #999;
             border-radius: 5px;
@@ -98,54 +138,48 @@
             background-color: #fafafa;
             box-sizing: border-box;
         }
+
         .dropzone.dragover {
             background-color: #e0e0e0;
         }
+
+        .boton-generar, .boton-copiar, .boton-guardar {
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
         .boton-generar {
-            background-color: #000;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 10px;
+            background-color: var(--alkosto-orange);
         }
+
         .boton-generar:hover {
-            background-color: #333;
+            background-color: #e65c00;
         }
+
         .boton-copiar {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 10px;
+            background-color: var(--alkosto-orange);
         }
+
         .boton-copiar:hover {
-            background-color: #45a049;
+            background-color: var(--alkosto-orange);
         }
+
         .boton-guardar {
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 10px;
+            background-color: var(--alkosto-blue);
         }
+
         .boton-guardar:hover {
             background-color: #0b7dda;
         }
+
         .mensaje {
             padding: 10px;
             margin-top: 10px;
@@ -153,27 +187,19 @@
             text-align: center;
             display: none;
         }
+
         .exito {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
         .error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        @media (max-width: 1200px) {
-            .contenedor-principal {
-                flex-direction: column;
-                align-items: center;
-            }
-            .formulario {
-                width: 90%;
-                margin-bottom: 20px;
-            }
-        }
-        
+
         /* Estilos para el modal de contraseña */
         .modal-contrasena {
             display: none;
@@ -187,6 +213,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .contenido-modal {
             background-color: white;
             padding: 30px;
@@ -195,13 +222,15 @@
             max-width: 400px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
+
         .contenido-modal h2 {
             text-align: center;
             margin-top: 0;
-            color: #000;
-            border-bottom: 2px solid #000;
+            color: var(--alkosto-blue);
+            border-bottom: 2px solid var(--alkosto-orange);
             padding-bottom: 10px;
         }
+
         .contenido-modal input {
             width: 100%;
             padding: 10px;
@@ -210,33 +239,40 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+
         .botones-modal {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
         }
+
         .botones-modal button {
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s ease;
         }
+
         .boton-confirmar {
-            background-color: #000;
+            background-color: var(--alkosto-orange);
             color: white;
         }
+
         .boton-confirmar:hover {
-            background-color: #333;
+            background-color: #e65c00;
         }
-        .boton-cancelar {
-            background-color: #ccc;
-            color: #333;
+
+	.boton-cancelar {
+            background-color: var(--alkosto-blue);
+            color: white;
         }
+
         .boton-cancelar:hover {
             background-color: #bbb;
         }
-        
+
         /* Estilo para el mensaje de alerta */
         .alerta-jasper {
             background-color: #fff3cd;
@@ -248,9 +284,46 @@
             display: none;
             font-weight: bold;
         }
+
+        @media (max-width: 1200px) {
+            .contenedor-principal {
+                flex-direction: column;
+                align-items: center;
+            }
+            .formulario {
+                width: 90%;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .contenedor-principal {
+                padding: 10px;
+            }
+            .formulario {
+                width: 100%;
+                min-width: unset;
+                margin: 0 0 20px 0;
+            }
+        }
     </style>
 </head>
 <body>
+
+<script>
+  // Verifica si hay sesión activa
+  if (!localStorage.getItem("userCedula")) {
+    window.location.href = "login.html";
+  }
+</script>
+
+<script>
+  function cerrarSesion() {
+    localStorage.removeItem("userCedula");
+    window.location.href = "login.html";
+  }
+</script>
+
     <div class="titulo">
         <h1>Generador de PDF Devoluciones</h1>
     </div>
@@ -260,6 +333,12 @@
     	<button onclick="window.location.href='PLANTILLAS_DEVOLUCIONES.html'">Generador PDF Devoluciones</button>
 	<button onclick="solicitarAccesoRegistros()">Historial de Registros</button>
     </div>
+
+    <!-- 🔒 Nuevo botón de cierre de sesión -->
+    <button onclick="cerrarSesion()" style="background-color:#333;color:white;border:none;padding:12px 20px;border-radius:5px;cursor:pointer;">
+        Cerrar Sesión
+    </button>
+</div>
 
     <div class="contenedor-principal">
         <!-- Formulario para generar PDF (izquierda) -->
@@ -408,7 +487,7 @@ let rmaImg = null;
 let facturaImg = null;
 
 // URL de tu Web App de Google Apps Script (debes reemplazarla con la tuya)
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzqqqNXv2vhq5zYagH4MAe-fOgnGdQlQ-OoHl2xCWvBoI8Lpk9Obfca4Aa6iQNtATrF3A/exec";
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhIsypREmGfZ-VrHLI1HMVg4rP_BxubD9QoOs8TGQ7bkMqGA2mb7QBDgAAmg7N0jf0/exec";
 
 // Contraseña predefinida
 const CONTRASENA_CORRECTA = "Alkosto2025*";
