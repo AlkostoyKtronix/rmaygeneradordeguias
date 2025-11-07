@@ -64,12 +64,6 @@
       background-color: #e65c00;
     }
 
-    p {
-      margin-top: 15px;
-      font-weight: bold;
-      color: var(--alkosto-blue);
-    }
-
     .crear-cuenta {
       background-color: var(--alkosto-blue);
     }
@@ -83,23 +77,39 @@
       font-size: 12px;
       color: #777;
     }
+
+    #cambioPass {
+      display: none;
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+    }
   </style>
 </head>
 <body>
 
   <div class="login-container">
-    <h2>Ingreso al Portal</h2>
+    <h2>Acceso al Portal</h2>
+
     <input type="text" id="cedula" placeholder="Número de Cédula">
     <input type="password" id="password" placeholder="Contraseña">
+
     <button onclick="login()">Ingresar</button>
-    <button class="crear-cuenta" onclick="crearCuenta()">Crear / Restablecer Contraseña</button>
+    <button class="crear-cuenta" onclick="crearCuenta()">Crear Contraseña</button>
+
+    <div id="cambioPass">
+      <h3 style="color:#0054A6;">Cambiar Contraseña</h3>
+      <input type="password" id="oldPass" placeholder="Contraseña actual">
+      <input type="password" id="newPass" placeholder="Nueva contraseña">
+      <button onclick="cambiarPassword()">Actualizar</button>
+    </div>
+
     <p id="mensaje"></p>
     <div class="footer">© Alkosto - Portal de Formularios</div>
   </div>
 
   <script>
-    // 🔗 Reemplaza este enlace con tu URL del Apps Script publicado
-    const apiURL = "https://script.google.com/macros/s/AKfycbwLnJbW512luw7eyQ3J9dfrop6gNkU73qXjSmn1DfWREC4PX7TsZkhwAhmrTH2lobdw/exec"; 
+    const apiURL = "https://script.google.com/macros/s/AKfycbzDmCk-BqsP7GlOwMrYmAOQEerCrhtZgHnW97K5PXGmuLun4zMK88A_Cf_I6rdti4vK/exec"; // reemplaza con tu URL
 
     async function login() {
       const cedula = document.getElementById("cedula").value.trim();
@@ -115,11 +125,13 @@
       const res = await fetch(`${apiURL}?action=check&cedula=${cedula}&pass=${pass}`);
       const text = await res.text();
 
-      if (text === "ok") {
-        msg.textContent = "✅ Acceso correcto, redirigiendo...";
+      if (text.startsWith("ok|")) {
+        const nombre = text.split("|")[1];
+        msg.textContent = `✅ Bienvenido, ${nombre}`;
         msg.style.color = "green";
         localStorage.setItem("userCedula", cedula);
-        setTimeout(() => window.location.href = "index.html", 1000);
+        localStorage.setItem("userName", nombre);
+        setTimeout(() => window.location.href = "index.html", 1200);
       } else if (text === "no_pass") {
         msg.textContent = "⚠️ Debes crear una contraseña primero.";
         msg.style.color = "orange";
@@ -127,7 +139,7 @@
         msg.textContent = "❌ Contraseña incorrecta.";
         msg.style.color = "red";
       } else if (text === "not_found") {
-        msg.textContent = "⚠️ Cédula no registrada en el sistema.";
+        msg.textContent = "⚠️ Cédula no registrada.";
         msg.style.color = "red";
       } else {
         msg.textContent = "Error de conexión.";
@@ -150,8 +162,13 @@
       const text = await res.text();
 
       if (text === "saved") {
-        msg.textContent = "✅ Contraseña creada o actualizada correctamente.";
+        msg.textContent = "✅ Contraseña creada correctamente.";
         msg.style.color = "green";
+        document.getElementById("cambioPass").style.display = "block";
+      } else if (text === "exists") {
+        msg.textContent = "Ya tienes una contraseña creada. Usa la opción de cambio.";
+        msg.style.color = "blue";
+        document.getElementById("cambioPass").style.display = "block";
       } else if (text === "not_found") {
         msg.textContent = "⚠️ Cédula no registrada.";
         msg.style.color = "red";
@@ -160,7 +177,33 @@
         msg.style.color = "red";
       }
     }
-  </script>
 
+    async function cambiarPassword() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const oldPass = document.getElementById("oldPass").value.trim();
+      const newPass = document.getElementById("newPass").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !oldPass || !newPass) {
+        msg.textContent = "Completa todos los campos.";
+        msg.style.color = "orange";
+        return;
+      }
+
+      const res = await fetch(`${apiURL}?action=update&cedula=${cedula}&pass=${oldPass}&newPass=${newPass}`);
+      const text = await res.text();
+
+      if (text === "updated") {
+        msg.textContent = "✅ Contraseña actualizada correctamente.";
+        msg.style.color = "green";
+      } else if (text === "wrong_current") {
+        msg.textContent = "❌ La contraseña actual no es correcta.";
+        msg.style.color = "red";
+      } else {
+        msg.textContent = "❌ Error al actualizar la contraseña.";
+        msg.style.color = "red";
+      }
+    }
+  </script>
 </body>
 </html>
