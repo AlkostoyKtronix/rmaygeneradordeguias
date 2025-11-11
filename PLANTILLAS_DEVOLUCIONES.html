@@ -373,6 +373,10 @@
 
             <label>Imagen de Cédula (Solo PAK) o RMA</label>
             <div id="rmaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
+            
+            <!-- NUEVO CAMPO: Cotización de recolección - AHORA DESPUÉS DE CÉDULA/RMA -->
+            <label>Cotización de recolección con coordinadora (Solo para PAK sin recolección)</label>
+            <div id="cotizacionDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
 
             <label>Factura Jasper</label>
             <div id="facturaDrop" class="dropzone" contenteditable="true">Pega aquí o arrastra una imagen</div>
@@ -494,6 +498,7 @@
 <script>
 let rmaImg = null;
 let facturaImg = null;
+let cotizacionImg = null; // Variable para la nueva imagen de cotización
 
 // URL de tu Web App de Google Apps Script (debes reemplazarla con la tuya)
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhIsypREmGfZ-VrHLI1HMVg4rP_BxubD9QoOs8TGQ7bkMqGA2mb7QBDgAAmg7N0jf0/exec";
@@ -605,6 +610,39 @@ function setupPasteDrop(divId, assignImgFn) {
 
 setupPasteDrop("rmaDrop", (data) => rmaImg = data);
 setupPasteDrop("facturaDrop", (data) => facturaImg = data);
+setupPasteDrop("cotizacionDrop", (data) => cotizacionImg = data); // Configurar el nuevo dropzone
+
+// Función para crear imagen desde data URL
+function crearImagenDesdeDataURL(dataURL) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = dataURL;
+    });
+}
+
+// Función para calcular dimensiones de imagen optimizadas para PDF SIN MÁRGENES
+function calcularDimensionesImagen(img, maxWidth, maxHeight) {
+    let width = img.width;
+    let height = img.height;
+    
+    // Si la imagen es más ancha que el máximo permitido
+    if (width > maxWidth) {
+        const ratio = maxWidth / width;
+        width = maxWidth;
+        height = height * ratio;
+    }
+    
+    // Si la imagen es más alta que el máximo permitido (después del ajuste de ancho)
+    if (height > maxHeight) {
+        const ratio = maxHeight / height;
+        height = maxHeight;
+        width = width * ratio;
+    }
+    
+    return { width, height };
+}
 
 async function generarPDF() {
     const factura = document.getElementById("numFactura").value.trim();
@@ -620,53 +658,115 @@ async function generarPDF() {
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
+    
+    // SIN MÁRGENES - usar todo el espacio disponible
+    let y = 5; // Posición vertical inicial (mínima)
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
 
-    let y = 10;
-
+    // PRIMERA PÁGINA: Imagen de Cédula/RMA + Texto + (Cotización si existe)
+    
+    // 1. Imagen de Cédula/RMA (siempre primera) - SIN TÍTULO
     if (rmaImg) {
-        doc.addImage(rmaImg, 'JPEG', 10, y, 180, 100);
-        y += 110;
+        try {
+            const img = await crearImagenDesdeDataURL(rmaImg);
+            // Usar casi todo el ancho de la página
+            const dimensiones = calcularDimensionesImagen(img, pageWidth - 10, 150);
+            
+            doc.addImage(rmaImg, 'JPEG', 5, y, dimensiones.width, dimensiones.height);
+            y += dimensiones.height + 10;
+        } catch (error) {
+            console.error("Error al procesar imagen RMA:", error);
+        }
     }
 
+    // 2. Información de texto (sin títulos, solo los datos)
     if (caso) {
         doc.setFont(undefined, 'bold');
-        doc.text(`CASO: ${caso}`, 10, y);
-        y += 10;
+        doc.text(`CASO: ${caso}`, 5, y);
+        y += 8;
     }
-
+    
     if (pak) {
-        doc.setFont(undefined, 'bold');
-        doc.text(`PAK: ${pak}`, 10, y);
-        y += 10;
+        doc.text(`PAK: ${pak}`, 5, y);
+        y += 8;
     }
-
+    
     if (procedimiento) {
-        doc.setFont(undefined, 'bold');
-        doc.text(procedimiento, 10, y);
-        y += 10;
+        doc.text(procedimiento, 5, y); // Solo el texto, sin título
+        y += 15;
     }
 
+    // 3. Imagen de Cotización (si existe) - SIN TÍTULO - USAR ESPACIO RESTANTE - CENTRADA
+    if (cotizacionImg) {
+        try {
+            const img = await crearImagenDesdeDataURL(cotizacionImg);
+            
+            // Calcular espacio disponible en la página actual
+            const espacioDisponible = pageHeight - y - 10;
+            
+            // Ajustar la imagen al espacio disponible
+            const dimensiones = calcularDimensionesImagen(img, pageWidth - 10, espacioDisponible);
+            
+            // CALCULAR POSICIÓN X PARA CENTRAR LA IMAGEN
+            const xCentrada = (pageWidth - dimensiones.width) / 2;
+            
+            doc.addImage(cotizacionImg, 'JPEG', xCentrada, y, dimensiones.width, dimensiones.height);
+            y += dimensiones.height + 5;
+        } catch (error) {
+            console.error("Error al procesar imagen de cotización:", error);
+        }
+    }
+
+    // DECISIÓN: ¿Dónde colocar Factura Jasper?
     if (facturaImg) {
-        doc.addImage(facturaImg, 'JPEG', 10, y, 180, 100);
-        y += 110;
+        // Si HAY cotización, Factura Jasper va en SEGUNDA PÁGINA
+        // Si NO hay cotización, Factura Jasper va en PRIMERA PÁGINA
+        if (cotizacionImg) {
+            // Crear SEGUNDA PÁGINA para Factura Jasper
+            doc.addPage();
+            y = 5; // Reiniciar posición en nueva página
+        }
+        
+        try {
+            const img = await crearImagenDesdeDataURL(facturaImg);
+            // Usar casi todo el espacio disponible en la página
+            const espacioDisponible = pageHeight - y - 10;
+            const dimensiones = calcularDimensionesImagen(img, pageWidth - 10, espacioDisponible);
+            
+            doc.addImage(facturaImg, 'JPEG', 5, y, dimensiones.width, dimensiones.height);
+            // SIN TÍTULO "FACTURA JASPER"
+        } catch (error) {
+            console.error("Error al procesar imagen de factura:", error);
+        }
     }
 
+    // Procesar PDF de devolución si existe (siempre como páginas adicionales)
     const pdfBytes = doc.output("arraybuffer");
-    const finalPdf = await PDFLib.PDFDocument.load(pdfBytes);
+    let finalPdf = await PDFLib.PDFDocument.load(pdfBytes);
 
     if (devolucionPDF) {
-        const devolucionBytes = await devolucionPDF.arrayBuffer();
-        const devolucionDoc = await PDFLib.PDFDocument.load(devolucionBytes);
-        const copiedPages = await finalPdf.copyPages(devolucionDoc, devolucionDoc.getPageIndices());
-        copiedPages.forEach(p => finalPdf.addPage(p));
+        try {
+            const devolucionBytes = await devolucionPDF.arrayBuffer();
+            const devolucionDoc = await PDFLib.PDFDocument.load(devolucionBytes);
+            const copiedPages = await finalPdf.copyPages(devolucionDoc, devolucionDoc.getPageIndices());
+            copiedPages.forEach(p => finalPdf.addPage(p));
+        } catch (error) {
+            console.error("Error al procesar PDF de devolución:", error);
+            alert("Hubo un error al procesar el PDF de devolución. El resto del documento se generará correctamente.");
+        }
     }
 
+    // Guardar y descargar el PDF final
     const finalBytes = await finalPdf.save();
     const blob = new Blob([finalBytes], { type: 'application/pdf' });
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `${factura} CONFIRN.pdf`;
     link.click();
+    
+    // Mostrar mensaje de éxito
+    alert("PDF generado exitosamente con la distribución solicitada.");
 }
 
 function copiarInformacion() {
