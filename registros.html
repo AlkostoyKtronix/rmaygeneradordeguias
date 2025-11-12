@@ -735,13 +735,25 @@ function formatDateToYYYYMMDD(date) {
 
 // Función para aplicar rango de fechas manualmente
 function aplicarRangoFechas() {
-    // Limpiar filtro de mes y año
+    // Limpiar filtros de fecha
+    document.getElementById('filtro-fecha').value = '';
     document.getElementById('filtro-mes').value = '';
     document.getElementById('filtro-anio').value = '';
-    
-    // Limpiar filtro de fecha específica
-    document.getElementById('filtro-fecha').value = '';
-    
+
+    // Limpiar rango de fechas
+    document.getElementById('filtro-fecha-inicio').value = '';
+    document.getElementById('filtro-fecha-fin').value = '';
+
+    // Limpiar filtros de texto
+    document.getElementById('filtro-factura').value = '';
+    document.getElementById('filtro-caso').value = '';
+
+    // Limpiar selectores de lista
+    document.getElementById('filtro-gestor').value = '';
+    document.getElementById('filtro-motivo').value = '';
+    document.getElementById('filtro-proceso').value = '';
+
+    // Aplicar filtros nuevamente (sin ninguno activo)
     aplicarFiltros();
 }
 
