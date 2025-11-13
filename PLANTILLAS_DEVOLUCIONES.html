@@ -764,9 +764,6 @@ async function generarPDF() {
     link.href = URL.createObjectURL(blob);
     link.download = `${factura} CONFIRN.pdf`;
     link.click();
-    
-    // Mostrar mensaje de éxito
-    alert("PDF generado exitosamente con la distribución solicitada.");
 }
 
 function copiarInformacion() {

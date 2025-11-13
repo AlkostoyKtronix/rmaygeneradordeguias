@@ -64,6 +64,11 @@
       background-color: #e65c00;
     }
 
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
     .crear-cuenta {
       background-color: var(--alkosto-blue);
     }
@@ -84,6 +89,30 @@
       border-top: 1px solid #ddd;
       padding-top: 15px;
     }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--alkosto-orange);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--alkosto-blue);
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -94,8 +123,8 @@
     <input type="text" id="cedula" placeholder="Número de Cédula">
     <input type="password" id="password" placeholder="Contraseña">
 
-    <button onclick="login()">Ingresar</button>
-    <button class="crear-cuenta" onclick="crearCuenta()">Crear Contraseña</button>
+    <button id="loginBtn" onclick="login()">Ingresar</button>
+    <button class="crear-cuenta" id="crearCuentaBtn" onclick="crearCuenta()">Crear Contraseña</button>
 
     <div id="cambioPass">
       <h3 style="color:#0054A6;">Cambiar Contraseña</h3>
@@ -109,7 +138,52 @@
   </div>
 
   <script>
-    const apiURL = "https://script.google.com/macros/s/AKfycbzDmCk-BqsP7GlOwMrYmAOQEerCrhtZgHnW97K5PXGmuLun4zMK88A_Cf_I6rdti4vK/exec"; // reemplaza con tu URL
+    const apiURL = "https://script.google.com/macros/s/AKfycbzDmCk-BqsP7GlOwMrYmAOQEerCrhtZgHnW97K5PXGmuLun4zMK88A_Cf_I6rdti4vK/exec";
+
+    // Función para manejar el evento "Enter"
+    function handleEnterKey(event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    }
+
+    // Agregar event listeners a los campos de entrada
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById("cedula").addEventListener("keypress", handleEnterKey);
+      document.getElementById("password").addEventListener("keypress", handleEnterKey);
+      
+      // También para los campos de cambio de contraseña
+      document.getElementById("oldPass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          cambiarPassword();
+        }
+      });
+      document.getElementById("newPass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          cambiarPassword();
+        }
+      });
+    });
+
+    // Función para mostrar estado de carga
+    function setLoadingState(loading) {
+      const loginBtn = document.getElementById("loginBtn");
+      const crearCuentaBtn = document.getElementById("crearCuentaBtn");
+      const mensaje = document.getElementById("mensaje");
+
+      if (loading) {
+        // Mostrar estado de carga
+        loginBtn.disabled = true;
+        crearCuentaBtn.disabled = true;
+        loginBtn.innerHTML = '<div class="loading"></div> Procesando...';
+        mensaje.innerHTML = '<div class="loading-message"><div class="loading"></div>Verificando credenciales...</div>';
+      } else {
+        // Restaurar estado normal
+        loginBtn.disabled = false;
+        crearCuentaBtn.disabled = false;
+        loginBtn.textContent = 'Ingresar';
+      }
+    }
 
     async function login() {
       const cedula = document.getElementById("cedula").value.trim();
@@ -122,28 +196,39 @@
         return;
       }
 
-      const res = await fetch(`${apiURL}?action=check&cedula=${cedula}&pass=${pass}`);
-      const text = await res.text();
+      // Activar estado de carga
+      setLoadingState(true);
 
-      if (text.startsWith("ok|")) {
-        const nombre = text.split("|")[1];
-        msg.textContent = `✅ Bienvenido, ${nombre}`;
-        msg.style.color = "green";
-        localStorage.setItem("userCedula", cedula);
-        localStorage.setItem("userName", nombre);
-        setTimeout(() => window.location.href = "index.html", 1200);
-      } else if (text === "no_pass") {
-        msg.textContent = "⚠️ Debes crear una contraseña primero.";
-        msg.style.color = "orange";
-      } else if (text === "wrong") {
-        msg.textContent = "❌ Contraseña incorrecta.";
+      try {
+        const res = await fetch(`${apiURL}?action=check&cedula=${cedula}&pass=${pass}`);
+        const text = await res.text();
+
+        if (text.startsWith("ok|")) {
+          const nombre = text.split("|")[1];
+          msg.textContent = `✅ Bienvenido, ${nombre}`;
+          msg.style.color = "green";
+          localStorage.setItem("userCedula", cedula);
+          localStorage.setItem("userName", nombre);
+          setTimeout(() => window.location.href = "index.html", 1200);
+        } else if (text === "no_pass") {
+          msg.textContent = "⚠️ Debes crear una contraseña primero.";
+          msg.style.color = "orange";
+        } else if (text === "wrong") {
+          msg.textContent = "❌ Contraseña incorrecta.";
+          msg.style.color = "red";
+        } else if (text === "not_found") {
+          msg.textContent = "⚠️ Cédula no registrada.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "Error de conexión.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
         msg.style.color = "red";
-      } else if (text === "not_found") {
-        msg.textContent = "⚠️ Cédula no registrada.";
-        msg.style.color = "red";
-      } else {
-        msg.textContent = "Error de conexión.";
-        msg.style.color = "red";
+      } finally {
+        // Desactivar estado de carga
+        setLoadingState(false);
       }
     }
 
@@ -158,23 +243,41 @@
         return;
       }
 
-      const res = await fetch(`${apiURL}?action=set&cedula=${cedula}&pass=${pass}`);
-      const text = await res.text();
+      // Activar estado de carga para crear cuenta
+      const crearCuentaBtn = document.getElementById("crearCuentaBtn");
+      const loginBtn = document.getElementById("loginBtn");
+      crearCuentaBtn.disabled = true;
+      loginBtn.disabled = true;
+      crearCuentaBtn.innerHTML = '<div class="loading"></div> Procesando...';
+      msg.innerHTML = '<div class="loading-message"><div class="loading"></div>Creando contraseña...</div>';
 
-      if (text === "saved") {
-        msg.textContent = "✅ Contraseña creada correctamente.";
-        msg.style.color = "green";
-        document.getElementById("cambioPass").style.display = "block";
-      } else if (text === "exists") {
-        msg.textContent = "Ya tienes una contraseña creada. Usa la opción de cambio.";
-        msg.style.color = "blue";
-        document.getElementById("cambioPass").style.display = "block";
-      } else if (text === "not_found") {
-        msg.textContent = "⚠️ Cédula no registrada.";
+      try {
+        const res = await fetch(`${apiURL}?action=set&cedula=${cedula}&pass=${pass}`);
+        const text = await res.text();
+
+        if (text === "saved") {
+          msg.textContent = "✅ Contraseña creada correctamente.";
+          msg.style.color = "green";
+          document.getElementById("cambioPass").style.display = "block";
+        } else if (text === "exists") {
+          msg.textContent = "Ya tienes una contraseña creada. Usa la opción de cambio.";
+          msg.style.color = "blue";
+          document.getElementById("cambioPass").style.display = "block";
+        } else if (text === "not_found") {
+          msg.textContent = "⚠️ Cédula no registrada.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "❌ Error al guardar contraseña.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
         msg.style.color = "red";
-      } else {
-        msg.textContent = "❌ Error al guardar contraseña.";
-        msg.style.color = "red";
+      } finally {
+        // Restaurar estado normal
+        crearCuentaBtn.disabled = false;
+        loginBtn.disabled = false;
+        crearCuentaBtn.textContent = 'Crear Contraseña';
       }
     }
 
@@ -190,18 +293,34 @@
         return;
       }
 
-      const res = await fetch(`${apiURL}?action=update&cedula=${cedula}&pass=${oldPass}&newPass=${newPass}`);
-      const text = await res.text();
+      // Activar estado de carga para cambio de contraseña
+      const cambiarBtn = document.querySelector('#cambioPass button');
+      const originalText = cambiarBtn.textContent;
+      cambiarBtn.disabled = true;
+      cambiarBtn.innerHTML = '<div class="loading"></div> Actualizando...';
+      msg.innerHTML = '<div class="loading-message"><div class="loading"></div>Actualizando contraseña...</div>';
 
-      if (text === "updated") {
-        msg.textContent = "✅ Contraseña actualizada correctamente.";
-        msg.style.color = "green";
-      } else if (text === "wrong_current") {
-        msg.textContent = "❌ La contraseña actual no es correcta.";
+      try {
+        const res = await fetch(`${apiURL}?action=update&cedula=${cedula}&pass=${oldPass}&newPass=${newPass}`);
+        const text = await res.text();
+
+        if (text === "updated") {
+          msg.textContent = "✅ Contraseña actualizada correctamente.";
+          msg.style.color = "green";
+        } else if (text === "wrong_current") {
+          msg.textContent = "❌ La contraseña actual no es correcta.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "❌ Error al actualizar la contraseña.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
         msg.style.color = "red";
-      } else {
-        msg.textContent = "❌ Error al actualizar la contraseña.";
-        msg.style.color = "red";
+      } finally {
+        // Restaurar estado normal
+        cambiarBtn.disabled = false;
+        cambiarBtn.textContent = originalText;
       }
     }
   </script>
