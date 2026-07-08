@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ingreso - Portal Alkosto</title>
+  <link rel="icon" href="https://i.ibb.co/KjKRG5j7/Captura-de-pantalla-2025-09-19-110757.png" type="image/x-icon">
+  <style>
+    :root {
+      --alkosto-blue: #0054A6;
+      --alkosto-orange: #FF6600;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .login-container {
+      background-color: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--alkosto-blue);
+      border-bottom: 2px solid var(--alkosto-orange);
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      background-color: var(--alkosto-orange);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #e65c00;
+    }
+
+    button:disabled {
+      background-color: #cccccc;
+      cursor: not-allowed;
+    }
+
+    .crear-cuenta {
+      background-color: var(--alkosto-blue);
+    }
+
+    .crear-cuenta:hover {
+      background-color: #004080;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #777;
+    }
+
+    #cambioPass {
+      display: none;
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+    }
+
+    .loading {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid var(--alkosto-orange);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--alkosto-blue);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2>Acceso al Portal</h2>
+
+    <input type="text" id="cedula" placeholder="Número de Cédula">
+    <input type="password" id="password" placeholder="Contraseña">
+
+    <button id="loginBtn" onclick="login()">Ingresar</button>
+    <button class="crear-cuenta" id="crearCuentaBtn" onclick="crearCuenta()">Crear Contraseña</button>
+
+    <div id="cambioPass">
+      <h3 style="color:#0054A6;">Cambiar Contraseña</h3>
+      <input type="password" id="oldPass" placeholder="Contraseña actual">
+      <input type="password" id="newPass" placeholder="Nueva contraseña">
+      <button onclick="cambiarPassword()">Actualizar</button>
+    </div>
+
+    <p id="mensaje"></p>
+    <div class="footer">© Alkosto - Portal de Formularios</div>
+  </div>
+
+  <script>
+    const apiURL = "https://script.google.com/macros/s/AKfycbzDmCk-BqsP7GlOwMrYmAOQEerCrhtZgHnW97K5PXGmuLun4zMK88A_Cf_I6rdti4vK/exec";
+
+    // Función para manejar el evento "Enter"
+    function handleEnterKey(event) {
+      if (event.key === "Enter") {
+        login();
+      }
+    }
+
+    // Agregar event listeners a los campos de entrada
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById("cedula").addEventListener("keypress", handleEnterKey);
+      document.getElementById("password").addEventListener("keypress", handleEnterKey);
+      
+      // También para los campos de cambio de contraseña
+      document.getElementById("oldPass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          cambiarPassword();
+        }
+      });
+      document.getElementById("newPass").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          cambiarPassword();
+        }
+      });
+    });
+
+    // Función para mostrar estado de carga
+    function setLoadingState(loading) {
+      const loginBtn = document.getElementById("loginBtn");
+      const crearCuentaBtn = document.getElementById("crearCuentaBtn");
+      const mensaje = document.getElementById("mensaje");
+
+      if (loading) {
+        // Mostrar estado de carga
+        loginBtn.disabled = true;
+        crearCuentaBtn.disabled = true;
+        loginBtn.innerHTML = '<div class="loading"></div> Procesando...';
+        mensaje.innerHTML = '<div class="loading-message"><div class="loading"></div>Verificando credenciales...</div>';
+      } else {
+        // Restaurar estado normal
+        loginBtn.disabled = false;
+        crearCuentaBtn.disabled = false;
+        loginBtn.textContent = 'Ingresar';
+      }
+    }
+
+    async function login() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !pass) {
+        msg.textContent = "Por favor ingresa ambos campos.";
+        msg.style.color = "red";
+        return;
+      }
+
+      // Activar estado de carga
+      setLoadingState(true);
+
+      try {
+        const res = await fetch(`${apiURL}?action=check&cedula=${cedula}&pass=${pass}`);
+        const text = await res.text();
+
+        if (text.startsWith("ok|")) {
+          const nombre = text.split("|")[1];
+          msg.textContent = `✅ Bienvenido, ${nombre}`;
+          msg.style.color = "green";
+          localStorage.setItem("userCedula", cedula);
+          localStorage.setItem("userName", nombre);
+          setTimeout(() => window.location.href = "index.html", 1200);
+        } else if (text === "no_pass") {
+          msg.textContent = "⚠️ Debes crear una contraseña primero.";
+          msg.style.color = "orange";
+        } else if (text === "wrong") {
+          msg.textContent = "❌ Contraseña incorrecta.";
+          msg.style.color = "red";
+        } else if (text === "not_found") {
+          msg.textContent = "⚠️ Cédula no registrada.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "Error de conexión.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
+        msg.style.color = "red";
+      } finally {
+        // Desactivar estado de carga
+        setLoadingState(false);
+      }
+    }
+
+    async function crearCuenta() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !pass) {
+        msg.textContent = "Ingresa tu cédula y la nueva contraseña.";
+        msg.style.color = "orange";
+        return;
+      }
+
+      // Activar estado de carga para crear cuenta
+      const crearCuentaBtn = document.getElementById("crearCuentaBtn");
+      const loginBtn = document.getElementById("loginBtn");
+      crearCuentaBtn.disabled = true;
+      loginBtn.disabled = true;
+      crearCuentaBtn.innerHTML = '<div class="loading"></div> Procesando...';
+      msg.innerHTML = '<div class="loading-message"><div class="loading"></div>Creando contraseña...</div>';
+
+      try {
+        const res = await fetch(`${apiURL}?action=set&cedula=${cedula}&pass=${pass}`);
+        const text = await res.text();
+
+        if (text === "saved") {
+          msg.textContent = "✅ Contraseña creada correctamente.";
+          msg.style.color = "green";
+          document.getElementById("cambioPass").style.display = "block";
+        } else if (text === "exists") {
+          msg.textContent = "Ya tienes una contraseña creada. Usa la opción de cambio.";
+          msg.style.color = "blue";
+          document.getElementById("cambioPass").style.display = "block";
+        } else if (text === "not_found") {
+          msg.textContent = "⚠️ Cédula no registrada.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "❌ Error al guardar contraseña.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
+        msg.style.color = "red";
+      } finally {
+        // Restaurar estado normal
+        crearCuentaBtn.disabled = false;
+        loginBtn.disabled = false;
+        crearCuentaBtn.textContent = 'Crear Contraseña';
+      }
+    }
+
+    async function cambiarPassword() {
+      const cedula = document.getElementById("cedula").value.trim();
+      const oldPass = document.getElementById("oldPass").value.trim();
+      const newPass = document.getElementById("newPass").value.trim();
+      const msg = document.getElementById("mensaje");
+
+      if (!cedula || !oldPass || !newPass) {
+        msg.textContent = "Completa todos los campos.";
+        msg.style.color = "orange";
+        return;
+      }
+
+      // Activar estado de carga para cambio de contraseña
+      const cambiarBtn = document.querySelector('#cambioPass button');
+      const originalText = cambiarBtn.textContent;
+      cambiarBtn.disabled = true;
+      cambiarBtn.innerHTML = '<div class="loading"></div> Actualizando...';
+      msg.innerHTML = '<div class="loading-message"><div class="loading"></div>Actualizando contraseña...</div>';
+
+      try {
+        const res = await fetch(`${apiURL}?action=update&cedula=${cedula}&pass=${oldPass}&newPass=${newPass}`);
+        const text = await res.text();
+
+        if (text === "updated") {
+          msg.textContent = "✅ Contraseña actualizada correctamente.";
+          msg.style.color = "green";
+        } else if (text === "wrong_current") {
+          msg.textContent = "❌ La contraseña actual no es correcta.";
+          msg.style.color = "red";
+        } else {
+          msg.textContent = "❌ Error al actualizar la contraseña.";
+          msg.style.color = "red";
+        }
+      } catch (error) {
+        msg.textContent = "❌ Error de conexión con el servidor.";
+        msg.style.color = "red";
+      } finally {
+        // Restaurar estado normal
+        cambiarBtn.disabled = false;
+        cambiarBtn.textContent = originalText;
+      }
+    }
+  </script>
+</body>
+</html>
